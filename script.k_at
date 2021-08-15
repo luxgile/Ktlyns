@@ -1,0 +1,11 @@
+
+
+method<Int> Main()
+{
+    ret GetFive() + 4 * 2;
+}
+
+method<Int> GetFive()
+{
+    ret 5;
+}
