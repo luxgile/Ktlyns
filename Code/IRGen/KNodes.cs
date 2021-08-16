@@ -15,7 +15,7 @@ namespace Kat
         public abstract LLVMValueRef CodeGen(CodeGenContext context);
     }
 
-    public abstract class KExpr : KNode { }
+    public abstract class KExpr : KNode { public virtual KValType GetReturnType() => KValType.Void; }
     public abstract class KStmt : KNode { }
     public class KExprStmt : KStmt
     {
@@ -29,6 +29,7 @@ namespace Kat
     public class KDec : KExpr
     {
         public double Value { get; set; }
+        public override KValType GetReturnType() => KValType.Dec;
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
             return LLVMValueRef.CreateConstReal(LLVMTypeRef.Double, Value);
@@ -38,6 +39,7 @@ namespace Kat
     public class KInt : KExpr
     {
         public int Value { get; set; }
+        public override KValType GetReturnType() => KValType.Int;
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
             return LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, (ulong)Value, true);
@@ -56,6 +58,10 @@ namespace Kat
     public class KId : KExpr
     {
         public string Name { get; set; }
+        public override KValType GetReturnType()
+        {
+            return Enum.Parse<KValType>(KVarDecl.Fields[Name].Ret.Name);
+        }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
             if (!context.locals.ContainsKey(Name))
@@ -68,17 +74,22 @@ namespace Kat
     {
         public KId Id { get; set; }
         public List<KExpr> Args { get; set; }
+        public override KValType GetReturnType()
+        {
+            return Enum.Parse<KValType>(KMthdDecl.Methods[Id.Name].Ret.Name);
+        }
+
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
             LLVMValueRef function = context.module.GetNamedFunction(Id.Name);
             if (function.IsNull)
                 throw new IRGenException($"No function with name {Id.Name} found.");
-
+            
             List<LLVMValueRef> argsValues = new List<LLVMValueRef>();
             foreach (var arg in Args)
                 argsValues.Add(arg.CodeGen(context));
 
-            return context.builder.BuildCall(function, argsValues.ToArray(), "tmpcall");
+            return context.builder.BuildCall(function, argsValues.ToArray(), Id.Name);
         }
     }
 
@@ -86,15 +97,24 @@ namespace Kat
     {
         public ExprType Op { get; set; }
         public KExpr Rhs { get; set; }
+        public override KValType GetReturnType() => Rhs.GetReturnType();
+
+        private static LLVMValueRef dummyInt = LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, 0, false);
+        private static LLVMValueRef dummyDec = LLVMValueRef.CreateConstReal(LLVMTypeRef.Float, 0);
+
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
+            KValType retType = GetReturnType();
+            if (retType != KValType.Int && retType != KValType.Dec)
+                throw new IRGenException($"Cannot create a unary operation with type '{retType}'.");
+
             return Op switch
             {
-                ExprType.Add => BuildBinOp(LLVMOpcode.LLVMAdd),
-                ExprType.Sub => BuildBinOp(LLVMOpcode.LLVMSub),
+                ExprType.Add => BuildBinOp(retType == KValType.Int ? LLVMOpcode.LLVMAdd : LLVMOpcode.LLVMFAdd),
+                ExprType.Sub => BuildBinOp(retType == KValType.Int ? LLVMOpcode.LLVMSub : LLVMOpcode.LLVMFSub),
                 _ => throw new IRGenException("Invalid operator"),
             };
-            LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, 0, false), Rhs.CodeGen(context));
+            LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, retType == KValType.Int ? dummyInt : dummyDec, Rhs.CodeGen(context));
         }
     }
 
@@ -103,15 +123,19 @@ namespace Kat
         public ExprType Op { get; set; }
         public KExpr Lhs { get; set; }
         public KExpr Rhs { get; set; }
+        public override KValType GetReturnType() => Lhs.GetReturnType();
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
-            //TODO: Add support for floats
+            KValType retType = GetReturnType();
+            if (retType != KValType.Int && retType != KValType.Dec)
+                throw new IRGenException($"Cannot create a binary operation with type '{retType}'.");
+
             return Op switch
             {
-                ExprType.Add => BuildBinOp(LLVMOpcode.LLVMAdd),
-                ExprType.Sub => BuildBinOp(LLVMOpcode.LLVMSub),
-                ExprType.Mult => BuildBinOp(LLVMOpcode.LLVMMul),
-                ExprType.Div => BuildBinOp(LLVMOpcode.LLVMSDiv),
+                ExprType.Add => BuildBinOp(retType == KValType.Int ? LLVMOpcode.LLVMAdd : LLVMOpcode.LLVMFAdd),
+                ExprType.Sub => BuildBinOp(retType == KValType.Int ? LLVMOpcode.LLVMSub : LLVMOpcode.LLVMFSub),
+                ExprType.Mult => BuildBinOp(retType == KValType.Int ? LLVMOpcode.LLVMMul : LLVMOpcode.LLVMFMul),
+                ExprType.Div => BuildBinOp(retType == KValType.Int ? LLVMOpcode.LLVMSDiv : LLVMOpcode.LLVMFDiv),
                 _ => throw new IRGenException("Invalid operator"),
             };
             LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, Lhs.CodeGen(context), Rhs.CodeGen(context));
@@ -122,6 +146,10 @@ namespace Kat
     {
         public KId Lhs { get; set; }
         public KExpr Rhs { get; set; }
+        public override KValType GetReturnType()
+        {
+            return Lhs.GetReturnType();
+        }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
             if (!context.locals.ContainsKey(Lhs.Name))
@@ -154,12 +182,20 @@ namespace Kat
 
     public class KVarDecl : KStmt
     {
-        public KId Type { get; set; }
+        public KId Ret { get; set; }
         public KId Id { get; set; }
         public KExpr Assignment { get; set; }
+
+        public static Dictionary<string, KVarDecl> Fields = new();
+        public KVarDecl(KId id)
+        {
+            Id = id;
+            //TODO: This should be scoped, otherwise can't use variables with same name in different methods
+            Fields.Add(Id.Name, this);
+        }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
-            LLVMValueRef alloc = context.builder.BuildAlloca(TypeTable.GetType(Type.Name), Id.Name);
+            LLVMValueRef alloc = context.builder.BuildAlloca(TypeTable.GetType(Ret.Name), Id.Name);
             context.locals[Id.Name] = alloc;
             if (Assignment != null)
             {
@@ -172,28 +208,30 @@ namespace Kat
 
     public class KMthdDecl : KStmt
     {
-        public KId Type { get; set; }
+        public KId Ret { get; set; }
         public KId Id { get; set; }
         public List<KVarDecl> Args { get; set; } = new List<KVarDecl>();
         public KBlock Block { get; set; }
 
         private LLVMValueRef func;
         private bool isDefined;
+        private bool needsBlock;
 
-        public static List<KMthdDecl> Methods = new();
+        public static Dictionary<string, KMthdDecl> Methods = new();
 
-        public KMthdDecl()
+        public KMthdDecl(KId id, bool needsBlock)
         {
-            Methods.Add(this);
+            Id = id;
+            this.needsBlock = needsBlock;
+            Methods.Add(Id.Name, this);
         }
 
         public void Define(CodeGenContext context)
         {
             List<LLVMTypeRef> argTypes = new();
             foreach (var arg in Args)
-                argTypes.Add(TypeTable.GetType(arg.Type.Name));
-
-            LLVMTypeRef fType = LLVMTypeRef.CreateFunction(TypeTable.GetType(Type.Name), argTypes.ToArray());
+                argTypes.Add(TypeTable.GetType(arg.Ret.Name));
+            LLVMTypeRef fType = LLVMTypeRef.CreateFunction(TypeTable.GetType(Ret.Name), argTypes.ToArray());
             func = context.module.AddFunction(Id.Name, fType);
             isDefined = true;
         }
@@ -202,6 +240,9 @@ namespace Kat
         {
             if (!isDefined)
                 throw new IRGenException("Method has not been defined before generating block.");
+
+            if (!needsBlock)
+                return default;
 
             //Call this when the function it's defined
             LLVMBasicBlockRef block = func.AppendBasicBlock("entry");

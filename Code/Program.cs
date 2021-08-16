@@ -13,6 +13,9 @@ namespace Kat
 {
     internal sealed class Program
     {
+        [DllImport("Katime.dll")]
+        public static extern void Print();
+
         private static void Main(string[] args)
         {
             string scriptFile = File.ReadAllText(@"D:\Development\K@\Ktlyns\script.k_at");

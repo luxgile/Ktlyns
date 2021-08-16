@@ -134,6 +134,20 @@ public partial class KtlynsBaseListener : IKtlynsListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitRStatementMthDecl([NotNull] KtlynsParser.RStatementMthDeclContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>RStatementExMthDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterRStatementExMthDecl([NotNull] KtlynsParser.RStatementExMthDeclContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RStatementExMthDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitRStatementExMthDecl([NotNull] KtlynsParser.RStatementExMthDeclContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RVarDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -173,6 +187,18 @@ public partial class KtlynsBaseListener : IKtlynsListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitMth_decl([NotNull] KtlynsParser.Mth_declContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="KtlynsParser.ex_mth_decl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterEx_mth_decl([NotNull] KtlynsParser.Ex_mth_declContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="KtlynsParser.ex_mth_decl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitEx_mth_decl([NotNull] KtlynsParser.Ex_mth_declContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RMthVoid</c>
 	/// labeled alternative in <see cref="KtlynsParser.mth"/>.

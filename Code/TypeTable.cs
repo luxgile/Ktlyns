@@ -1,19 +1,22 @@
 ﻿using LLVMSharp.Interop;
+using System;
 using System.Collections.Generic;
 
 namespace Kat
 {
+    public enum KValType { Void, Int, Dec, String }
     public static class TypeTable
     {
-        private static Dictionary<string, LLVMTypeRef> typeTable = new();
+        private static Dictionary<KValType, LLVMTypeRef> typeTable = new();
 
         static TypeTable()
         {
-            typeTable.Add("Void", LLVMTypeRef.Void);
-            typeTable.Add("Int", LLVMTypeRef.Int32);
-            typeTable.Add("Dec", LLVMTypeRef.Int32);
+            typeTable.Add(KValType.Void, LLVMTypeRef.Void);
+            typeTable.Add(KValType.Int, LLVMTypeRef.Int32);
+            typeTable.Add(KValType.Dec, LLVMTypeRef.Double);
         }
 
-        public static LLVMTypeRef GetType(string type) => typeTable[type];
+        public static LLVMTypeRef GetType(KValType type) => typeTable[type];
+        public static LLVMTypeRef GetType(string type) => typeTable[(KValType)Enum.Parse(typeof(KValType), type)];
     }
 }

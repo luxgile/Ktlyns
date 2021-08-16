@@ -80,7 +80,12 @@ namespace Kat
             localStack.Peek().AddId(data);
         }
 
-        public void AddPromise(string id, IdType type, ParserException exception) => promises.Add(new IdPromise() { Data = new IdData() { name = id, type = type } , Exception = exception});
+        public void AddPromise(string id, IdType type, ParserException exception)
+        {
+            if (!TryGetId(id, out _))
+                promises.Add(new IdPromise() { Data = new IdData() { name = id, type = type }, Exception = exception });
+        }
+
         private void RemovePromise(IdData data)
         {
             for (int i = 0; i < promises.Count; i++)

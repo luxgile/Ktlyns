@@ -1,11 +1,18 @@
+ext method Print();
 
-
-method<Int> Main()
+method<Dec> AddThree(Dec a)
 {
-    ret GetFive() + 4 * 2;
+    ret a + 3.0;
 }
 
-method<Int> GetFive()
+method<Dec> Main()
 {
-    ret 5;
+    Dec b = AddThree(5);
+    Print();
+    ret GetFive() + 4.5 * 2.0 + b;
+}
+
+method<Dec> GetFive()
+{
+    ret 5.2;
 }

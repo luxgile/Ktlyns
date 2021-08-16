@@ -14,8 +14,8 @@ namespace Kat
             CodeGenContext context = new("script.k_at");
             try
             {
-                for (int i = 0; i < KMthdDecl.Methods.Count; i++)
-                    KMthdDecl.Methods[i].Define(context);
+                foreach (var method in KMthdDecl.Methods)
+                    method.Value.Define(context);
                 root.CodeGen(context);
             }
             catch (Exception e) { Console.WriteLine($"Exception while generating IR: {e}"); return; }

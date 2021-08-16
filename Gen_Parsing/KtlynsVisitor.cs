@@ -83,6 +83,13 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitRStatementMthDecl([NotNull] KtlynsParser.RStatementMthDeclContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>RStatementExMthDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRStatementExMthDecl([NotNull] KtlynsParser.RStatementExMthDeclContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>RVarDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
 	/// </summary>
@@ -102,6 +109,12 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitMth_decl([NotNull] KtlynsParser.Mth_declContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="KtlynsParser.ex_mth_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitEx_mth_decl([NotNull] KtlynsParser.Ex_mth_declContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>RMthVoid</c>
 	/// labeled alternative in <see cref="KtlynsParser.mth"/>.

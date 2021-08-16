@@ -83,6 +83,12 @@ namespace Kat
             context.Stmt = context.mth_decl().Stmt;
             return ParsingResult.Success;
         }
+        public override ParsingResult VisitRStatementExMthDecl([NotNull] RStatementExMthDeclContext context)
+        {
+            Safe(() => VisitChildren(context));
+            context.Stmt = context.ex_mth_decl().Stmt;
+            return ParsingResult.Success;
+        }
 
         //Var Decl
         public override ParsingResult VisitRVarDecl([NotNull] RVarDeclContext context)
@@ -92,7 +98,7 @@ namespace Kat
             if (state.TryGetId(identifier.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
             state.AddId(identifier.Name, IdType.Field);
-            context.Stmt = new KVarDecl() { Type = context.id(0).Id, Id = identifier };
+            context.Stmt = new KVarDecl(identifier) { Ret = context.id(0).Id };
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRVarDeclExpr([NotNull] RVarDeclExprContext context)
@@ -102,7 +108,7 @@ namespace Kat
             if (state.TryGetId(identifier.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
             state.AddId(identifier.Name, IdType.Field);
-            context.Stmt = new KVarDecl() { Type = context.id(0).Id, Id = identifier, Assignment = context.expr().Expr };
+            context.Stmt = new KVarDecl(identifier) { Ret = context.id(0).Id, Assignment = context.expr().Expr };
             return ParsingResult.Success;
         }
 
@@ -125,7 +131,26 @@ namespace Kat
 
             state.AddId(id.Name, IdType.Method);
 
-            context.Stmt = new KMthdDecl() { Type = type, Id = id, Args = args, Block = block };
+            context.Stmt = new KMthdDecl(id, true) { Ret = type, Args = args, Block = block };
+
+            return ParsingResult.Success;
+        }
+
+        //External Mth Decl
+        public override ParsingResult VisitEx_mth_decl([NotNull] Ex_mth_declContext context)
+        {
+            VisitChildren(context);
+
+            KId type = context.mth().Id;
+            KId id = context.id().Id;
+            List<KVarDecl> args = context.mth_decl_arg().Decls;
+
+            if (state.TryGetId(id.Name, out IdData data))
+                throw ParseErrorLib.IdDeclared(data.name, context.Start.Line, context.Start.Column);
+
+            state.AddId(id.Name, IdType.Method);
+
+            context.Stmt = new KMthdDecl(id, false) { Ret = type, Args = args };
 
             return ParsingResult.Success;
         }

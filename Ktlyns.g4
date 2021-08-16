@@ -19,9 +19,10 @@ statements
 
 statement
 	locals[KStmt Stmt]:
-	expr SDOT		# RStatement
-	| var_decl SDOT	# RStatementVarDecl
-	| mth_decl		# RStatementMthDecl;
+	expr SDOT			# RStatement
+	| var_decl SDOT		# RStatementVarDecl
+	| mth_decl			# RStatementMthDecl
+	| ex_mth_decl SDOT	# RStatementExMthDecl;
 
 var_decl
 	locals[KStmt Stmt]:
@@ -31,6 +32,10 @@ var_decl
 mth_decl
 	locals[KStmt Stmt]:
 	mth id LPRN mth_decl_arg RPRN block;
+
+ex_mth_decl
+	locals[KStmt Stmt]:
+	EXTERNAL mth id LPRN mth_decl_arg RPRN;
 
 mth
 	locals[KId Id]:
@@ -155,6 +160,9 @@ EQLESS:
 
 METHOD:
 	'method';
+
+EXTERNAL:
+	'ext';
 
 ID:
 	[a-zA-Z][a-zA-Z0-9]*;
