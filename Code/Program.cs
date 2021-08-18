@@ -14,10 +14,12 @@ namespace Kat
     internal sealed class Program
     {
         [DllImport("Katime.dll")]
-        public static extern void Print();
+        public static extern void Print(string s);
 
-        private static void Main(string[] args)
+        private static unsafe void Main(string[] args)
         {
+            LLVM.LoadLibraryPermanently(new MarshaledString("Katime.dll".AsSpan()).Value);
+
             string scriptFile = File.ReadAllText(@"D:\Development\K@\Ktlyns\script.k_at");
             Console.WriteLine("> SCRIPT: \n ----------");
             Console.Write(scriptFile);

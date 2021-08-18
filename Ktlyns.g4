@@ -44,7 +44,6 @@ mth
 
 expr
 	locals[KExpr Expr]:
-	// number						# RExprNumber
 	string						# RExprString
 	| id						# RExprId
 	| id EQ expr				# RExprAssign
@@ -86,8 +85,6 @@ mth_decl_arg
 									# RMthDeclArg
 	| var_decl						# RMthDeclArgVar
 	| mth_decl_arg COMMA var_decl	# RMthDeclArgAdd;
-
-// op locals[ExprType TypeExpr]: | SLASH { $TypeExpr = ExprType.Div;} | STAR { $TypeExpr = ExprType.Mult;} | PLUS { $TypeExpr = ExprType.Add;} | MINUS { $TypeExpr = ExprType.Sub;} | AND | OR | NOT | EQEQ | NEQEQ | GREAT | LESS | EQGREAT | EQLESS;
 
 WS:
 	[ \n\t\r]+ -> skip;
@@ -166,3 +163,9 @@ EXTERNAL:
 
 ID:
 	[a-zA-Z][a-zA-Z0-9]*;
+
+COMMENT:
+	'/*' .*? '*/' -> skip;
+
+LINE_COMMENT:
+	'//' ~[\r\n]* -> skip;

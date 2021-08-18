@@ -40,7 +40,15 @@ namespace Kat
 
             LLVMValueRef func = context.module.GetNamedFunction("Main");
             MainDelegate mainFunc = (MainDelegate)Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(func), typeof(MainDelegate));
-            int a = mainFunc();
+            int a = -1;
+            try
+            {
+                a = mainFunc();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Program failed. Exception {e}");
+            }
 
             Console.WriteLine("\n\n> RESULT:\n----------");
             Console.WriteLine("Result: " + a);

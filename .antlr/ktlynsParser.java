@@ -23,7 +23,8 @@ public class KtlynsParser extends Parser {
 		WS=1, DEC=2, INT=3, PLUS=4, MINUS=5, SLASH=6, STAR=7, STR=8, LPRN=9, RPRN=10, 
 		LBRC=11, RBRC=12, LARR=13, RARR=14, COMMA=15, DOT=16, SDOT=17, EQ=18, 
 		IF=19, ELSE=20, AT=21, RET=22, AND=23, OR=24, NOT=25, EQEQ=26, NEQEQ=27, 
-		GREAT=28, EQGREAT=29, LESS=30, EQLESS=31, METHOD=32, EXTERNAL=33, ID=34;
+		GREAT=28, EQGREAT=29, LESS=30, EQLESS=31, METHOD=32, EXTERNAL=33, ID=34, 
+		COMMENT=35, LINE_COMMENT=36;
 	public static final int
 		RULE_program = 0, RULE_block = 1, RULE_statements = 2, RULE_statement = 3, 
 		RULE_var_decl = 4, RULE_mth_decl = 5, RULE_ex_mth_decl = 6, RULE_mth = 7, 
@@ -52,7 +53,7 @@ public class KtlynsParser extends Parser {
 			null, "WS", "DEC", "INT", "PLUS", "MINUS", "SLASH", "STAR", "STR", "LPRN", 
 			"RPRN", "LBRC", "RBRC", "LARR", "RARR", "COMMA", "DOT", "SDOT", "EQ", 
 			"IF", "ELSE", "AT", "RET", "AND", "OR", "NOT", "EQEQ", "NEQEQ", "GREAT", 
-			"EQGREAT", "LESS", "EQLESS", "METHOD", "EXTERNAL", "ID"
+			"EQGREAT", "LESS", "EQLESS", "METHOD", "EXTERNAL", "ID", "COMMENT", "LINE_COMMENT"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -1326,7 +1327,7 @@ public class KtlynsParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3$\u00a9\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3&\u00a9\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\3\2\3\2\3\3\3\3\3\3"+
 		"\3\3\3\3\3\3\5\3)\n\3\3\4\6\4,\n\4\r\4\16\4-\3\5\3\5\3\5\3\5\3\5\3\5\3"+

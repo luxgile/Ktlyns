@@ -51,6 +51,7 @@ namespace Kat
         public string Value { get; set; }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
+            //TODO: Add string support.
             return context.builder.BuildGlobalString(Value);
         }
     }
@@ -64,9 +65,12 @@ namespace Kat
         }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
-            if (!context.locals.ContainsKey(Name))
+            if (!context.HasLocal(Name))
                 throw new IRGenException($"Undeclared variable {Name}.");
-            return context.builder.BuildLoad(context.locals[Name], "id");
+            var local = context.GetLocal(Name);
+            if (local.Kind == LLVMValueKind.LLVMArgumentValueKind)
+                return local;
+            return context.builder.BuildLoad(local, "id");
         }
     }
 
@@ -84,7 +88,7 @@ namespace Kat
             LLVMValueRef function = context.module.GetNamedFunction(Id.Name);
             if (function.IsNull)
                 throw new IRGenException($"No function with name {Id.Name} found.");
-            
+
             List<LLVMValueRef> argsValues = new List<LLVMValueRef>();
             foreach (var arg in Args)
                 argsValues.Add(arg.CodeGen(context));
@@ -152,9 +156,9 @@ namespace Kat
         }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
-            if (!context.locals.ContainsKey(Lhs.Name))
+            if (!context.HasLocal(Lhs.Name))
                 throw new IRGenException($"Undeclared variable {Lhs.Name}.");
-            return context.builder.BuildStore(Rhs.CodeGen(context), context.locals[Lhs.Name]);
+            return context.builder.BuildStore(Rhs.CodeGen(context), context.GetLocal(Lhs.Name));
         }
     }
 
@@ -196,7 +200,7 @@ namespace Kat
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
             LLVMValueRef alloc = context.builder.BuildAlloca(TypeTable.GetType(Ret.Name), Id.Name);
-            context.locals[Id.Name] = alloc;
+            context.SetLocal(Id.Name, alloc);
             if (Assignment != null)
             {
                 KAssign assign = new KAssign() { Lhs = Id, Rhs = Assignment };
@@ -229,10 +233,15 @@ namespace Kat
         public void Define(CodeGenContext context)
         {
             List<LLVMTypeRef> argTypes = new();
-            foreach (var arg in Args)
+            for (int i = 0; i < Args.Count; i++)
+            {
+                KVarDecl arg = Args[i];
                 argTypes.Add(TypeTable.GetType(arg.Ret.Name));
+            }
             LLVMTypeRef fType = LLVMTypeRef.CreateFunction(TypeTable.GetType(Ret.Name), argTypes.ToArray());
             func = context.module.AddFunction(Id.Name, fType);
+            for (int i = 0; i < Args.Count; i++)
+                func.Params[i].Name = Args[i].Id.Name;
             isDefined = true;
         }
 
@@ -246,11 +255,16 @@ namespace Kat
 
             //Call this when the function it's defined
             LLVMBasicBlockRef block = func.AppendBasicBlock("entry");
+
             context.builder.PositionAtEnd(block);
             context.blocks.Push(block);
 
-            foreach (var arg in Args)
+            for (int i = 0; i < Args.Count; i++)
+            {
+                KVarDecl arg = Args[i];
                 arg.CodeGen(context);
+                context.SetLocal(func.Params[i].Name, func.Params[i]);
+            }
 
             if (Block == null) throw new IRGenException("Error while creating method declaration. Block is null.");
             Block.CodeGen(context);

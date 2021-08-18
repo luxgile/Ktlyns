@@ -43,7 +43,8 @@ public partial class KtlynsParser : Parser {
 		WS=1, DEC=2, INT=3, PLUS=4, MINUS=5, SLASH=6, STAR=7, STR=8, LPRN=9, RPRN=10, 
 		LBRC=11, RBRC=12, LARR=13, RARR=14, COMMA=15, DOT=16, SDOT=17, EQ=18, 
 		IF=19, ELSE=20, AT=21, RET=22, AND=23, OR=24, NOT=25, EQEQ=26, NEQEQ=27, 
-		GREAT=28, EQGREAT=29, LESS=30, EQLESS=31, METHOD=32, EXTERNAL=33, ID=34;
+		GREAT=28, EQGREAT=29, LESS=30, EQLESS=31, METHOD=32, EXTERNAL=33, ID=34, 
+		COMMENT=35, LINE_COMMENT=36;
 	public const int
 		RULE_program = 0, RULE_block = 1, RULE_statements = 2, RULE_statement = 3, 
 		RULE_var_decl = 4, RULE_mth_decl = 5, RULE_ex_mth_decl = 6, RULE_mth = 7, 
@@ -65,7 +66,7 @@ public partial class KtlynsParser : Parser {
 		null, "WS", "DEC", "INT", "PLUS", "MINUS", "SLASH", "STAR", "STR", "LPRN", 
 		"RPRN", "LBRC", "RBRC", "LARR", "RARR", "COMMA", "DOT", "SDOT", "EQ", 
 		"IF", "ELSE", "AT", "RET", "AND", "OR", "NOT", "EQEQ", "NEQEQ", "GREAT", 
-		"EQGREAT", "LESS", "EQLESS", "METHOD", "EXTERNAL", "ID"
+		"EQGREAT", "LESS", "EQLESS", "METHOD", "EXTERNAL", "ID", "COMMENT", "LINE_COMMENT"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -1920,7 +1921,7 @@ public partial class KtlynsParser : Parser {
 
 	private static char[] _serializedATN = {
 		'\x3', '\x608B', '\xA72A', '\x8133', '\xB9ED', '\x417C', '\x3BE7', '\x7786', 
-		'\x5964', '\x3', '$', '\xA9', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
+		'\x5964', '\x3', '&', '\xA9', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
 		'\t', '\x3', '\x4', '\x4', '\t', '\x4', '\x4', '\x5', '\t', '\x5', '\x4', 
 		'\x6', '\t', '\x6', '\x4', '\a', '\t', '\a', '\x4', '\b', '\t', '\b', 
 		'\x4', '\t', '\t', '\t', '\x4', '\n', '\t', '\n', '\x4', '\v', '\t', '\v', 
