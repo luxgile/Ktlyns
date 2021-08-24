@@ -67,9 +67,13 @@ namespace Kat
         {
             if (!context.HasLocal(Name))
                 throw new IRGenException($"Undeclared variable {Name}.");
+
             var local = context.GetLocal(Name);
+
+            //Check if it's an argument. If it is then don't load it as it's already loaded
             if (local.Kind == LLVMValueKind.LLVMArgumentValueKind)
                 return local;
+
             return context.builder.BuildLoad(local, "id");
         }
     }

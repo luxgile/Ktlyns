@@ -281,12 +281,20 @@ namespace Kat
         }
 
         //ID
-        public override ParsingResult VisitId([NotNull] IdContext context)
+        public override ParsingResult VisitRIDSimple([NotNull] RIDSimpleContext context)
         {
             VisitChildren(context);
             string text = context.ID().ToString();
             context.Id = new KId() { Name = text };
             return ParsingResult.Success;
+        }
+        public override ParsingResult VisitRIDArray([NotNull] RIDArrayContext context)
+        {
+            throw new NotImplementedException();
+        }
+        public override ParsingResult VisitRIDPointer([NotNull] RIDPointerContext context)
+        {
+            throw new NotImplementedException();
         }
 
         //Call Args

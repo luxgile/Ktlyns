@@ -1,24 +1,9 @@
 //ext method Print();
 
-
-method<Int> AddThree(Int a)
-{
-    Int c = a;
-    ret c + 3;
-}
-
-
 method<Int> Main()
 {
-    //Print();
-    Int b = AddThree(5);
-    Int d = 4;
-    d = d + 1;
-    Int result = (GetFive() / d) + 4 * 2 + d * b;
-    ret result;
-}
-
-method<Int> GetFive()
-{
-    ret 5;
+	Int test = 5;
+	test = 4;
+	test = test - 1;
+	ret test;
 }

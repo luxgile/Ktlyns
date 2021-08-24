@@ -371,15 +371,41 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitString([NotNull] KtlynsParser.StringContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="KtlynsParser.id"/>.
+	/// Enter a parse tree produced by the <c>RIDPointer</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterId([NotNull] KtlynsParser.IdContext context);
+	void EnterRIDPointer([NotNull] KtlynsParser.RIDPointerContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="KtlynsParser.id"/>.
+	/// Exit a parse tree produced by the <c>RIDPointer</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitId([NotNull] KtlynsParser.IdContext context);
+	void ExitRIDPointer([NotNull] KtlynsParser.RIDPointerContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RIDArray</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRIDArray([NotNull] KtlynsParser.RIDArrayContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RIDArray</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRIDArray([NotNull] KtlynsParser.RIDArrayContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RIDSimple</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRIDSimple([NotNull] KtlynsParser.RIDSimpleContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RIDSimple</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRIDSimple([NotNull] KtlynsParser.RIDSimpleContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RCallArgsAdd</c>
 	/// labeled alternative in <see cref="KtlynsParser.call_args"/>.

@@ -434,17 +434,47 @@ public partial class KtlynsBaseListener : IKtlynsListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitString([NotNull] KtlynsParser.StringContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="KtlynsParser.id"/>.
+	/// Enter a parse tree produced by the <c>RIDPointer</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterId([NotNull] KtlynsParser.IdContext context) { }
+	public virtual void EnterRIDPointer([NotNull] KtlynsParser.RIDPointerContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="KtlynsParser.id"/>.
+	/// Exit a parse tree produced by the <c>RIDPointer</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitId([NotNull] KtlynsParser.IdContext context) { }
+	public virtual void ExitRIDPointer([NotNull] KtlynsParser.RIDPointerContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RIDArray</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterRIDArray([NotNull] KtlynsParser.RIDArrayContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RIDArray</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitRIDArray([NotNull] KtlynsParser.RIDArrayContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RIDSimple</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterRIDSimple([NotNull] KtlynsParser.RIDSimpleContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RIDSimple</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitRIDSimple([NotNull] KtlynsParser.RIDSimpleContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RCallArgsAdd</c>
 	/// labeled alternative in <see cref="KtlynsParser.call_args"/>.

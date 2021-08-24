@@ -233,11 +233,26 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitString([NotNull] KtlynsParser.StringContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="KtlynsParser.id"/>.
+	/// Visit a parse tree produced by the <c>RIDPointer</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitId([NotNull] KtlynsParser.IdContext context);
+	Result VisitRIDPointer([NotNull] KtlynsParser.RIDPointerContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>RIDArray</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRIDArray([NotNull] KtlynsParser.RIDArrayContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>RIDSimple</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRIDSimple([NotNull] KtlynsParser.RIDSimpleContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>RCallArgsAdd</c>
 	/// labeled alternative in <see cref="KtlynsParser.call_args"/>.

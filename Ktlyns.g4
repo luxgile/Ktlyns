@@ -72,7 +72,9 @@ string
 
 id
 	locals[KId Id]:
-	ID;
+	ID					# RIDSimple
+	| id '[' INT? ']'	# RIDArray
+	| id '*'			# RIDPointer;
 
 call_args
 	locals[List<KExpr> Exprs]:
