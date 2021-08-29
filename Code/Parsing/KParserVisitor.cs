@@ -285,16 +285,22 @@ namespace Kat
         {
             VisitChildren(context);
             string text = context.ID().ToString();
-            context.Id = new KId() { Name = text };
+            context.Id = new KId() { Name = text, Type = KIdType.Regular };
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRIDArray([NotNull] RIDArrayContext context)
         {
-            throw new NotImplementedException();
+            VisitChildren(context);
+            string text = context.id().Id.Name;
+            context.Id = new KId() { Name = text, Type = KIdType.Regular };
+            return ParsingResult.Success;
         }
         public override ParsingResult VisitRIDPointer([NotNull] RIDPointerContext context)
         {
-            throw new NotImplementedException();
+            VisitChildren(context);
+            string text = context.id().Id.Name;
+            context.Id = new KId() { Name = text, Type = KIdType.Regular };
+            return ParsingResult.Success;
         }
 
         //Call Args

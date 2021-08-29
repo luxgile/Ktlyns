@@ -58,6 +58,7 @@ namespace Kat
 
     public class KId : KExpr
     {
+        public KIdType Type { get; init; }
         public string Name { get; set; }
         public override KValType GetReturnType()
         {
@@ -68,13 +69,15 @@ namespace Kat
             if (!context.HasLocal(Name))
                 throw new IRGenException($"Undeclared variable {Name}.");
 
-            var local = context.GetLocal(Name);
+            LLVMValueRef local = context.GetLocal(Name);
 
-            //Check if it's an argument. If it is then don't load it as it's already loaded
+            //Check if it's an argument. If it is then it's the value
             if (local.Kind == LLVMValueKind.LLVMArgumentValueKind)
                 return local;
 
-            return context.builder.BuildLoad(local, "id");
+            //If not, load the pointer value.
+            return context.builder.BuildLoad(local, Name + "*");
+            //return default;
         }
     }
 
@@ -203,14 +206,18 @@ namespace Kat
         }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
-            LLVMValueRef alloc = context.builder.BuildAlloca(TypeTable.GetType(Ret.Name), Id.Name);
-            context.SetLocal(Id.Name, alloc);
+            //This creates an empty pointer of predefined type.
+            LLVMValueRef pointer = context.builder.BuildAlloca(TypeTable.GetType(Ret.Name), Id.Name);
+
+            //We store the pointer
+            context.SetLocal(Id.Name, pointer);
+
             if (Assignment != null)
             {
                 KAssign assign = new KAssign() { Lhs = Id, Rhs = Assignment };
                 assign.CodeGen(context);
             }
-            return alloc;
+            return pointer;
         }
     }
 

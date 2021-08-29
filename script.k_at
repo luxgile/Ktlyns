@@ -3,7 +3,5 @@
 method<Int> Main()
 {
 	Int test = 5;
-	test = 4;
-	test = test - 1;
 	ret test;
 }
