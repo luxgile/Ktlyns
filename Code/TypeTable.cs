@@ -19,5 +19,12 @@ namespace Kat
 
         public static LLVMTypeRef GetType(KValType type) => typeTable[type];
         public static LLVMTypeRef GetType(string type) => typeTable[(KValType)Enum.Parse(typeof(KValType), type)];
+        public static bool TryGetType(string type, out LLVMTypeRef value)
+        {
+            if (Enum.TryParse(typeof(KValType), type, out object? valType))
+                return typeTable.TryGetValue((KValType)valType, out value);
+            value = default;
+            return false;
+        }
     }
 }

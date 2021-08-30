@@ -371,18 +371,6 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitString([NotNull] KtlynsParser.StringContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>RIDPointer</c>
-	/// labeled alternative in <see cref="KtlynsParser.id"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterRIDPointer([NotNull] KtlynsParser.RIDPointerContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>RIDPointer</c>
-	/// labeled alternative in <see cref="KtlynsParser.id"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitRIDPointer([NotNull] KtlynsParser.RIDPointerContext context);
-	/// <summary>
 	/// Enter a parse tree produced by the <c>RIDArray</c>
 	/// labeled alternative in <see cref="KtlynsParser.id"/>.
 	/// </summary>

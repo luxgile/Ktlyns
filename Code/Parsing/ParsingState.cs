@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Kat
 {
-    public enum IdType { Field, Method }
+    public enum IdType { Field, Method, Type }
     public struct IdData : IEquatable<IdData>
     {
         public string name;

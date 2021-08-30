@@ -434,20 +434,6 @@ public partial class KtlynsBaseListener : IKtlynsListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitString([NotNull] KtlynsParser.StringContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>RIDPointer</c>
-	/// labeled alternative in <see cref="KtlynsParser.id"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterRIDPointer([NotNull] KtlynsParser.RIDPointerContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>RIDPointer</c>
-	/// labeled alternative in <see cref="KtlynsParser.id"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitRIDPointer([NotNull] KtlynsParser.RIDPointerContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by the <c>RIDArray</c>
 	/// labeled alternative in <see cref="KtlynsParser.id"/>.
 	/// <para>The default implementation does nothing.</para>

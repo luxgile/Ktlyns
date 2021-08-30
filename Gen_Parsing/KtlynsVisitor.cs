@@ -233,13 +233,6 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitString([NotNull] KtlynsParser.StringContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>RIDPointer</c>
-	/// labeled alternative in <see cref="KtlynsParser.id"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitRIDPointer([NotNull] KtlynsParser.RIDPointerContext context);
-	/// <summary>
 	/// Visit a parse tree produced by the <c>RIDArray</c>
 	/// labeled alternative in <see cref="KtlynsParser.id"/>.
 	/// </summary>

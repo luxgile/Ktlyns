@@ -28,7 +28,7 @@ namespace Kat
             LLVM.InitializeX86AsmParser();
             LLVM.InitializeX86AsmPrinter();
 
-            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
+            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1};
             if (!context.module.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
             {
                 Console.WriteLine($"Error: {error}");

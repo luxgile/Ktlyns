@@ -59,7 +59,16 @@ namespace Kat
     public class KId : KExpr
     {
         public KIdType Type { get; init; }
+        public IdType IdType { get; init; }
         public string Name { get; set; }
+
+        public KId(string name, IdType idType, KIdType type)
+        {
+            Name = name;
+            IdType = idType;
+            Type = type;
+        }
+
         public override KValType GetReturnType()
         {
             return Enum.Parse<KValType>(KVarDecl.Fields[Name].Ret.Name);
@@ -70,14 +79,32 @@ namespace Kat
                 throw new IRGenException($"Undeclared variable {Name}.");
 
             LLVMValueRef local = context.GetLocal(Name);
+            //KIdType kidType = Type;
+            //KId retType = null;
+            //if (IdType == IdType.Field)
+            //{
+            //    retType = KVarDecl.Fields[Name].Ret;
+            //    kidType = retType.Type;
+            //}
 
             //Check if it's an argument. If it is then it's the value
             if (local.Kind == LLVMValueKind.LLVMArgumentValueKind)
                 return local;
+            //if (kidType == KIdType.Pointer)
+            //    return context.builder.BuildPointerCast(local, TypeTable.GetType(retType.Name), Name);
 
             //If not, load the pointer value.
-            return context.builder.BuildLoad(local, Name + "*");
+            return context.builder.BuildLoad(local, Name + "_value");
             //return default;
+        }
+    }
+
+    public class KAddress : KExpr
+    {
+        public KId Id { get; set; }
+        public override LLVMValueRef CodeGen(CodeGenContext context)
+        {
+            return context.GetLocal(Id.Name);
         }
     }
 
@@ -157,6 +184,7 @@ namespace Kat
     {
         public KId Lhs { get; set; }
         public KExpr Rhs { get; set; }
+        public bool ToPointer { get; set; }
         public override KValType GetReturnType()
         {
             return Lhs.GetReturnType();
@@ -165,7 +193,12 @@ namespace Kat
         {
             if (!context.HasLocal(Lhs.Name))
                 throw new IRGenException($"Undeclared variable {Lhs.Name}.");
-            return context.builder.BuildStore(Rhs.CodeGen(context), context.GetLocal(Lhs.Name));
+
+            //Loads value into address
+            LLVMValueRef lhs = context.GetLocal(Lhs.Name);
+            if (ToPointer)asdasdsadasd
+                lhs = context.builder.BuildLoad(lhs, Lhs.Name + "_value");
+            return context.builder.BuildStore(Rhs.CodeGen(context), lhs);
         }
     }
 
@@ -214,7 +247,7 @@ namespace Kat
 
             if (Assignment != null)
             {
-                KAssign assign = new KAssign() { Lhs = Id, Rhs = Assignment };
+                KAssign assign = new KAssign() { Lhs = Id, Rhs = Assignment, ToPointer = false };
                 assign.CodeGen(context);
             }
             return pointer;

@@ -59,7 +59,8 @@ expr
 unary
 	locals[KExpr Expr]:
 	number
-	| MINUS number;
+	| MINUS number
+	| AMP id;
 
 number
 	locals[KExpr Expr]:
@@ -72,9 +73,8 @@ string
 
 id
 	locals[KId Id]:
-	ID					# RIDSimple
-	| id '[' INT? ']'	# RIDArray
-	| id '*'			# RIDPointer;
+	id '[' INT? ']'	# RIDArray
+	| ID			# RIDSimple;
 
 call_args
 	locals[List<KExpr> Exprs]:
@@ -103,6 +103,8 @@ SLASH:
 	'/';
 STAR:
 	'*';
+AMP:
+	'&';
 
 STR:
 	'"' [^"]* '"';
@@ -164,7 +166,7 @@ EXTERNAL:
 	'ext';
 
 ID:
-	[a-zA-Z][a-zA-Z0-9]*;
+	[a-zA-Z][a-zA-Z0-9]*'*'?;
 
 COMMENT:
 	'/*' .*? '*/' -> skip;

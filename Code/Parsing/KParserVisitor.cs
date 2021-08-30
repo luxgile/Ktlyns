@@ -94,6 +94,7 @@ namespace Kat
         public override ParsingResult VisitRVarDecl([NotNull] RVarDeclContext context)
         {
             VisitChildren(context);
+            var retType = context.id(0).Id;
             var identifier = context.id(1).Id;
             if (state.TryGetId(identifier.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
@@ -104,7 +105,8 @@ namespace Kat
         public override ParsingResult VisitRVarDeclExpr([NotNull] RVarDeclExprContext context)
         {
             Safe(() => VisitChildren(context));
-            var identifier = context.id(1).Id;
+            KId retType = context.id(0).Id;
+            KId identifier = context.id(1).Id;
             if (state.TryGetId(identifier.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
             state.AddId(identifier.Name, IdType.Field);
@@ -159,7 +161,7 @@ namespace Kat
         public override ParsingResult VisitRMthVoid([NotNull] RMthVoidContext context)
         {
             VisitChildren(context);
-            context.Id = new KId() { Name = "Void" };
+            context.Id = new KId("Void", IdType.Method, KIdType.Regular);
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRMthType([NotNull] RMthTypeContext context)
@@ -191,7 +193,7 @@ namespace Kat
             KId id = context.id().Id;
             if (!state.TryGetId(id.Name, out _))
                 throw ParseErrorLib.IdNotDeclared(id.Name, context.Start.Line, context.Start.Column);
-            context.Expr = new KAssign() { Lhs = id, Rhs = context.expr().Expr };
+            context.Expr = new KAssign() { Lhs = id, Rhs = context.expr().Expr, ToPointer = KVarDecl.Fields[id.Name].Ret.Type == KIdType.Pointer };
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRExprCall([NotNull] RExprCallContext context)
@@ -252,6 +254,8 @@ namespace Kat
             VisitChildren(context);
             if (context.MINUS() != null)
                 context.Expr = new KUnaryOp() { Op = ExprType.Sub, Rhs = context.number().Expr };
+            else if (context.AMP() != null)
+                context.Expr = new KAddress() { Id = context.id().Id };
             else
                 context.Expr = context.number().Expr;
 
@@ -285,21 +289,17 @@ namespace Kat
         {
             VisitChildren(context);
             string text = context.ID().ToString();
-            context.Id = new KId() { Name = text, Type = KIdType.Regular };
+            bool isPointer = text[^1] == '*';
+            if (isPointer) text = text[0..^1];
+            if(TypeTable.TryGetType(text, out _)) context.Id = new KId(text, IdType.Type, isPointer ? KIdType.Pointer : KIdType.Regular);
+            else context.Id = new KId(text, IdType.Field, KIdType.Regular);
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRIDArray([NotNull] RIDArrayContext context)
         {
             VisitChildren(context);
             string text = context.id().Id.Name;
-            context.Id = new KId() { Name = text, Type = KIdType.Regular };
-            return ParsingResult.Success;
-        }
-        public override ParsingResult VisitRIDPointer([NotNull] RIDPointerContext context)
-        {
-            VisitChildren(context);
-            string text = context.id().Id.Name;
-            context.Id = new KId() { Name = text, Type = KIdType.Regular };
+            context.Id = new KId(text, IdType.Field, KIdType.Array);
             return ParsingResult.Success;
         }
 

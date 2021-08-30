@@ -2,6 +2,8 @@
 
 method<Int> Main()
 {
-	Int test = 5;
-	ret test;
+	Int a = 5;
+	Int* b = &a;
+	b = 4;
+	ret a;
 }
