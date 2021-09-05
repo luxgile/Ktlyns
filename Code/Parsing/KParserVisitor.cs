@@ -32,6 +32,11 @@ namespace Kat
             return result;
         }
 
+        public override ParsingResult VisitTerminal(ITerminalNode node)
+        {
+            return base.VisitTerminal(node);
+        }
+
         //Program
         public override ParsingResult VisitProgram([NotNull] ProgramContext context)
         {

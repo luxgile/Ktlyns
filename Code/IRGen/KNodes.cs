@@ -15,7 +15,7 @@ namespace Kat
         public abstract LLVMValueRef CodeGen(CodeGenContext context);
     }
 
-    public abstract class KExpr : KNode { public virtual KValType GetReturnType() => KValType.Void; }
+    public abstract class KExpr : KNode { public virtual KValType GetReturnType() => KValType.Void; public virtual bool IsPointer { get; } = false; }
     public abstract class KStmt : KNode { }
     public class KExprStmt : KStmt
     {
@@ -62,6 +62,10 @@ namespace Kat
         public IdType IdType { get; init; }
         public string Name { get; set; }
 
+        public override bool IsPointer => retTypeCached != null ? retTypeCached.IsPointer : Type == KIdType.Pointer;
+
+        private KId retTypeCached;
+
         public KId(string name, IdType idType, KIdType type)
         {
             Name = name;
@@ -71,7 +75,9 @@ namespace Kat
 
         public override KValType GetReturnType()
         {
-            return Enum.Parse<KValType>(KVarDecl.Fields[Name].Ret.Name);
+            if (retTypeCached == null)
+                retTypeCached = KVarDecl.Fields[Name].Ret;
+            return Enum.Parse<KValType>(retTypeCached.Name);
         }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
@@ -79,23 +85,20 @@ namespace Kat
                 throw new IRGenException($"Undeclared variable {Name}.");
 
             LLVMValueRef local = context.GetLocal(Name);
-            //KIdType kidType = Type;
-            //KId retType = null;
-            //if (IdType == IdType.Field)
-            //{
-            //    retType = KVarDecl.Fields[Name].Ret;
-            //    kidType = retType.Type;
-            //}
 
             //Check if it's an argument. If it is then it's the value
             if (local.Kind == LLVMValueKind.LLVMArgumentValueKind)
                 return local;
-            //if (kidType == KIdType.Pointer)
-            //    return context.builder.BuildPointerCast(local, TypeTable.GetType(retType.Name), Name);
 
-            //If not, load the pointer value.
+            if(IsPointer)
+            {
+                //If pointer, load the address and the value of the address
+                local = context.builder.BuildLoad(local, Name + "_address");
+                local = context.builder.BuildIntToPtr(local, LLVMTypeRef.CreatePointer(TypeTable.GetType(GetReturnType()), 0));
+            }
+
+            //If not, load the value.
             return context.builder.BuildLoad(local, Name + "_value");
-            //return default;
         }
     }
 
@@ -104,7 +107,7 @@ namespace Kat
         public KId Id { get; set; }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
-            return context.GetLocal(Id.Name);
+            return context.builder.BuildPtrToInt(context.GetLocal(Id.Name), LLVMTypeRef.Int64);
         }
     }
 
@@ -196,9 +199,15 @@ namespace Kat
 
             //Loads value into address
             LLVMValueRef lhs = context.GetLocal(Lhs.Name);
-            if (ToPointer)asdasdsadasd
-                lhs = context.builder.BuildLoad(lhs, Lhs.Name + "_value");
-            return context.builder.BuildStore(Rhs.CodeGen(context), lhs);
+            LLVMValueRef rhs = Rhs.CodeGen(context);
+            if (ToPointer)
+            {
+                //Convert pointer to address and address into value
+                LLVMValueRef lhs_Adr = context.builder.BuildLoad(lhs, Lhs.Name + "_address");
+                lhs = context.builder.BuildIntToPtr(lhs_Adr, LLVMTypeRef.CreatePointer(TypeTable.GetType(GetReturnType()), 0));
+            }
+
+            return context.builder.BuildStore(rhs, lhs);
         }
     }
 
@@ -240,7 +249,8 @@ namespace Kat
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
             //This creates an empty pointer of predefined type.
-            LLVMValueRef pointer = context.builder.BuildAlloca(TypeTable.GetType(Ret.Name), Id.Name);
+            LLVMTypeRef type = Ret.Type == KIdType.Pointer ? LLVMTypeRef.Int64 : TypeTable.GetType(Ret.Name);
+            LLVMValueRef pointer = context.builder.BuildAlloca(type, Id.Name);
 
             //We store the pointer
             context.SetLocal(Id.Name, pointer);

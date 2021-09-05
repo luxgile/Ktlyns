@@ -2,8 +2,10 @@
 
 method<Int> Main()
 {
-	Int a = 5;
-	Int* b = &a;
-	b = 4;
-	ret a;
+	Int a = 0;
+	Int* aptr = &a;
+	Int b = 5;
+	Int* bptr = &b;
+	Int c = a + b;
+	ret c;
 }

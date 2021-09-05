@@ -46,7 +46,6 @@ expr
 	locals[KExpr Expr]:
 	string						# RExprString
 	| id						# RExprId
-	| id EQ expr				# RExprAssign
 	| id LPRN call_args RPRN	# RExprCall
 	| LPRN expr RPRN			# RExprGroup
 	| unary						# RExprUnary
@@ -54,6 +53,7 @@ expr
 	| expr SLASH expr			# RExprBinDiv
 	| expr PLUS expr			# RExprBinAdd
 	| expr MINUS expr			# RExprBinSub
+	| id EQ expr				# RExprAssign
 	| RET expr?					# RExprReturn;
 
 unary
@@ -166,7 +166,7 @@ EXTERNAL:
 	'ext';
 
 ID:
-	[a-zA-Z][a-zA-Z0-9]*'*'?;
+	[a-zA-Z][a-zA-Z0-9]* '*'?;
 
 COMMENT:
 	'/*' .*? '*/' -> skip;

@@ -1,60 +1,73 @@
-﻿using LLVMSharp.Interop;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
+using LLVMSharp.Interop;
 using System;
-using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Kat
 {
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate int MainDelegate();
-
-    public class KCompiler
+    public unsafe class KCompiler
     {
-        public void Compile(KNode root)
+        public bool DebugCompilation { get; set; } = false;
+
+        public KCompiler()
         {
-            CodeGenContext context = new("script.k_at");
-            try
+            LLVM.LoadLibraryPermanently(new MarshaledString("Katime.dll".AsSpan()).Value);
+        }
+
+        public int CompileAndRun(string source)
+        {
+            if (DebugCompilation)
             {
-                foreach (var method in KMthdDecl.Methods)
-                    method.Value.Define(context);
-                root.CodeGen(context);
-            }
-            catch (Exception e) { Console.WriteLine($"Exception while generating IR: {e}"); return; }
-
-            LLVM.LinkInMCJIT();
-
-            LLVM.InitializeX86TargetMC();
-            LLVM.InitializeX86Target();
-            LLVM.InitializeX86TargetInfo();
-            LLVM.InitializeX86AsmParser();
-            LLVM.InitializeX86AsmPrinter();
-
-            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1};
-            if (!context.module.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
-            {
-                Console.WriteLine($"Error: {error}");
-                return;
+                Console.WriteLine("> SCRIPT: \n ----------");
+                Console.Write(source);
+                Console.WriteLine("\n");
             }
 
-            Console.WriteLine("\n\n> IR CODE:\n----------");
-            context.module.Dump();
+            ICharStream stream = CharStreams.fromString(source);
+            KtlynsLexer lexer = new KtlynsLexer(stream);
 
-            LLVMValueRef func = context.module.GetNamedFunction("Main");
-            MainDelegate mainFunc = (MainDelegate)Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(func), typeof(MainDelegate));
-            int a = -1;
-            try
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            KtlynsParser parser = new KtlynsParser(tokens);
+            parser.AddErrorListener(new KErrorListener());
+
+            IParseTree tree = parser.program();
+
+            if (DebugCompilation)
+                PrettyPrint2(tree, parser);
+            //return;
+
+            KParserVisitor visitor = new KParserVisitor();
+            visitor.Visit(tree);
+            KNode root = visitor.Root;
+
+            if (visitor.Errors.Count > 0)
             {
-                a = mainFunc();
+                for (int i = 0; i < visitor.Errors.Count; i++) Console.WriteLine(visitor.Errors[i]);
+                return -1;
             }
-            catch(Exception e)
+
+            KLLVMGen compiler = new KLLVMGen();
+            return compiler.CompileAndRun(root);
+        }
+
+        private static void PrettyPrint2(IParseTree tree, Parser parser)
+        {
+            int indent = 0;
+            StringBuilder sb = new StringBuilder();
+            PrintNode(tree);
+            Console.Write(sb);
+            void PrintNode(IParseTree node)
             {
-                Console.WriteLine($"Program failed. Exception {e}");
+                for (int i = 0; i < indent; i++)
+                    sb.Append("  |");
+                sb.Append(Trees.GetNodeText(node, parser));
+                sb.Append('\n');
+                indent++;
+                for (int i = 0; i < node.ChildCount; i++)
+                    PrintNode(node.GetChild(i));
+                indent--;
             }
-
-            Console.WriteLine("\n\n> RESULT:\n----------");
-            Console.WriteLine("Result: " + a);
-
-            context.builder.Dispose();
-            engine.Dispose();
         }
     }
 }
