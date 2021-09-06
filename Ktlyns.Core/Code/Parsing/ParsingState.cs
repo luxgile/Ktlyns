@@ -44,6 +44,7 @@ namespace Kat
 
         private Stack<LocalScope> localStack = new Stack<LocalScope>();
         private List<IdPromise> promises = new List<IdPromise>();
+        public CodeGenContext GenContext { get; private set; } = new CodeGenContext();
 
         public ParsingState()
         {

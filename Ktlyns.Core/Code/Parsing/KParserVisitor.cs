@@ -14,8 +14,10 @@ namespace Kat
     {
         public KBlock Root { get; private set; }
 
-        private ParsingState state = new();
+        private ParsingState state = new ParsingState();
         public List<ParserException> Errors { get; private set; } = new List<ParserException>();
+
+        public CodeGenContext GetIRGenContext() => state.GenContext;
 
         private ParsingResult Safe(Func<ParsingResult> f)
         {
@@ -104,7 +106,7 @@ namespace Kat
             if (state.TryGetId(identifier.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
             state.AddId(identifier.Name, IdType.Field);
-            context.Stmt = new KVarDecl(identifier) { Ret = context.id(0).Id };
+            context.Stmt = new KVarDecl(state.GenContext, identifier) { Ret = context.id(0).Id };
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRVarDeclExpr([NotNull] RVarDeclExprContext context)
@@ -115,7 +117,7 @@ namespace Kat
             if (state.TryGetId(identifier.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
             state.AddId(identifier.Name, IdType.Field);
-            context.Stmt = new KVarDecl(identifier) { Ret = context.id(0).Id, Assignment = context.expr().Expr };
+            context.Stmt = new KVarDecl(state.GenContext, identifier) { Ret = context.id(0).Id, Assignment = context.expr().Expr };
             return ParsingResult.Success;
         }
 
@@ -138,7 +140,7 @@ namespace Kat
 
             state.AddId(id.Name, IdType.Method);
 
-            context.Stmt = new KMthdDecl(id, true) { Ret = type, Args = args, Block = block };
+            context.Stmt = new KMthdDecl(state.GenContext, id, true) { Ret = type, Args = args, Block = block };
 
             return ParsingResult.Success;
         }
@@ -157,7 +159,7 @@ namespace Kat
 
             state.AddId(id.Name, IdType.Method);
 
-            context.Stmt = new KMthdDecl(id, false) { Ret = type, Args = args };
+            context.Stmt = new KMthdDecl(state.GenContext, id, false) { Ret = type, Args = args };
 
             return ParsingResult.Success;
         }
@@ -198,7 +200,7 @@ namespace Kat
             KId id = context.id().Id;
             if (!state.TryGetId(id.Name, out _))
                 throw ParseErrorLib.IdNotDeclared(id.Name, context.Start.Line, context.Start.Column);
-            context.Expr = new KAssign() { Lhs = id, Rhs = context.expr().Expr, ToPointer = KVarDecl.Fields[id.Name].Ret.Type == KIdType.Pointer };
+            context.Expr = new KAssign() { Lhs = id, Rhs = context.expr().Expr, ToPointer = state.GenContext.Fields[id.Name].Ret.Type == KIdType.Pointer };
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRExprCall([NotNull] RExprCallContext context)

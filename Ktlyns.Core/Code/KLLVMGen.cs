@@ -11,12 +11,12 @@ namespace Kat
     {
         public bool LogIR { get; set; }
 
-        public int CompileAndRun(KNode root)
+        public int CompileAndRun(KNode root, CodeGenContext context)
         {
-            CodeGenContext context = new("script.k_at");
+            context.InitializeLLVMModules("main_source");
             try
             {
-                foreach (var method in KMthdDecl.Methods)
+                foreach (var method in context.Methods)
                     method.Value.Define(context);
                 root.CodeGen(context);
             }

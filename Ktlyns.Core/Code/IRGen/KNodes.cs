@@ -15,7 +15,12 @@ namespace Kat
         public abstract LLVMValueRef CodeGen(CodeGenContext context);
     }
 
-    public abstract class KExpr : KNode { public virtual KValType GetReturnType() => KValType.Void; public virtual bool IsPointer { get; } = false; }
+    public abstract class KExpr : KNode
+    {
+        public virtual KValType GetReturnType(CodeGenContext context) => KValType.Void;
+        public virtual bool IsPointer { get; } = false;
+    }
+
     public abstract class KStmt : KNode { }
     public class KExprStmt : KStmt
     {
@@ -29,7 +34,7 @@ namespace Kat
     public class KDec : KExpr
     {
         public double Value { get; set; }
-        public override KValType GetReturnType() => KValType.Dec;
+        public override KValType GetReturnType(CodeGenContext context) => KValType.Dec;
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
             return LLVMValueRef.CreateConstReal(LLVMTypeRef.Double, Value);
@@ -39,7 +44,7 @@ namespace Kat
     public class KInt : KExpr
     {
         public int Value { get; set; }
-        public override KValType GetReturnType() => KValType.Int;
+        public override KValType GetReturnType(CodeGenContext context) => KValType.Int;
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
             return LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, (ulong)Value, true);
@@ -73,10 +78,10 @@ namespace Kat
             Type = type;
         }
 
-        public override KValType GetReturnType()
+        public override KValType GetReturnType(CodeGenContext context)
         {
             if (retTypeCached == null)
-                retTypeCached = KVarDecl.Fields[Name].Ret;
+                retTypeCached = context.Fields[Name].Ret;
             return Enum.Parse<KValType>(retTypeCached.Name);
         }
         public override LLVMValueRef CodeGen(CodeGenContext context)
@@ -90,11 +95,11 @@ namespace Kat
             if (local.Kind == LLVMValueKind.LLVMArgumentValueKind)
                 return local;
 
-            if(IsPointer)
+            if (IsPointer)
             {
                 //If pointer, load the address and the value of the address
                 local = context.builder.BuildLoad(local, Name + "_address");
-                local = context.builder.BuildIntToPtr(local, LLVMTypeRef.CreatePointer(TypeTable.GetType(GetReturnType()), 0));
+                local = context.builder.BuildIntToPtr(local, LLVMTypeRef.CreatePointer(TypeTable.GetType(GetReturnType(context)), 0));
             }
 
             //If not, load the value.
@@ -115,9 +120,9 @@ namespace Kat
     {
         public KId Id { get; set; }
         public List<KExpr> Args { get; set; }
-        public override KValType GetReturnType()
+        public override KValType GetReturnType(CodeGenContext context)
         {
-            return Enum.Parse<KValType>(KMthdDecl.Methods[Id.Name].Ret.Name);
+            return Enum.Parse<KValType>(context.Methods[Id.Name].Ret.Name);
         }
 
         public override LLVMValueRef CodeGen(CodeGenContext context)
@@ -138,14 +143,14 @@ namespace Kat
     {
         public ExprType Op { get; set; }
         public KExpr Rhs { get; set; }
-        public override KValType GetReturnType() => Rhs.GetReturnType();
+        public override KValType GetReturnType(CodeGenContext context) => Rhs.GetReturnType(context);
 
         private static LLVMValueRef dummyInt = LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, 0, false);
         private static LLVMValueRef dummyDec = LLVMValueRef.CreateConstReal(LLVMTypeRef.Float, 0);
 
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
-            KValType retType = GetReturnType();
+            KValType retType = GetReturnType(context);
             if (retType != KValType.Int && retType != KValType.Dec)
                 throw new IRGenException($"Cannot create a unary operation with type '{retType}'.");
 
@@ -164,10 +169,10 @@ namespace Kat
         public ExprType Op { get; set; }
         public KExpr Lhs { get; set; }
         public KExpr Rhs { get; set; }
-        public override KValType GetReturnType() => Lhs.GetReturnType();
+        public override KValType GetReturnType(CodeGenContext context) => Lhs.GetReturnType(context);
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
-            KValType retType = GetReturnType();
+            KValType retType = GetReturnType(context);
             if (retType != KValType.Int && retType != KValType.Dec)
                 throw new IRGenException($"Cannot create a binary operation with type '{retType}'.");
 
@@ -188,9 +193,9 @@ namespace Kat
         public KId Lhs { get; set; }
         public KExpr Rhs { get; set; }
         public bool ToPointer { get; set; }
-        public override KValType GetReturnType()
+        public override KValType GetReturnType(CodeGenContext context)
         {
-            return Lhs.GetReturnType();
+            return Lhs.GetReturnType(context);
         }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
@@ -204,7 +209,7 @@ namespace Kat
             {
                 //Convert pointer to address and address into value
                 LLVMValueRef lhs_Adr = context.builder.BuildLoad(lhs, Lhs.Name + "_address");
-                lhs = context.builder.BuildIntToPtr(lhs_Adr, LLVMTypeRef.CreatePointer(TypeTable.GetType(GetReturnType()), 0));
+                lhs = context.builder.BuildIntToPtr(lhs_Adr, LLVMTypeRef.CreatePointer(TypeTable.GetType(GetReturnType(context)), 0));
             }
 
             return context.builder.BuildStore(rhs, lhs);
@@ -239,12 +244,11 @@ namespace Kat
         public KId Id { get; set; }
         public KExpr Assignment { get; set; }
 
-        public static Dictionary<string, KVarDecl> Fields = new();
-        public KVarDecl(KId id)
+        public KVarDecl(CodeGenContext context, KId id)
         {
             Id = id;
             //TODO: This should be scoped, otherwise can't use variables with same name in different methods
-            Fields.Add(Id.Name, this);
+            context.Fields.Add(Id.Name, this);
         }
         public override LLVMValueRef CodeGen(CodeGenContext context)
         {
@@ -275,13 +279,11 @@ namespace Kat
         private bool isDefined;
         private bool needsBlock;
 
-        public static Dictionary<string, KMthdDecl> Methods = new();
-
-        public KMthdDecl(KId id, bool needsBlock)
+        public KMthdDecl(CodeGenContext context, KId id, bool needsBlock)
         {
             Id = id;
             this.needsBlock = needsBlock;
-            Methods.Add(Id.Name, this);
+            context.Methods.Add(Id.Name, this);
         }
 
         public void Define(CodeGenContext context)

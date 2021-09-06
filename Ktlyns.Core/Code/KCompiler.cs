@@ -48,7 +48,7 @@ namespace Kat
             }
 
             KLLVMGen compiler = new KLLVMGen();
-            return compiler.CompileAndRun(root);
+            return compiler.CompileAndRun(root, visitor.GetIRGenContext());
         }
 
         private static void PrettyPrint2(IParseTree tree, Parser parser)

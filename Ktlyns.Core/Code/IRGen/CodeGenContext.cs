@@ -9,11 +9,12 @@ namespace Kat
         public LLVMBuilderRef builder;
         public LLVMModuleRef module;
 
+        public Dictionary<string, KMthdDecl> Methods { get; } = new();
+        public Dictionary<string, KVarDecl> Fields { get; } = new();
         private Dictionary<string, LLVMValueRef> Locals { get; } = new();
-
-        public CodeGenContext(string name)
+        public void InitializeLLVMModules(string moduleName)
         {
-            module = LLVMModuleRef.CreateWithName(name);
+            module = LLVMModuleRef.CreateWithName(moduleName);
             builder = LLVMBuilderRef.Create(module.Context);
         }
 
