@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ktlyns", "Ktlyns.csproj", "{10653FAB-335D-45C1-AE4B-C5271FBA35D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ktlyns", "Ktlyns.Core\Ktlyns.csproj", "{10653FAB-335D-45C1-AE4B-C5271FBA35D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ktlyns.Tests", "..\Ktlyns.Tests\Ktlyns.Tests.csproj", "{A3902CCA-2159-40A4-B7A7-9297289CBD20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ktlyns.Tests", "Ktlyns.Tests\Ktlyns.Tests.csproj", "{A3902CCA-2159-40A4-B7A7-9297289CBD20}"
 	ProjectSection(ProjectDependencies) = postProject
 		{10653FAB-335D-45C1-AE4B-C5271FBA35D9} = {10653FAB-335D-45C1-AE4B-C5271FBA35D9}
 	EndProjectSection
