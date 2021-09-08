@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Kat
 {
-    public enum KValType { Void, Int, Dec }
+    public enum KValType { Void, Int, Dec, Bool }
     public enum KIdType { Regular, Pointer, Array }
     public static class TypeTable
     {
@@ -15,6 +15,7 @@ namespace Kat
             typeTable.Add(KValType.Void, LLVMTypeRef.Void);
             typeTable.Add(KValType.Int, LLVMTypeRef.Int32);
             typeTable.Add(KValType.Dec, LLVMTypeRef.Double);
+            typeTable.Add(KValType.Bool, LLVMTypeRef.Int1);
         }
 
         public static LLVMTypeRef GetType(KValType type) => typeTable[type];

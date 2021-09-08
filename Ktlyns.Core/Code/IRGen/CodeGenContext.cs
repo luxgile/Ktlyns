@@ -11,11 +11,28 @@ namespace Kat
 
         public Dictionary<string, KMthdDecl> Methods { get; } = new();
         public Dictionary<string, KVarDecl> Fields { get; } = new();
+        public LLVMValueRef CurrentFunc { get; private set; }
+
         private Dictionary<string, LLVMValueRef> Locals { get; } = new();
+
+
         public void InitializeLLVMModules(string moduleName)
         {
             module = LLVMModuleRef.CreateWithName(moduleName);
             builder = LLVMBuilderRef.Create(module.Context);
+        }
+
+        public void SetFunc(LLVMValueRef func)
+        {
+            if (func.IsAFunction.IsNull)
+                throw new System.Exception("LLVM Value passed is not a function");
+
+            CurrentFunc = func;
+        }
+
+        public void ClearFunc()
+        {
+            CurrentFunc = default;
         }
 
         public bool HasLocal(string name) => Locals.ContainsKey(name);

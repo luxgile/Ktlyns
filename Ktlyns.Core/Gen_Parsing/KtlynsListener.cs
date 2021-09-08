@@ -103,6 +103,18 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitRStatementVarDecl([NotNull] KtlynsParser.RStatementVarDeclContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>RStatementIfElse</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRStatementIfElse([NotNull] KtlynsParser.RStatementIfElseContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RStatementIfElse</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRStatementIfElse([NotNull] KtlynsParser.RStatementIfElseContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RStatementMthDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
 	/// </summary>
@@ -126,6 +138,18 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitRStatementExMthDecl([NotNull] KtlynsParser.RStatementExMthDeclContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RIfElse</c>
+	/// labeled alternative in <see cref="KtlynsParser.if_else_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRIfElse([NotNull] KtlynsParser.RIfElseContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RIfElse</c>
+	/// labeled alternative in <see cref="KtlynsParser.if_else_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRIfElse([NotNull] KtlynsParser.RIfElseContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RVarDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
@@ -327,39 +351,101 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitRExprId([NotNull] KtlynsParser.RExprIdContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="KtlynsParser.unary"/>.
+	/// Enter a parse tree produced by the <c>RUnaryFactor</c>
+	/// labeled alternative in <see cref="KtlynsParser.unary"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterUnary([NotNull] KtlynsParser.UnaryContext context);
+	void EnterRUnaryFactor([NotNull] KtlynsParser.RUnaryFactorContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="KtlynsParser.unary"/>.
+	/// Exit a parse tree produced by the <c>RUnaryFactor</c>
+	/// labeled alternative in <see cref="KtlynsParser.unary"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitUnary([NotNull] KtlynsParser.UnaryContext context);
+	void ExitRUnaryFactor([NotNull] KtlynsParser.RUnaryFactorContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>RNumberInt</c>
-	/// labeled alternative in <see cref="KtlynsParser.number"/>.
+	/// Enter a parse tree produced by the <c>RUnaryMinus</c>
+	/// labeled alternative in <see cref="KtlynsParser.unary"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterRNumberInt([NotNull] KtlynsParser.RNumberIntContext context);
+	void EnterRUnaryMinus([NotNull] KtlynsParser.RUnaryMinusContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>RNumberInt</c>
-	/// labeled alternative in <see cref="KtlynsParser.number"/>.
+	/// Exit a parse tree produced by the <c>RUnaryMinus</c>
+	/// labeled alternative in <see cref="KtlynsParser.unary"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitRNumberInt([NotNull] KtlynsParser.RNumberIntContext context);
+	void ExitRUnaryMinus([NotNull] KtlynsParser.RUnaryMinusContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>RNumberDec</c>
-	/// labeled alternative in <see cref="KtlynsParser.number"/>.
+	/// Enter a parse tree produced by the <c>RUnaryNot</c>
+	/// labeled alternative in <see cref="KtlynsParser.unary"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterRNumberDec([NotNull] KtlynsParser.RNumberDecContext context);
+	void EnterRUnaryNot([NotNull] KtlynsParser.RUnaryNotContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>RNumberDec</c>
-	/// labeled alternative in <see cref="KtlynsParser.number"/>.
+	/// Exit a parse tree produced by the <c>RUnaryNot</c>
+	/// labeled alternative in <see cref="KtlynsParser.unary"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitRNumberDec([NotNull] KtlynsParser.RNumberDecContext context);
+	void ExitRUnaryNot([NotNull] KtlynsParser.RUnaryNotContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RUnaryAddress</c>
+	/// labeled alternative in <see cref="KtlynsParser.unary"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRUnaryAddress([NotNull] KtlynsParser.RUnaryAddressContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RUnaryAddress</c>
+	/// labeled alternative in <see cref="KtlynsParser.unary"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRUnaryAddress([NotNull] KtlynsParser.RUnaryAddressContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RFactorInt</c>
+	/// labeled alternative in <see cref="KtlynsParser.factor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRFactorInt([NotNull] KtlynsParser.RFactorIntContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RFactorInt</c>
+	/// labeled alternative in <see cref="KtlynsParser.factor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRFactorInt([NotNull] KtlynsParser.RFactorIntContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RFactorDec</c>
+	/// labeled alternative in <see cref="KtlynsParser.factor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRFactorDec([NotNull] KtlynsParser.RFactorDecContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RFactorDec</c>
+	/// labeled alternative in <see cref="KtlynsParser.factor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRFactorDec([NotNull] KtlynsParser.RFactorDecContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RFactorTrue</c>
+	/// labeled alternative in <see cref="KtlynsParser.factor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRFactorTrue([NotNull] KtlynsParser.RFactorTrueContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RFactorTrue</c>
+	/// labeled alternative in <see cref="KtlynsParser.factor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRFactorTrue([NotNull] KtlynsParser.RFactorTrueContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RFactorFalse</c>
+	/// labeled alternative in <see cref="KtlynsParser.factor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRFactorFalse([NotNull] KtlynsParser.RFactorFalseContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RFactorFalse</c>
+	/// labeled alternative in <see cref="KtlynsParser.factor"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRFactorFalse([NotNull] KtlynsParser.RFactorFalseContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="KtlynsParser.string"/>.
 	/// </summary>

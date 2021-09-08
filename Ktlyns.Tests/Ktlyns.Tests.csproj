@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ktlyns\Ktlyns.csproj" />
+    <ProjectReference Include="..\Ktlyns.Core\Ktlyns.csproj" />
   </ItemGroup>
 
 </Project>

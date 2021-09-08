@@ -47,7 +47,7 @@ namespace Kat
                 return -1;
             }
 
-            KLLVMGen compiler = new KLLVMGen();
+            KLLVMGen compiler = new KLLVMGen() { LogIR = DebugCompilation };
             return compiler.CompileAndRun(root, visitor.GetIRGenContext());
         }
 

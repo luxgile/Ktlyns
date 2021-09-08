@@ -2,10 +2,16 @@
 
 method<Int> Main()
 {
-	Int a = 0;
-	Int* aptr = &a;
-	Int b = 5;
-	Int* bptr = &b;
-	Int c = a + b;
+	Bool a = false;
+	Int c = 3;
+	if(a)
+	{
+		c = 2;
+	}
+	else
+	{
+		c = 4;
+	}
+
 	ret c;
 }

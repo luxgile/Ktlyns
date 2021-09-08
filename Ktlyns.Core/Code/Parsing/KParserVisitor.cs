@@ -96,6 +96,40 @@ namespace Kat
             context.Stmt = context.ex_mth_decl().Stmt;
             return ParsingResult.Success;
         }
+        public override ParsingResult VisitRStatementIfElse([NotNull] RStatementIfElseContext context)
+        {
+            Safe(() => VisitChildren(context));
+            context.Stmt = context.if_else_decl().Stmt;
+            return ParsingResult.Success;
+        }
+
+        //If else
+        public override ParsingResult VisitRIfElse([NotNull] RIfElseContext context)
+        {
+            Safe(() => VisitChildren(context));
+            KBlock ifBlock = new KBlock();
+            if (context.block(0) != null)
+                ifBlock = context.block(0).Block;
+            else if (context.statement(0) != null)
+                ifBlock = new KBlock() { Statements = new List<KStmt>() { context.statement(0).Stmt } };
+
+            KBlock elseBlock = null;
+            if (context.block(1) != null)
+                elseBlock = context.block(1).Block;
+            else if (context.statement(1) != null)
+                elseBlock = new KBlock() { Statements = new List<KStmt>() { context.statement(1).Stmt } };
+
+            context.Stmt = new KIfElse() { Condition = context.expr().Expr, IfBlock = ifBlock, ElseBlock = elseBlock };
+            return ParsingResult.Success;
+        }
+        //public override ParsingResult VisitRIfElseIfLoop([NotNull] RIfElseIfLoopContext context)
+        //{
+
+        //}
+        //public override ParsingResult VisitRIfElseEnd([NotNull] RIfElseEndContext context)
+        //{
+
+        //}
 
         //Var Decl
         public override ParsingResult VisitRVarDecl([NotNull] RVarDeclContext context)
@@ -256,27 +290,40 @@ namespace Kat
             return ParsingResult.Success;
         }
 
-        public override ParsingResult VisitUnary([NotNull] UnaryContext context)
+        //Unary
+        public override ParsingResult VisitRUnaryFactor([NotNull] RUnaryFactorContext context)
         {
             VisitChildren(context);
-            if (context.MINUS() != null)
-                context.Expr = new KUnaryOp() { Op = ExprType.Sub, Rhs = context.number().Expr };
-            else if (context.AMP() != null)
-                context.Expr = new KAddress() { Id = context.id().Id };
-            else
-                context.Expr = context.number().Expr;
-
+            context.Expr = context.factor().Expr;
+            return ParsingResult.Success;
+        }
+        public override ParsingResult VisitRUnaryMinus([NotNull] RUnaryMinusContext context)
+        {
+            VisitChildren(context);
+            context.Expr = new KUnaryOp() { Op = ExprType.Sub, Rhs = context.factor().Expr };
+            return ParsingResult.Success;
+        }
+        public override ParsingResult VisitRUnaryNot([NotNull] RUnaryNotContext context)
+        {
+            VisitChildren(context);
+            context.Expr = new KUnaryOp() { Op = ExprType.Not, Rhs = context.factor().Expr };
+            return ParsingResult.Success;
+        }
+        public override ParsingResult VisitRUnaryAddress([NotNull] RUnaryAddressContext context)
+        {
+            VisitChildren(context);
+            context.Expr = new KAddress() { Id = context.id().Id };
             return ParsingResult.Success;
         }
 
         //Number
-        public override ParsingResult VisitRNumberInt([NotNull] RNumberIntContext context)
+        public override ParsingResult VisitRFactorInt([NotNull] RFactorIntContext context)
         {
             VisitChildren(context);
             context.Expr = new KInt() { Value = int.Parse(context.GetText()) };
             return ParsingResult.Success;
         }
-        public override ParsingResult VisitRNumberDec([NotNull] RNumberDecContext context)
+        public override ParsingResult VisitRFactorDec([NotNull] RFactorDecContext context)
         {
             VisitChildren(context);
             context.Expr = new KDec() { Value = double.Parse(context.GetText()) };
@@ -291,6 +338,20 @@ namespace Kat
             return ParsingResult.Success;
         }
 
+        //Bool literals
+        public override ParsingResult VisitRFactorTrue([NotNull] RFactorTrueContext context)
+        {
+            VisitChildren(context);
+            context.Expr = new KBool() { Value = true };
+            return ParsingResult.Success;
+        }
+        public override ParsingResult VisitRFactorFalse([NotNull] RFactorFalseContext context)
+        {
+            VisitChildren(context);
+            context.Expr = new KBool() { Value = false };
+            return ParsingResult.Success;
+        }
+
         //ID
         public override ParsingResult VisitRIDSimple([NotNull] RIDSimpleContext context)
         {
@@ -298,7 +359,7 @@ namespace Kat
             string text = context.ID().ToString();
             bool isPointer = text[^1] == '*';
             if (isPointer) text = text[0..^1];
-            if(TypeTable.TryGetType(text, out _)) context.Id = new KId(text, IdType.Type, isPointer ? KIdType.Pointer : KIdType.Regular);
+            if (TypeTable.TryGetType(text, out _)) context.Id = new KId(text, IdType.Type, isPointer ? KIdType.Pointer : KIdType.Regular);
             else context.Id = new KId(text, IdType.Field, KIdType.Regular);
             return ParsingResult.Success;
         }
@@ -351,80 +412,3 @@ namespace Kat
         }
     }
 }
-
-
-//program
-//	locals[KBlock Root]:
-//	x1 = statements {$Root = $x1.Block; };
-//block
-//	returns[KBlock Block]:
-//	LBRC x1 = statements RBRC	{$Block = $x1.Block;}
-//	| LBRC RBRC {$Block = new()};
-//statements
-//	returns[KBlock Block]:
-//	x1 = statement                      {$Block = new() { Statements = new($x1.Stmt) }; }
-//	| x1 = statements x2 = statement    {$x1.Block.Statements.Add($x2.Stmt); };
-
-//statement
-//	returns[KStmt Stmt]:
-//	x1 = expr SDOT
-//{$Stmt = new KExprStmt() { Expr = $x1.Expr }; }
-//	| x1 = var_decl SDOT
-//{$Stmt = $x1.Stmt; }
-//	| x1 = mth_decl         {$Stmt = $x1.Stmt; };
-
-//var_decl
-//	returns[KStmt Stmt]:
-//	x1 = id x2 = id                 {$Stmt = new KVarDecl() { Type = $x1.Id, Id = $x2.Id }; }
-//	| x1 = id x2 = id EQ x3 = expr	{$Stmt = new KVarDecl() { Type = $x1.Id, Id = $x2.Id, Assignment = $x3.Expr };
-//		};
-
-//mth_decl
-//	returns[KStmt Stmt]:
-//	x1 = mth x2 = id LPRN x3 = mth_decl_arg RPRN x4 = block {$Stmt = new KMthDecl() { Type = $x1.Id, Id = $x2.Id, Args = $x3.Decls, Block = $x4.Block };
-//		};
-
-//mth
-//	returns[KId Id]:
-//	METHOD
-//{$Id = new KId() { Name = "Void" }; }
-//	| METHOD LARR x1 = id RARR	{$Id = $x1.Id;};
-
-//expr
-//	returns[KExpr Expr]:
-//	x1 = number                         {$Expr = $x1.Expr; }
-//	| x1 = string                       {$Expr = $x1.Str; }
-//	| x1 = id                           {$Expr = $x1.Id; }
-//	| x1 = id EQ x2 = expr				{$Expr = new KAssign() { Lhs = $x1.Id, Rhs = $x2.Expr }; }
-//	| x1 = id LPRN x2 = call_args RPRN	{$Expr = new KMethod() { Id = $x1.Id, Args = $x2.Exprs }; }
-//	| x1 = expr x2 = op x3 = expr       {$Expr = new KBinOp() { Op = $x2.type, Lhs = $x1.Expr, Rhs = $x3.Expr }; }
-//	| LPRN x1 = expr RPRN
-//{$Expr = $x1.Expr; };
-
-//number
-//	returns[KExpr Expr]:
-//	INT
-//{$Expr = new KInt { Value = ulong.Parse($INT.text) }; }
-//	| DEC   {$Expr = new KDec { Value = double.Parse($DEC.text) }; };
-
-//string
-//	returns[KStr Str]:
-//	STR
-//{$Str = new KStr() { Value = $STR.text }; };
-
-//id
-//	returns[KId Id]:
-//	ID
-//{$Id = new KId() { Name = $ID.text }; };
-
-//call_args
-//	returns[List < KExpr > Exprs]:
-//										{ $Exprs = new(); }
-//	| x1 = expr                         { $Exprs = new(); $Exprs.Add($x1.Expr); }
-//	| x1 = call_args COMMA x2 = expr	{ $x1.Exprs.Add($x2.Expr); };
-
-//mth_decl_arg
-//	returns[List < KVarDecl > Decls]:
-//											{$Decls = new(); }
-//	| x1 = var_decl                         {$Decls = new(); $Decls.Add((KVarDecl)$x1.Expr)}
-//	| x1 = mth_decl_arg COMMA x2 = var_decl	{$x1.Decls.Add((KVarDecl)$x2.Expr)};

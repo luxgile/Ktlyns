@@ -7,5 +7,8 @@
         Sub,
         Mult,
         Div,
+        Not,
+        And,
+        Or,
     }
 }

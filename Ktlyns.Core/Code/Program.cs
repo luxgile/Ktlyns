@@ -18,8 +18,8 @@ namespace Kat
 
         private static unsafe void Main(string[] args)
         {
-            string scriptFile = File.ReadAllText(@"D:\Development\K@\Ktlyns\script.k_at");
-            KCompiler compiler = new KCompiler();
+            string scriptFile = File.ReadAllText(@"D:\Development\K@\Ktlyns\Ktlyns.Core\script.k_at");
+            KCompiler compiler = new KCompiler() { DebugCompilation = true };
             int result = compiler.CompileAndRun(scriptFile);
             Console.WriteLine("Result: " + result);
         }

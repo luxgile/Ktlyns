@@ -21,8 +21,19 @@ statement
 	locals[KStmt Stmt]:
 	expr SDOT			# RStatement
 	| var_decl SDOT		# RStatementVarDecl
+	| if_else_decl		# RStatementIfElse
 	| mth_decl			# RStatementMthDecl
 	| ex_mth_decl SDOT	# RStatementExMthDecl;
+
+if_else_decl
+	locals[KStmt Stmt]:
+	IF LPRN expr RPRN (
+		block
+		| statement
+	) (ELSE (
+		block
+		| statement
+	))? # RIfElse;
 
 var_decl
 	locals[KStmt Stmt]:
@@ -58,14 +69,17 @@ expr
 
 unary
 	locals[KExpr Expr]:
-	number
-	| MINUS number
-	| AMP id;
+	factor			# RUnaryFactor
+	| MINUS factor	# RUnaryMinus
+	| NOT factor	# RUnaryNot
+	| AMP id		# RUnaryAddress;
 
-number
+factor
 	locals[KExpr Expr]:
-	INT		# RNumberInt
-	| DEC	# RNumberDec;
+	INT		# RFactorInt
+	| DEC	# RFactorDec
+	| TRUE	# RFactorTrue
+	| FALSE	# RFactorFalse;
 
 string
 	locals[KStr Str]:
@@ -94,6 +108,11 @@ DEC:
 	[0-9]+ '.' [0-9]+;
 INT:
 	[0-9]+;
+
+TRUE:
+	'true';
+FALSE:
+	'false';
 
 PLUS:
 	'+';
@@ -141,23 +160,23 @@ RET:
 	'ret';
 
 AND:
-	'and';
+	'&&';
 OR:
-	'or';
+	'||';
 NOT:
-	'not';
+	'!';
 EQEQ:
-	'equals';
+	'==';
 NEQEQ:
-	'not equals';
+	'!=';
 GREAT:
-	'great';
+	RARR;
 EQGREAT:
-	'eq great';
+	'>=';
 LESS:
-	'less';
+	LARR;
 EQLESS:
-	'eq less';
+	'<=';
 
 METHOD:
 	'method';
