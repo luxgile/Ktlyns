@@ -24,5 +24,4 @@ namespace Kat
             Console.WriteLine("Result: " + result);
         }
     }
-
 }

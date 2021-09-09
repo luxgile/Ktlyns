@@ -30,10 +30,12 @@ if_else_decl
 	IF LPRN expr RPRN (
 		block
 		| statement
-	) (ELSE (
-		block
-		| statement
-	))? # RIfElse;
+	) (
+		ELSE (
+			block
+			| statement
+		)
+	)? # RIfElse;
 
 var_decl
 	locals[KStmt Stmt]:
@@ -51,7 +53,7 @@ ex_mth_decl
 mth
 	locals[KId Id]:
 	METHOD					# RMthVoid
-	| METHOD LARR id RARR	# RMthType;
+	| METHOD '<' id '>'	# RMthType;
 
 expr
 	locals[KExpr Expr]:
@@ -60,12 +62,21 @@ expr
 	| id LPRN call_args RPRN	# RExprCall
 	| LPRN expr RPRN			# RExprGroup
 	| unary						# RExprUnary
-	| expr STAR expr			# RExprBinMult
-	| expr SLASH expr			# RExprBinDiv
-	| expr PLUS expr			# RExprBinAdd
-	| expr MINUS expr			# RExprBinSub
-	| id EQ expr				# RExprAssign
-	| RET expr?					# RExprReturn;
+	//Number operators
+	| expr STAR expr	# RExprBinMult
+	| expr SLASH expr	# RExprBinDiv
+	| expr PLUS expr	# RExprBinAdd
+	| expr MINUS expr	# RExprBinSub
+	//Logical operators
+	| expr EQEQ expr	# RExprBinEq
+	| expr NEQEQ expr	# RExprBinNEq
+	| expr GREAT expr	# RExprBinGreat
+	| expr EQGREAT expr	# RExprBinEGreat
+	| expr LESS expr	# RExprBinLess
+	| expr EQLESS expr	# RExprBinELess
+	//-----------------
+	| id EQ expr	# RExprAssign
+	| RET expr?		# RExprReturn;
 
 unary
 	locals[KExpr Expr]:
@@ -136,10 +147,6 @@ LBRC:
 	'{';
 RBRC:
 	'}';
-LARR:
-	'<';
-RARR:
-	'>';
 
 COMMA:
 	',';
@@ -170,11 +177,11 @@ EQEQ:
 NEQEQ:
 	'!=';
 GREAT:
-	RARR;
+	'>';
 EQGREAT:
 	'>=';
 LESS:
-	LARR;
+	'<';
 EQLESS:
 	'<=';
 

@@ -122,14 +122,6 @@ namespace Kat
             context.Stmt = new KIfElse() { Condition = context.expr().Expr, IfBlock = ifBlock, ElseBlock = elseBlock };
             return ParsingResult.Success;
         }
-        //public override ParsingResult VisitRIfElseIfLoop([NotNull] RIfElseIfLoopContext context)
-        //{
-
-        //}
-        //public override ParsingResult VisitRIfElseEnd([NotNull] RIfElseEndContext context)
-        //{
-
-        //}
 
         //Var Decl
         public override ParsingResult VisitRVarDecl([NotNull] RVarDeclContext context)
@@ -257,38 +249,30 @@ namespace Kat
             context.Expr = context.unary().Expr;
             return ParsingResult.Success;
         }
-        private static KBinOp CreateBinOp(ExprContext ctx, ExprType exprType)
-            => new KBinOp() { Lhs = ctx.GetRuleContext<ExprContext>(0).Expr, Rhs = ctx.GetRuleContext<ExprContext>(1).Expr, Op = exprType };
-        public override ParsingResult VisitRExprBinMult([NotNull] RExprBinMultContext context)
-        {
-            VisitChildren(context);
-            context.Expr = CreateBinOp(context, ExprType.Mult);
-            return ParsingResult.Success;
-        }
-        public override ParsingResult VisitRExprBinDiv([NotNull] RExprBinDivContext context)
-        {
-            VisitChildren(context);
-            context.Expr = CreateBinOp(context, ExprType.Div);
-            return ParsingResult.Success;
-        }
-        public override ParsingResult VisitRExprBinAdd([NotNull] RExprBinAddContext context)
-        {
-            VisitChildren(context);
-            context.Expr = CreateBinOp(context, ExprType.Add);
-            return ParsingResult.Success;
-        }
-        public override ParsingResult VisitRExprBinSub([NotNull] RExprBinSubContext context)
-        {
-            VisitChildren(context);
-            context.Expr = CreateBinOp(context, ExprType.Sub);
-            return ParsingResult.Success;
-        }
         public override ParsingResult VisitRExprReturn([NotNull] RExprReturnContext context)
         {
             VisitChildren(context);
             context.Expr = new KRet() { expr = context.expr()?.Expr };
             return ParsingResult.Success;
         }
+        private ParsingResult CreateBinOp(ExprContext ctx, ExprType exprType)
+        {
+            VisitChildren(ctx);
+            ctx.Expr = new KBinOp() { Lhs = ctx.GetRuleContext<ExprContext>(0).Expr, Rhs = ctx.GetRuleContext<ExprContext>(1).Expr, Op = exprType };
+            return ParsingResult.Success;
+        }
+
+        //TODO: Might need to check if LHS and RHS are actually from supported types.
+        public override ParsingResult VisitRExprBinMult([NotNull] RExprBinMultContext context) => CreateBinOp(context, ExprType.Mult);
+        public override ParsingResult VisitRExprBinDiv([NotNull] RExprBinDivContext context) => CreateBinOp(context, ExprType.Div);
+        public override ParsingResult VisitRExprBinAdd([NotNull] RExprBinAddContext context) => CreateBinOp(context, ExprType.Add);
+        public override ParsingResult VisitRExprBinSub([NotNull] RExprBinSubContext context) => CreateBinOp(context, ExprType.Sub);
+        public override ParsingResult VisitRExprBinEq([NotNull] RExprBinEqContext context) => CreateBinOp(context, ExprType.Eq);
+        public override ParsingResult VisitRExprBinNEq([NotNull] RExprBinNEqContext context) => CreateBinOp(context, ExprType.NEq);
+        public override ParsingResult VisitRExprBinGreat([NotNull] RExprBinGreatContext context) => CreateBinOp(context, ExprType.Great);
+        public override ParsingResult VisitRExprBinEGreat([NotNull] RExprBinEGreatContext context) => CreateBinOp(context, ExprType.EGreat);
+        public override ParsingResult VisitRExprBinLess([NotNull] RExprBinLessContext context) => CreateBinOp(context, ExprType.Less);
+        public override ParsingResult VisitRExprBinELess([NotNull] RExprBinELessContext context) => CreateBinOp(context, ExprType.ELess);
 
         //Unary
         public override ParsingResult VisitRUnaryFactor([NotNull] RUnaryFactorContext context)
@@ -316,7 +300,7 @@ namespace Kat
             return ParsingResult.Success;
         }
 
-        //Number
+        //Numbers
         public override ParsingResult VisitRFactorInt([NotNull] RFactorIntContext context)
         {
             VisitChildren(context);
@@ -326,7 +310,9 @@ namespace Kat
         public override ParsingResult VisitRFactorDec([NotNull] RFactorDecContext context)
         {
             VisitChildren(context);
-            context.Expr = new KDec() { Value = double.Parse(context.GetText()) };
+            string text = context.GetText();
+            text = text.Replace('.', ',');
+            context.Expr = new KDec() { Value = double.Parse(text) };
             return ParsingResult.Success;
         }
 

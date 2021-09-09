@@ -9,32 +9,29 @@ namespace Kat.Tests
         [Test]
         public void Add()
         {
-            int result = compiler.CompileAndRun("method<Int> Main() { ret 5.0 + 4.0; } ");
-            Assert.AreEqual(9, result);
+            int result = compiler.CompileAndRun(TestUtils.CreateSource("Dec a = 5.1 + 4.3; if(a > 9.3) {ret 1;} ret 0;"));
+            Assert.AreEqual(1, result);
         }
 
-        //[Test]
-        //public void Substract()
-        //{
-        //    //Won't compile as keys from last test are not being reset.
-        //    int result = compiler.CompileAndRun("method<Int> Main() { ret 12 - 4; } ");
-        //    Assert.AreEqual(8, result);
-        //}
+        [Test]
+        public void Substract()
+        {
+            int result = compiler.CompileAndRun(TestUtils.CreateSource("Dec a = 5.1 - 4.3; if(a == 0.8) {ret 1;} ret 0;"));
+            Assert.AreEqual(1, result);
+        }
 
-        //[Test]
-        //public void Multiply()
-        //{
-        //    //Won't compile as keys from last test are not being reset.
-        //    int result = compiler.CompileAndRun("method<Int> Main() { ret 4 * 4; } ");
-        //    Assert.AreEqual(16, result);
-        //}
+        [Test]
+        public void Multiply()
+        {
+            int result = compiler.CompileAndRun(TestUtils.CreateSource("Dec a = 2.5 * 4.0; if(a == 10.0) {ret 1;} ret 0;"));
+            Assert.AreEqual(1, result);
+        }
 
-        //[Test]
-        //public void Divide()
-        //{
-        //    //Won't compile as keys from last test are not being reset.
-        //    int result = compiler.CompileAndRun("method<Int> Main() { ret 8 / 2; } ");
-        //    Assert.AreEqual(4, result);
-        //}
+        [Test]
+        public void Divide()
+        {
+            int result = compiler.CompileAndRun(TestUtils.CreateSource("Dec a = 9.0 / 2.0; if(a == 3.5) {ret 1;} ret 0;"));
+            Assert.AreEqual(1, result);
+        }
     }
 }

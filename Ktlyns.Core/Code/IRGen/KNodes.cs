@@ -238,11 +238,19 @@ namespace Kat
                 ExprType.Sub => BuildBinOp(retType == KValType.Int ? LLVMOpcode.LLVMSub : LLVMOpcode.LLVMFSub),
                 ExprType.Mult => BuildBinOp(retType == KValType.Int ? LLVMOpcode.LLVMMul : LLVMOpcode.LLVMFMul),
                 ExprType.Div => BuildBinOp(retType == KValType.Int ? LLVMOpcode.LLVMSDiv : LLVMOpcode.LLVMFDiv),
+                ExprType.Eq => retType == KValType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntEQ) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOEQ),
+                ExprType.NEq => retType == KValType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntNE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealONE),
+                ExprType.Less => retType == KValType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntSLT) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOLT),
+                ExprType.ELess => retType == KValType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntSLE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOLE),
+                ExprType.Great => retType == KValType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGT) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGT),
+                ExprType.EGreat => retType == KValType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGE),
                 ExprType.And => BuildBinOp(LLVMOpcode.LLVMAnd),
                 ExprType.Or => BuildBinOp(LLVMOpcode.LLVMOr),
                 _ => throw new IRGenException("Invalid operator"),
             };
             LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, Lhs.CodeGen(context), Rhs.CodeGen(context));
+            LLVMValueRef BuildBinICmp(LLVMIntPredicate predicate) => context.builder.BuildICmp(predicate, Lhs.CodeGen(context), Rhs.CodeGen(context));
+            LLVMValueRef BuildBinFCmp(LLVMRealPredicate predicate) => context.builder.BuildFCmp(predicate, Lhs.CodeGen(context), Rhs.CodeGen(context));
         }
     }
 

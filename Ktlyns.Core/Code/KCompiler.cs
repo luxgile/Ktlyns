@@ -35,7 +35,6 @@ namespace Kat
 
             if (DebugCompilation)
                 PrettyPrint2(tree, parser);
-            //return;
 
             KParserVisitor visitor = new KParserVisitor();
             visitor.Visit(tree);

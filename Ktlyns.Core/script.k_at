@@ -2,16 +2,11 @@
 
 method<Int> Main()
 {
-	Bool a = false;
-	Int c = 3;
-	if(a)
+	Dec a = 5.1 + 4.3; 
+	if(a > 9.3 && a < 9.5) 
 	{
-		c = 2;
-	}
-	else
-	{
-		c = 4;
+		ret 1;
 	}
 
-	ret c;
+	ret 0;
 }
