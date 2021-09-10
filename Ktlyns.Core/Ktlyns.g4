@@ -22,6 +22,7 @@ statement
 	expr SDOT			# RStatement
 	| var_decl SDOT		# RStatementVarDecl
 	| if_else_decl		# RStatementIfElse
+	| loop_decl			# RStatementLoop
 	| mth_decl			# RStatementMthDecl
 	| ex_mth_decl SDOT	# RStatementExMthDecl;
 
@@ -36,6 +37,11 @@ if_else_decl
 			| statement
 		)
 	)? # RIfElse;
+
+loop_decl
+	locals[KStmt Stmt]:
+	AT LPRN expr RPRN block					# RLoopOne
+	| AT LPRN expr COMMA expr RPRN block	# RLoopTwo;
 
 var_decl
 	locals[KStmt Stmt]:
@@ -52,7 +58,7 @@ ex_mth_decl
 
 mth
 	locals[KId Id]:
-	METHOD					# RMthVoid
+	METHOD				# RMthVoid
 	| METHOD '<' id '>'	# RMthType;
 
 expr
@@ -74,6 +80,8 @@ expr
 	| expr EQGREAT expr	# RExprBinEGreat
 	| expr LESS expr	# RExprBinLess
 	| expr EQLESS expr	# RExprBinELess
+	| expr AND expr		# RExprBinAnd
+	| expr OR expr		# RExprBinOr
 	//-----------------
 	| id EQ expr	# RExprAssign
 	| RET expr?		# RExprReturn;

@@ -65,6 +65,80 @@ namespace Kat
         }
     }
 
+    public class KLoop : KStmt
+    {
+        public KExpr Expr1 { get; set; }
+        public KExpr Expr2 { get; set; }
+        public KBlock Block { get; set; }
+
+        private static LLVMValueRef Dummy1 = LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, 1u);
+
+        public override LLVMValueRef CodeGen(CodeGenContext context)
+        {
+            if(Expr1 != null)
+            {
+                if (Expr2 == null)
+                    return CodeGenOnlyConditional(context);
+                else
+                    return CodeGenOnlyIteration(context);
+            }
+
+            throw new IRGenException("Cannot create a loop without any expressions.");
+        }
+
+        private LLVMValueRef CodeGenOnlyConditional(CodeGenContext context)
+        {
+            LLVMBasicBlockRef condBlock = context.CurrentFunc.AppendBasicBlock("loop_cond");
+            LLVMBasicBlockRef loopBlock = context.CurrentFunc.AppendBasicBlock("loop_block");
+            LLVMBasicBlockRef afterBlock = context.CurrentFunc.AppendBasicBlock("after_block");
+
+            context.builder.BuildBr(condBlock);
+
+            context.builder.PositionAtEnd(condBlock);
+            context.builder.BuildCondBr(Expr1.CodeGen(context), loopBlock, afterBlock);
+
+            context.builder.PositionAtEnd(loopBlock);
+            context.blocks.Push(loopBlock);
+            Block.CodeGen(context);
+            context.blocks.Pop();
+            context.builder.BuildBr(condBlock);
+
+            context.builder.PositionAtEnd(afterBlock);
+            return default;
+        }
+
+        private LLVMValueRef CodeGenOnlyIteration(CodeGenContext context)
+        {
+            LLVMBasicBlockRef condBlock = context.CurrentFunc.AppendBasicBlock("loop_cond");
+            LLVMBasicBlockRef loopBlock = context.CurrentFunc.AppendBasicBlock("loop_block");
+            LLVMBasicBlockRef afterBlock = context.CurrentFunc.AppendBasicBlock("after_block");
+
+            //Here we are assuming that expr1 is less than expr2 and both are ints.
+            LLVMValueRef min = Expr1.CodeGen(context);
+            LLVMValueRef max = Expr2.CodeGen(context);
+
+            //Loop counter, starts at min
+            LLVMValueRef count = context.builder.BuildAlloca(LLVMTypeRef.Int32, "i");
+            context.builder.BuildStore(min, count);
+
+            context.builder.BuildBr(condBlock);
+
+            context.builder.PositionAtEnd(condBlock);
+            LLVMValueRef compare = context.builder.BuildICmp(LLVMIntPredicate.LLVMIntSLT, context.builder.BuildLoad(count), max);
+            context.builder.BuildCondBr(compare, loopBlock, afterBlock);
+
+            context.builder.PositionAtEnd(loopBlock);
+            context.blocks.Push(loopBlock);
+            Block.CodeGen(context);
+            context.builder.BuildStore(context.builder.BuildAdd(context.builder.BuildLoad(count), Dummy1), count);
+            context.blocks.Pop();
+            context.builder.BuildBr(condBlock);
+
+            context.builder.PositionAtEnd(afterBlock);
+            return default;
+        }
+    }
+
     public class KExprStmt : KStmt
     {
         public KExpr Expr { get; set; }

@@ -102,6 +102,12 @@ namespace Kat
             context.Stmt = context.if_else_decl().Stmt;
             return ParsingResult.Success;
         }
+        public override ParsingResult VisitRStatementLoop([NotNull] RStatementLoopContext context)
+        {
+            Safe(() => VisitChildren(context));
+            context.Stmt = context.loop_decl().Stmt;
+            return ParsingResult.Success;
+        }
 
         //If else
         public override ParsingResult VisitRIfElse([NotNull] RIfElseContext context)
@@ -120,6 +126,20 @@ namespace Kat
                 elseBlock = new KBlock() { Statements = new List<KStmt>() { context.statement(1).Stmt } };
 
             context.Stmt = new KIfElse() { Condition = context.expr().Expr, IfBlock = ifBlock, ElseBlock = elseBlock };
+            return ParsingResult.Success;
+        }
+
+        //Loops
+        public override ParsingResult VisitRLoopOne([NotNull] RLoopOneContext context)
+        {
+            Safe(() => VisitChildren(context));
+            context.Stmt = new KLoop() { Block = context.block().Block, Expr1 = context.expr().Expr };
+            return ParsingResult.Success;
+        }
+        public override ParsingResult VisitRLoopTwo([NotNull] RLoopTwoContext context)
+        {
+            Safe(() => VisitChildren(context));
+            context.Stmt = new KLoop() { Block = context.block().Block, Expr1 = context.expr(0).Expr, Expr2 = context.expr(1).Expr };
             return ParsingResult.Success;
         }
 
@@ -273,6 +293,8 @@ namespace Kat
         public override ParsingResult VisitRExprBinEGreat([NotNull] RExprBinEGreatContext context) => CreateBinOp(context, ExprType.EGreat);
         public override ParsingResult VisitRExprBinLess([NotNull] RExprBinLessContext context) => CreateBinOp(context, ExprType.Less);
         public override ParsingResult VisitRExprBinELess([NotNull] RExprBinELessContext context) => CreateBinOp(context, ExprType.ELess);
+        public override ParsingResult VisitRExprBinAnd([NotNull] RExprBinAndContext context) => CreateBinOp(context, ExprType.And);
+        public override ParsingResult VisitRExprBinOr([NotNull] RExprBinOrContext context) => CreateBinOp(context, ExprType.Or);
 
         //Unary
         public override ParsingResult VisitRUnaryFactor([NotNull] RUnaryFactorContext context)

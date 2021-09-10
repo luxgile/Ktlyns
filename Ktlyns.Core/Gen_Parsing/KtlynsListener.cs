@@ -115,6 +115,18 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitRStatementIfElse([NotNull] KtlynsParser.RStatementIfElseContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>RStatementLoop</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRStatementLoop([NotNull] KtlynsParser.RStatementLoopContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RStatementLoop</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRStatementLoop([NotNull] KtlynsParser.RStatementLoopContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RStatementMthDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
 	/// </summary>
@@ -150,6 +162,30 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitRIfElse([NotNull] KtlynsParser.RIfElseContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RLoopOne</c>
+	/// labeled alternative in <see cref="KtlynsParser.loop_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRLoopOne([NotNull] KtlynsParser.RLoopOneContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RLoopOne</c>
+	/// labeled alternative in <see cref="KtlynsParser.loop_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRLoopOne([NotNull] KtlynsParser.RLoopOneContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RLoopTwo</c>
+	/// labeled alternative in <see cref="KtlynsParser.loop_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRLoopTwo([NotNull] KtlynsParser.RLoopTwoContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RLoopTwo</c>
+	/// labeled alternative in <see cref="KtlynsParser.loop_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRLoopTwo([NotNull] KtlynsParser.RLoopTwoContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RVarDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
@@ -315,6 +351,18 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitRExprBinLess([NotNull] KtlynsParser.RExprBinLessContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>RExprBinAnd</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRExprBinAnd([NotNull] KtlynsParser.RExprBinAndContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RExprBinAnd</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRExprBinAnd([NotNull] KtlynsParser.RExprBinAndContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RExprBinDiv</c>
 	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
 	/// </summary>
@@ -362,6 +410,18 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitRExprBinELess([NotNull] KtlynsParser.RExprBinELessContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RExprBinOr</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRExprBinOr([NotNull] KtlynsParser.RExprBinOrContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RExprBinOr</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRExprBinOr([NotNull] KtlynsParser.RExprBinOrContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RExprBinMult</c>
 	/// labeled alternative in <see cref="KtlynsParser.expr"/>.

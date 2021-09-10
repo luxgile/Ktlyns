@@ -134,6 +134,20 @@ public partial class KtlynsBaseListener : IKtlynsListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitRStatementIfElse([NotNull] KtlynsParser.RStatementIfElseContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>RStatementLoop</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterRStatementLoop([NotNull] KtlynsParser.RStatementLoopContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RStatementLoop</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitRStatementLoop([NotNull] KtlynsParser.RStatementLoopContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RStatementMthDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -175,6 +189,34 @@ public partial class KtlynsBaseListener : IKtlynsListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitRIfElse([NotNull] KtlynsParser.RIfElseContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RLoopOne</c>
+	/// labeled alternative in <see cref="KtlynsParser.loop_decl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterRLoopOne([NotNull] KtlynsParser.RLoopOneContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RLoopOne</c>
+	/// labeled alternative in <see cref="KtlynsParser.loop_decl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitRLoopOne([NotNull] KtlynsParser.RLoopOneContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RLoopTwo</c>
+	/// labeled alternative in <see cref="KtlynsParser.loop_decl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterRLoopTwo([NotNull] KtlynsParser.RLoopTwoContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RLoopTwo</c>
+	/// labeled alternative in <see cref="KtlynsParser.loop_decl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitRLoopTwo([NotNull] KtlynsParser.RLoopTwoContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RVarDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
@@ -368,6 +410,20 @@ public partial class KtlynsBaseListener : IKtlynsListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitRExprBinLess([NotNull] KtlynsParser.RExprBinLessContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>RExprBinAnd</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterRExprBinAnd([NotNull] KtlynsParser.RExprBinAndContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RExprBinAnd</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitRExprBinAnd([NotNull] KtlynsParser.RExprBinAndContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RExprBinDiv</c>
 	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -423,6 +479,20 @@ public partial class KtlynsBaseListener : IKtlynsListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitRExprBinELess([NotNull] KtlynsParser.RExprBinELessContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RExprBinOr</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterRExprBinOr([NotNull] KtlynsParser.RExprBinOrContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RExprBinOr</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitRExprBinOr([NotNull] KtlynsParser.RExprBinOrContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RExprBinMult</c>
 	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
