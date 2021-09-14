@@ -21,8 +21,10 @@ statement
 	locals[KStmt Stmt]:
 	expr SDOT			# RStatement
 	| var_decl SDOT		# RStatementVarDecl
+	| arr_decl SDOT		# RStatementArrDecl
 	| if_else_decl		# RStatementIfElse
 	| loop_decl			# RStatementLoop
+	| BREAK SDOT		# RStatementBreak
 	| mth_decl			# RStatementMthDecl
 	| ex_mth_decl SDOT	# RStatementExMthDecl;
 
@@ -45,8 +47,11 @@ loop_decl
 
 var_decl
 	locals[KStmt Stmt]:
-	id id			# RVarDecl
-	| id id EQ expr	# RVarDeclExpr;
+	id id EQ expr # RVarDeclExpr;
+
+arr_decl
+	locals[KStmt Stmt]:
+	id id EQ '[' INT ']' LPRN expr RPRN # RArrDeclExpr;
 
 mth_decl
 	locals[KStmt Stmt]:
@@ -90,8 +95,7 @@ unary
 	locals[KExpr Expr]:
 	factor			# RUnaryFactor
 	| MINUS factor	# RUnaryMinus
-	| NOT factor	# RUnaryNot
-	| AMP id		# RUnaryAddress;
+	| NOT factor	# RUnaryNot;
 
 factor
 	locals[KExpr Expr]:
@@ -106,8 +110,10 @@ string
 
 id
 	locals[KId Id]:
-	id '[' INT? ']'	# RIDArray
-	| ID			# RIDSimple;
+	ID					# RIDSimple
+	| id LBKT expr RBKT	# RIDArray
+	| AMP+ id			# RIDAddress
+	| STAR+ id			# RIDPointer;
 
 call_args
 	locals[List<KExpr> Exprs]:
@@ -155,6 +161,10 @@ LBRC:
 	'{';
 RBRC:
 	'}';
+LBKT:
+	'[';
+RBKT:
+	']';
 
 COMMA:
 	',';
@@ -173,6 +183,8 @@ AT:
 	'@';
 RET:
 	'ret';
+BREAK:
+	'break';
 
 AND:
 	'&&';
@@ -200,7 +212,7 @@ EXTERNAL:
 	'ext';
 
 ID:
-	[a-zA-Z][a-zA-Z0-9]* '*'?;
+	[a-zA-Z][a-zA-Z0-9]* '[]'? '*'?;
 
 COMMENT:
 	'/*' .*? '*/' -> skip;

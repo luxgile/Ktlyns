@@ -2,10 +2,9 @@
 
 method<Int> Main()
 {
-	Int a = 0;
-	@(0, 100)
-	{
-		a = a + 1;
-	}
-	ret a;
+	Int a = 3;
+	Int* b = &a;
+	*b = 5;
+	Int c = *b;
+	ret *b;
 }

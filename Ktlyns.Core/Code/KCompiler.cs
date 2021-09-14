@@ -29,12 +29,18 @@ namespace Kat
 
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             KtlynsParser parser = new KtlynsParser(tokens);
-            parser.AddErrorListener(new KErrorListener());
+            KErrorListener errorListener = new KErrorListener();
+            parser.Profile = true;
+            parser.AddErrorListener(errorListener);
+            parser.Interpreter.PredictionMode = Antlr4.Runtime.Atn.PredictionMode.LL_EXACT_AMBIG_DETECTION;
 
             IParseTree tree = parser.program();
 
             if (DebugCompilation)
                 PrettyPrint2(tree, parser);
+
+            if (errorListener.HasErrors)
+                return -1;
 
             KParserVisitor visitor = new KParserVisitor();
             visitor.Visit(tree);

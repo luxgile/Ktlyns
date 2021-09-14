@@ -5,13 +5,15 @@ namespace Kat
 {
     public class CodeGenContext
     {
-        public Stack<LLVMBasicBlockRef> blocks = new();
         public LLVMBuilderRef builder;
         public LLVMModuleRef module;
 
         public Dictionary<string, KMthdDecl> Methods { get; } = new();
         public Dictionary<string, KVarDecl> Fields { get; } = new();
         public LLVMValueRef CurrentFunc { get; private set; }
+        public LLVMBasicBlockRef CurrentLoopBlock { get; private set; }
+        public LLVMBasicBlockRef ExitLoopBlock { get; private set; }
+        public bool PathCompleted { get; set; }
 
         private Dictionary<string, LLVMValueRef> Locals { get; } = new();
 
@@ -33,6 +35,17 @@ namespace Kat
         public void ClearFunc()
         {
             CurrentFunc = default;
+        }
+
+        public void SetBlocks(LLVMBasicBlockRef current, LLVMBasicBlockRef next)
+        {
+            CurrentLoopBlock = current;
+            ExitLoopBlock = next;
+        }
+        public void ClearBlocks()
+        {
+            CurrentLoopBlock = default;
+            ExitLoopBlock = default;
         }
 
         public bool HasLocal(string name) => Locals.ContainsKey(name);

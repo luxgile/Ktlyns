@@ -20,41 +20,42 @@ public class KtlynsParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, WS=3, DEC=4, INT=5, TRUE=6, FALSE=7, PLUS=8, MINUS=9, 
-		SLASH=10, STAR=11, AMP=12, STR=13, LPRN=14, RPRN=15, LBRC=16, RBRC=17, 
-		COMMA=18, DOT=19, SDOT=20, EQ=21, IF=22, ELSE=23, AT=24, RET=25, AND=26, 
-		OR=27, NOT=28, EQEQ=29, NEQEQ=30, GREAT=31, EQGREAT=32, LESS=33, EQLESS=34, 
-		METHOD=35, EXTERNAL=36, ID=37, COMMENT=38, LINE_COMMENT=39;
+		WS=1, DEC=2, INT=3, TRUE=4, FALSE=5, PLUS=6, MINUS=7, SLASH=8, STAR=9, 
+		AMP=10, STR=11, LPRN=12, RPRN=13, LBRC=14, RBRC=15, LBKT=16, RBKT=17, 
+		COMMA=18, DOT=19, SDOT=20, EQ=21, IF=22, ELSE=23, AT=24, RET=25, BREAK=26, 
+		AND=27, OR=28, NOT=29, EQEQ=30, NEQEQ=31, GREAT=32, EQGREAT=33, LESS=34, 
+		EQLESS=35, METHOD=36, EXTERNAL=37, ID=38, COMMENT=39, LINE_COMMENT=40;
 	public static final int
 		RULE_program = 0, RULE_block = 1, RULE_statements = 2, RULE_statement = 3, 
-		RULE_if_else_decl = 4, RULE_loop_decl = 5, RULE_var_decl = 6, RULE_mth_decl = 7, 
-		RULE_ex_mth_decl = 8, RULE_mth = 9, RULE_expr = 10, RULE_unary = 11, RULE_factor = 12, 
-		RULE_string = 13, RULE_id = 14, RULE_call_args = 15, RULE_mth_decl_arg = 16;
+		RULE_if_else_decl = 4, RULE_loop_decl = 5, RULE_var_decl = 6, RULE_arr_decl = 7, 
+		RULE_mth_decl = 8, RULE_ex_mth_decl = 9, RULE_mth = 10, RULE_expr = 11, 
+		RULE_unary = 12, RULE_factor = 13, RULE_string = 14, RULE_id = 15, RULE_call_args = 16, 
+		RULE_mth_decl_arg = 17;
 	private static String[] makeRuleNames() {
 		return new String[] {
 			"program", "block", "statements", "statement", "if_else_decl", "loop_decl", 
-			"var_decl", "mth_decl", "ex_mth_decl", "mth", "expr", "unary", "factor", 
-			"string", "id", "call_args", "mth_decl_arg"
+			"var_decl", "arr_decl", "mth_decl", "ex_mth_decl", "mth", "expr", "unary", 
+			"factor", "string", "id", "call_args", "mth_decl_arg"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'['", "']'", null, null, null, "'true'", "'false'", "'+'", "'-'", 
-			"'/'", "'*'", "'&'", null, "'('", "')'", "'{'", "'}'", "','", "'.'", 
-			"';'", "'='", "'if'", "'else'", "'@'", "'ret'", "'&&'", "'||'", "'!'", 
-			"'=='", "'!='", "'>'", "'>='", "'<'", "'<='", "'method'", "'ext'"
+			null, null, null, null, "'true'", "'false'", "'+'", "'-'", "'/'", "'*'", 
+			"'&'", null, "'('", "')'", "'{'", "'}'", "'['", "']'", "','", "'.'", 
+			"';'", "'='", "'if'", "'else'", "'@'", "'ret'", "'break'", "'&&'", "'||'", 
+			"'!'", "'=='", "'!='", "'>'", "'>='", "'<'", "'<='", "'method'", "'ext'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, "WS", "DEC", "INT", "TRUE", "FALSE", "PLUS", "MINUS", 
-			"SLASH", "STAR", "AMP", "STR", "LPRN", "RPRN", "LBRC", "RBRC", "COMMA", 
-			"DOT", "SDOT", "EQ", "IF", "ELSE", "AT", "RET", "AND", "OR", "NOT", "EQEQ", 
-			"NEQEQ", "GREAT", "EQGREAT", "LESS", "EQLESS", "METHOD", "EXTERNAL", 
-			"ID", "COMMENT", "LINE_COMMENT"
+			null, "WS", "DEC", "INT", "TRUE", "FALSE", "PLUS", "MINUS", "SLASH", 
+			"STAR", "AMP", "STR", "LPRN", "RPRN", "LBRC", "RBRC", "LBKT", "RBKT", 
+			"COMMA", "DOT", "SDOT", "EQ", "IF", "ELSE", "AT", "RET", "BREAK", "AND", 
+			"OR", "NOT", "EQEQ", "NEQEQ", "GREAT", "EQGREAT", "LESS", "EQLESS", "METHOD", 
+			"EXTERNAL", "ID", "COMMENT", "LINE_COMMENT"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -124,7 +125,7 @@ public class KtlynsParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(34);
+			setState(36);
 			statements();
 			}
 		}
@@ -170,18 +171,18 @@ public class KtlynsParser extends Parser {
 		BlockContext _localctx = new BlockContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_block);
 		try {
-			setState(42);
+			setState(44);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,0,_ctx) ) {
 			case 1:
 				_localctx = new RBlockStmtsContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(36);
-				match(LBRC);
-				setState(37);
-				statements();
 				setState(38);
+				match(LBRC);
+				setState(39);
+				statements();
+				setState(40);
 				match(RBRC);
 				}
 				break;
@@ -189,9 +190,9 @@ public class KtlynsParser extends Parser {
 				_localctx = new RBlockEmptyContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(40);
+				setState(42);
 				match(LBRC);
-				setState(41);
+				setState(43);
 				match(RBRC);
 				}
 				break;
@@ -229,20 +230,20 @@ public class KtlynsParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(45); 
+			setState(47); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(44);
+				setState(46);
 				statement();
 				}
 				}
-				setState(47); 
+				setState(49); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DEC) | (1L << INT) | (1L << TRUE) | (1L << FALSE) | (1L << MINUS) | (1L << AMP) | (1L << STR) | (1L << LPRN) | (1L << IF) | (1L << AT) | (1L << RET) | (1L << NOT) | (1L << METHOD) | (1L << EXTERNAL) | (1L << ID))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DEC) | (1L << INT) | (1L << TRUE) | (1L << FALSE) | (1L << MINUS) | (1L << STAR) | (1L << AMP) | (1L << STR) | (1L << LPRN) | (1L << IF) | (1L << AT) | (1L << RET) | (1L << BREAK) | (1L << NOT) | (1L << METHOD) | (1L << EXTERNAL) | (1L << ID))) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -276,6 +277,13 @@ public class KtlynsParser extends Parser {
 		public TerminalNode SDOT() { return getToken(KtlynsParser.SDOT, 0); }
 		public RStatementContext(StatementContext ctx) { copyFrom(ctx); }
 	}
+	public static class RStatementArrDeclContext extends StatementContext {
+		public Arr_declContext arr_decl() {
+			return getRuleContext(Arr_declContext.class,0);
+		}
+		public TerminalNode SDOT() { return getToken(KtlynsParser.SDOT, 0); }
+		public RStatementArrDeclContext(StatementContext ctx) { copyFrom(ctx); }
+	}
 	public static class RStatementLoopContext extends StatementContext {
 		public Loop_declContext loop_decl() {
 			return getRuleContext(Loop_declContext.class,0);
@@ -287,6 +295,11 @@ public class KtlynsParser extends Parser {
 			return getRuleContext(If_else_declContext.class,0);
 		}
 		public RStatementIfElseContext(StatementContext ctx) { copyFrom(ctx); }
+	}
+	public static class RStatementBreakContext extends StatementContext {
+		public TerminalNode BREAK() { return getToken(KtlynsParser.BREAK, 0); }
+		public TerminalNode SDOT() { return getToken(KtlynsParser.SDOT, 0); }
+		public RStatementBreakContext(StatementContext ctx) { copyFrom(ctx); }
 	}
 	public static class RStatementVarDeclContext extends StatementContext {
 		public Var_declContext var_decl() {
@@ -313,16 +326,16 @@ public class KtlynsParser extends Parser {
 		StatementContext _localctx = new StatementContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_statement);
 		try {
-			setState(61);
+			setState(68);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
 			case 1:
 				_localctx = new RStatementContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(49);
+				setState(51);
 				expr(0);
-				setState(50);
+				setState(52);
 				match(SDOT);
 				}
 				break;
@@ -330,43 +343,63 @@ public class KtlynsParser extends Parser {
 				_localctx = new RStatementVarDeclContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(52);
+				setState(54);
 				var_decl();
-				setState(53);
+				setState(55);
 				match(SDOT);
 				}
 				break;
 			case 3:
-				_localctx = new RStatementIfElseContext(_localctx);
+				_localctx = new RStatementArrDeclContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(55);
-				if_else_decl();
+				setState(57);
+				arr_decl();
+				setState(58);
+				match(SDOT);
 				}
 				break;
 			case 4:
-				_localctx = new RStatementLoopContext(_localctx);
+				_localctx = new RStatementIfElseContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(56);
-				loop_decl();
+				setState(60);
+				if_else_decl();
 				}
 				break;
 			case 5:
-				_localctx = new RStatementMthDeclContext(_localctx);
+				_localctx = new RStatementLoopContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(57);
-				mth_decl();
+				setState(61);
+				loop_decl();
 				}
 				break;
 			case 6:
-				_localctx = new RStatementExMthDeclContext(_localctx);
+				_localctx = new RStatementBreakContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(58);
+				setState(62);
+				match(BREAK);
+				setState(63);
+				match(SDOT);
+				}
+				break;
+			case 7:
+				_localctx = new RStatementMthDeclContext(_localctx);
+				enterOuterAlt(_localctx, 7);
+				{
+				setState(64);
+				mth_decl();
+				}
+				break;
+			case 8:
+				_localctx = new RStatementExMthDeclContext(_localctx);
+				enterOuterAlt(_localctx, 8);
+				{
+				setState(65);
 				ex_mth_decl();
-				setState(59);
+				setState(66);
 				match(SDOT);
 				}
 				break;
@@ -426,20 +459,20 @@ public class KtlynsParser extends Parser {
 			_localctx = new RIfElseContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(63);
+			setState(70);
 			match(IF);
-			setState(64);
+			setState(71);
 			match(LPRN);
-			setState(65);
+			setState(72);
 			expr(0);
-			setState(66);
+			setState(73);
 			match(RPRN);
-			setState(69);
+			setState(76);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case LBRC:
 				{
-				setState(67);
+				setState(74);
 				block();
 				}
 				break;
@@ -448,37 +481,39 @@ public class KtlynsParser extends Parser {
 			case TRUE:
 			case FALSE:
 			case MINUS:
+			case STAR:
 			case AMP:
 			case STR:
 			case LPRN:
 			case IF:
 			case AT:
 			case RET:
+			case BREAK:
 			case NOT:
 			case METHOD:
 			case EXTERNAL:
 			case ID:
 				{
-				setState(68);
+				setState(75);
 				statement();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(76);
+			setState(83);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
 			case 1:
 				{
-				setState(71);
+				setState(78);
 				match(ELSE);
-				setState(74);
+				setState(81);
 				_errHandler.sync(this);
 				switch (_input.LA(1)) {
 				case LBRC:
 					{
-					setState(72);
+					setState(79);
 					block();
 					}
 					break;
@@ -487,18 +522,20 @@ public class KtlynsParser extends Parser {
 				case TRUE:
 				case FALSE:
 				case MINUS:
+				case STAR:
 				case AMP:
 				case STR:
 				case LPRN:
 				case IF:
 				case AT:
 				case RET:
+				case BREAK:
 				case NOT:
 				case METHOD:
 				case EXTERNAL:
 				case ID:
 					{
-					setState(73);
+					setState(80);
 					statement();
 					}
 					break;
@@ -567,22 +604,22 @@ public class KtlynsParser extends Parser {
 		Loop_declContext _localctx = new Loop_declContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_loop_decl);
 		try {
-			setState(92);
+			setState(99);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
 			case 1:
 				_localctx = new RLoopOneContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(78);
+				setState(85);
 				match(AT);
-				setState(79);
+				setState(86);
 				match(LPRN);
-				setState(80);
+				setState(87);
 				expr(0);
-				setState(81);
+				setState(88);
 				match(RPRN);
-				setState(82);
+				setState(89);
 				block();
 				}
 				break;
@@ -590,19 +627,19 @@ public class KtlynsParser extends Parser {
 				_localctx = new RLoopTwoContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(84);
+				setState(91);
 				match(AT);
-				setState(85);
+				setState(92);
 				match(LPRN);
-				setState(86);
+				setState(93);
 				expr(0);
-				setState(87);
+				setState(94);
 				match(COMMA);
-				setState(88);
+				setState(95);
 				expr(0);
-				setState(89);
+				setState(96);
 				match(RPRN);
-				setState(90);
+				setState(97);
 				block();
 				}
 				break;
@@ -645,47 +682,92 @@ public class KtlynsParser extends Parser {
 		}
 		public RVarDeclExprContext(Var_declContext ctx) { copyFrom(ctx); }
 	}
-	public static class RVarDeclContext extends Var_declContext {
+
+	public final Var_declContext var_decl() throws RecognitionException {
+		Var_declContext _localctx = new Var_declContext(_ctx, getState());
+		enterRule(_localctx, 12, RULE_var_decl);
+		try {
+			_localctx = new RVarDeclExprContext(_localctx);
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(101);
+			id(0);
+			setState(102);
+			id(0);
+			setState(103);
+			match(EQ);
+			setState(104);
+			expr(0);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class Arr_declContext extends ParserRuleContext {
+		public KStmt Stmt;
+		public Arr_declContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_arr_decl; }
+	 
+		public Arr_declContext() { }
+		public void copyFrom(Arr_declContext ctx) {
+			super.copyFrom(ctx);
+			this.Stmt = ctx.Stmt;
+		}
+	}
+	public static class RArrDeclExprContext extends Arr_declContext {
 		public List<IdContext> id() {
 			return getRuleContexts(IdContext.class);
 		}
 		public IdContext id(int i) {
 			return getRuleContext(IdContext.class,i);
 		}
-		public RVarDeclContext(Var_declContext ctx) { copyFrom(ctx); }
+		public TerminalNode EQ() { return getToken(KtlynsParser.EQ, 0); }
+		public TerminalNode LBKT() { return getToken(KtlynsParser.LBKT, 0); }
+		public TerminalNode INT() { return getToken(KtlynsParser.INT, 0); }
+		public TerminalNode RBKT() { return getToken(KtlynsParser.RBKT, 0); }
+		public TerminalNode LPRN() { return getToken(KtlynsParser.LPRN, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public TerminalNode RPRN() { return getToken(KtlynsParser.RPRN, 0); }
+		public RArrDeclExprContext(Arr_declContext ctx) { copyFrom(ctx); }
 	}
 
-	public final Var_declContext var_decl() throws RecognitionException {
-		Var_declContext _localctx = new Var_declContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_var_decl);
+	public final Arr_declContext arr_decl() throws RecognitionException {
+		Arr_declContext _localctx = new Arr_declContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_arr_decl);
 		try {
-			setState(102);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
-			case 1:
-				_localctx = new RVarDeclContext(_localctx);
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(94);
-				id(0);
-				setState(95);
-				id(0);
-				}
-				break;
-			case 2:
-				_localctx = new RVarDeclExprContext(_localctx);
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(97);
-				id(0);
-				setState(98);
-				id(0);
-				setState(99);
-				match(EQ);
-				setState(100);
-				expr(0);
-				}
-				break;
+			_localctx = new RArrDeclExprContext(_localctx);
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(106);
+			id(0);
+			setState(107);
+			id(0);
+			setState(108);
+			match(EQ);
+			setState(109);
+			match(LBKT);
+			setState(110);
+			match(INT);
+			setState(111);
+			match(RBKT);
+			setState(112);
+			match(LPRN);
+			setState(113);
+			expr(0);
+			setState(114);
+			match(RPRN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -723,21 +805,21 @@ public class KtlynsParser extends Parser {
 
 	public final Mth_declContext mth_decl() throws RecognitionException {
 		Mth_declContext _localctx = new Mth_declContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_mth_decl);
+		enterRule(_localctx, 16, RULE_mth_decl);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(104);
+			setState(116);
 			mth();
-			setState(105);
+			setState(117);
 			id(0);
-			setState(106);
+			setState(118);
 			match(LPRN);
-			setState(107);
+			setState(119);
 			mth_decl_arg(0);
-			setState(108);
+			setState(120);
 			match(RPRN);
-			setState(109);
+			setState(121);
 			block();
 			}
 		}
@@ -774,21 +856,21 @@ public class KtlynsParser extends Parser {
 
 	public final Ex_mth_declContext ex_mth_decl() throws RecognitionException {
 		Ex_mth_declContext _localctx = new Ex_mth_declContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_ex_mth_decl);
+		enterRule(_localctx, 18, RULE_ex_mth_decl);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(111);
+			setState(123);
 			match(EXTERNAL);
-			setState(112);
+			setState(124);
 			mth();
-			setState(113);
+			setState(125);
 			id(0);
-			setState(114);
+			setState(126);
 			match(LPRN);
-			setState(115);
+			setState(127);
 			mth_decl_arg(0);
-			setState(116);
+			setState(128);
 			match(RPRN);
 			}
 		}
@@ -832,16 +914,16 @@ public class KtlynsParser extends Parser {
 
 	public final MthContext mth() throws RecognitionException {
 		MthContext _localctx = new MthContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_mth);
+		enterRule(_localctx, 20, RULE_mth);
 		try {
-			setState(124);
+			setState(136);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
 			case 1:
 				_localctx = new RMthVoidContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(118);
+				setState(130);
 				match(METHOD);
 				}
 				break;
@@ -849,13 +931,13 @@ public class KtlynsParser extends Parser {
 				_localctx = new RMthTypeContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(119);
+				setState(131);
 				match(METHOD);
-				setState(120);
+				setState(132);
 				match(LESS);
-				setState(121);
+				setState(133);
 				id(0);
-				setState(122);
+				setState(134);
 				match(GREAT);
 				}
 				break;
@@ -1069,22 +1151,22 @@ public class KtlynsParser extends Parser {
 		int _parentState = getState();
 		ExprContext _localctx = new ExprContext(_ctx, _parentState);
 		ExprContext _prevctx = _localctx;
-		int _startState = 20;
-		enterRecursionRule(_localctx, 20, RULE_expr, _p);
+		int _startState = 22;
+		enterRecursionRule(_localctx, 22, RULE_expr, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(147);
+			setState(159);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
 			case 1:
 				{
 				_localctx = new RExprStringContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(127);
+				setState(139);
 				string();
 				}
 				break;
@@ -1093,7 +1175,7 @@ public class KtlynsParser extends Parser {
 				_localctx = new RExprIdContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(128);
+				setState(140);
 				id(0);
 				}
 				break;
@@ -1102,13 +1184,13 @@ public class KtlynsParser extends Parser {
 				_localctx = new RExprCallContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(129);
+				setState(141);
 				id(0);
-				setState(130);
+				setState(142);
 				match(LPRN);
-				setState(131);
+				setState(143);
 				call_args(0);
-				setState(132);
+				setState(144);
 				match(RPRN);
 				}
 				break;
@@ -1117,11 +1199,11 @@ public class KtlynsParser extends Parser {
 				_localctx = new RExprGroupContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(134);
+				setState(146);
 				match(LPRN);
-				setState(135);
+				setState(147);
 				expr(0);
-				setState(136);
+				setState(148);
 				match(RPRN);
 				}
 				break;
@@ -1130,7 +1212,7 @@ public class KtlynsParser extends Parser {
 				_localctx = new RExprUnaryContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(138);
+				setState(150);
 				unary();
 				}
 				break;
@@ -1139,11 +1221,11 @@ public class KtlynsParser extends Parser {
 				_localctx = new RExprAssignContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(139);
+				setState(151);
 				id(0);
-				setState(140);
+				setState(152);
 				match(EQ);
-				setState(141);
+				setState(153);
 				expr(2);
 				}
 				break;
@@ -1152,14 +1234,14 @@ public class KtlynsParser extends Parser {
 				_localctx = new RExprReturnContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(143);
+				setState(155);
 				match(RET);
-				setState(145);
+				setState(157);
 				_errHandler.sync(this);
-				switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
+				switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
 				case 1:
 					{
-					setState(144);
+					setState(156);
 					expr(0);
 					}
 					break;
@@ -1168,26 +1250,26 @@ public class KtlynsParser extends Parser {
 				break;
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(187);
+			setState(199);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(185);
+					setState(197);
 					_errHandler.sync(this);
-					switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
+					switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 					case 1:
 						{
 						_localctx = new RExprBinMultContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(149);
+						setState(161);
 						if (!(precpred(_ctx, 14))) throw new FailedPredicateException(this, "precpred(_ctx, 14)");
-						setState(150);
+						setState(162);
 						match(STAR);
-						setState(151);
+						setState(163);
 						expr(15);
 						}
 						break;
@@ -1195,11 +1277,11 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinDivContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(152);
+						setState(164);
 						if (!(precpred(_ctx, 13))) throw new FailedPredicateException(this, "precpred(_ctx, 13)");
-						setState(153);
+						setState(165);
 						match(SLASH);
-						setState(154);
+						setState(166);
 						expr(14);
 						}
 						break;
@@ -1207,11 +1289,11 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinAddContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(155);
+						setState(167);
 						if (!(precpred(_ctx, 12))) throw new FailedPredicateException(this, "precpred(_ctx, 12)");
-						setState(156);
+						setState(168);
 						match(PLUS);
-						setState(157);
+						setState(169);
 						expr(13);
 						}
 						break;
@@ -1219,11 +1301,11 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinSubContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(158);
+						setState(170);
 						if (!(precpred(_ctx, 11))) throw new FailedPredicateException(this, "precpred(_ctx, 11)");
-						setState(159);
+						setState(171);
 						match(MINUS);
-						setState(160);
+						setState(172);
 						expr(12);
 						}
 						break;
@@ -1231,11 +1313,11 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinEqContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(161);
+						setState(173);
 						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
-						setState(162);
+						setState(174);
 						match(EQEQ);
-						setState(163);
+						setState(175);
 						expr(11);
 						}
 						break;
@@ -1243,11 +1325,11 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinNEqContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(164);
+						setState(176);
 						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");
-						setState(165);
+						setState(177);
 						match(NEQEQ);
-						setState(166);
+						setState(178);
 						expr(10);
 						}
 						break;
@@ -1255,11 +1337,11 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinGreatContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(167);
+						setState(179);
 						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
-						setState(168);
+						setState(180);
 						match(GREAT);
-						setState(169);
+						setState(181);
 						expr(9);
 						}
 						break;
@@ -1267,11 +1349,11 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinEGreatContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(170);
+						setState(182);
 						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
-						setState(171);
+						setState(183);
 						match(EQGREAT);
-						setState(172);
+						setState(184);
 						expr(8);
 						}
 						break;
@@ -1279,11 +1361,11 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinLessContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(173);
+						setState(185);
 						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
-						setState(174);
+						setState(186);
 						match(LESS);
-						setState(175);
+						setState(187);
 						expr(7);
 						}
 						break;
@@ -1291,11 +1373,11 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinELessContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(176);
+						setState(188);
 						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
-						setState(177);
+						setState(189);
 						match(EQLESS);
-						setState(178);
+						setState(190);
 						expr(6);
 						}
 						break;
@@ -1303,11 +1385,11 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinAndContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(179);
+						setState(191);
 						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
-						setState(180);
+						setState(192);
 						match(AND);
-						setState(181);
+						setState(193);
 						expr(5);
 						}
 						break;
@@ -1315,20 +1397,20 @@ public class KtlynsParser extends Parser {
 						{
 						_localctx = new RExprBinOrContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(182);
+						setState(194);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
-						setState(183);
+						setState(195);
 						match(OR);
-						setState(184);
+						setState(196);
 						expr(4);
 						}
 						break;
 					}
 					} 
 				}
-				setState(189);
+				setState(201);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
 			}
 			}
 		}
@@ -1356,13 +1438,6 @@ public class KtlynsParser extends Parser {
 			this.Expr = ctx.Expr;
 		}
 	}
-	public static class RUnaryAddressContext extends UnaryContext {
-		public TerminalNode AMP() { return getToken(KtlynsParser.AMP, 0); }
-		public IdContext id() {
-			return getRuleContext(IdContext.class,0);
-		}
-		public RUnaryAddressContext(UnaryContext ctx) { copyFrom(ctx); }
-	}
 	public static class RUnaryNotContext extends UnaryContext {
 		public TerminalNode NOT() { return getToken(KtlynsParser.NOT, 0); }
 		public FactorContext factor() {
@@ -1386,9 +1461,9 @@ public class KtlynsParser extends Parser {
 
 	public final UnaryContext unary() throws RecognitionException {
 		UnaryContext _localctx = new UnaryContext(_ctx, getState());
-		enterRule(_localctx, 22, RULE_unary);
+		enterRule(_localctx, 24, RULE_unary);
 		try {
-			setState(197);
+			setState(207);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case DEC:
@@ -1398,7 +1473,7 @@ public class KtlynsParser extends Parser {
 				_localctx = new RUnaryFactorContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(190);
+				setState(202);
 				factor();
 				}
 				break;
@@ -1406,9 +1481,9 @@ public class KtlynsParser extends Parser {
 				_localctx = new RUnaryMinusContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(191);
+				setState(203);
 				match(MINUS);
-				setState(192);
+				setState(204);
 				factor();
 				}
 				break;
@@ -1416,20 +1491,10 @@ public class KtlynsParser extends Parser {
 				_localctx = new RUnaryNotContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(193);
+				setState(205);
 				match(NOT);
-				setState(194);
+				setState(206);
 				factor();
-				}
-				break;
-			case AMP:
-				_localctx = new RUnaryAddressContext(_localctx);
-				enterOuterAlt(_localctx, 4);
-				{
-				setState(195);
-				match(AMP);
-				setState(196);
-				id(0);
 				}
 				break;
 			default:
@@ -1479,16 +1544,16 @@ public class KtlynsParser extends Parser {
 
 	public final FactorContext factor() throws RecognitionException {
 		FactorContext _localctx = new FactorContext(_ctx, getState());
-		enterRule(_localctx, 24, RULE_factor);
+		enterRule(_localctx, 26, RULE_factor);
 		try {
-			setState(203);
+			setState(213);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case INT:
 				_localctx = new RFactorIntContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(199);
+				setState(209);
 				match(INT);
 				}
 				break;
@@ -1496,7 +1561,7 @@ public class KtlynsParser extends Parser {
 				_localctx = new RFactorDecContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(200);
+				setState(210);
 				match(DEC);
 				}
 				break;
@@ -1504,7 +1569,7 @@ public class KtlynsParser extends Parser {
 				_localctx = new RFactorTrueContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(201);
+				setState(211);
 				match(TRUE);
 				}
 				break;
@@ -1512,7 +1577,7 @@ public class KtlynsParser extends Parser {
 				_localctx = new RFactorFalseContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(202);
+				setState(212);
 				match(FALSE);
 				}
 				break;
@@ -1542,11 +1607,11 @@ public class KtlynsParser extends Parser {
 
 	public final StringContext string() throws RecognitionException {
 		StringContext _localctx = new StringContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_string);
+		enterRule(_localctx, 28, RULE_string);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(205);
+			setState(215);
 			match(STR);
 			}
 		}
@@ -1574,16 +1639,40 @@ public class KtlynsParser extends Parser {
 			this.Id = ctx.Id;
 		}
 	}
+	public static class RIDPointerContext extends IdContext {
+		public IdContext id() {
+			return getRuleContext(IdContext.class,0);
+		}
+		public List<TerminalNode> STAR() { return getTokens(KtlynsParser.STAR); }
+		public TerminalNode STAR(int i) {
+			return getToken(KtlynsParser.STAR, i);
+		}
+		public RIDPointerContext(IdContext ctx) { copyFrom(ctx); }
+	}
 	public static class RIDArrayContext extends IdContext {
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
 		}
-		public TerminalNode INT() { return getToken(KtlynsParser.INT, 0); }
+		public TerminalNode LBKT() { return getToken(KtlynsParser.LBKT, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public TerminalNode RBKT() { return getToken(KtlynsParser.RBKT, 0); }
 		public RIDArrayContext(IdContext ctx) { copyFrom(ctx); }
 	}
 	public static class RIDSimpleContext extends IdContext {
 		public TerminalNode ID() { return getToken(KtlynsParser.ID, 0); }
 		public RIDSimpleContext(IdContext ctx) { copyFrom(ctx); }
+	}
+	public static class RIDAddressContext extends IdContext {
+		public IdContext id() {
+			return getRuleContext(IdContext.class,0);
+		}
+		public List<TerminalNode> AMP() { return getTokens(KtlynsParser.AMP); }
+		public TerminalNode AMP(int i) {
+			return getToken(KtlynsParser.AMP, i);
+		}
+		public RIDAddressContext(IdContext ctx) { copyFrom(ctx); }
 	}
 
 	public final IdContext id() throws RecognitionException {
@@ -1595,25 +1684,90 @@ public class KtlynsParser extends Parser {
 		int _parentState = getState();
 		IdContext _localctx = new IdContext(_ctx, _parentState);
 		IdContext _prevctx = _localctx;
-		int _startState = 28;
-		enterRecursionRule(_localctx, 28, RULE_id, _p);
-		int _la;
+		int _startState = 30;
+		enterRecursionRule(_localctx, 30, RULE_id, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			{
-			_localctx = new RIDSimpleContext(_localctx);
-			_ctx = _localctx;
-			_prevctx = _localctx;
+			setState(231);
+			_errHandler.sync(this);
+			switch (_input.LA(1)) {
+			case ID:
+				{
+				_localctx = new RIDSimpleContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 
-			setState(208);
-			match(ID);
+				setState(218);
+				match(ID);
+				}
+				break;
+			case AMP:
+				{
+				_localctx = new RIDAddressContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(220); 
+				_errHandler.sync(this);
+				_alt = 1;
+				do {
+					switch (_alt) {
+					case 1:
+						{
+						{
+						setState(219);
+						match(AMP);
+						}
+						}
+						break;
+					default:
+						throw new NoViableAltException(this);
+					}
+					setState(222); 
+					_errHandler.sync(this);
+					_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
+				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+				setState(224);
+				id(2);
+				}
+				break;
+			case STAR:
+				{
+				_localctx = new RIDPointerContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(226); 
+				_errHandler.sync(this);
+				_alt = 1;
+				do {
+					switch (_alt) {
+					case 1:
+						{
+						{
+						setState(225);
+						match(STAR);
+						}
+						}
+						break;
+					default:
+						throw new NoViableAltException(this);
+					}
+					setState(228); 
+					_errHandler.sync(this);
+					_alt = getInterpreter().adaptivePredict(_input,15,_ctx);
+				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
+				setState(230);
+				id(1);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(218);
+			setState(240);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,16,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,17,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1622,28 +1776,20 @@ public class KtlynsParser extends Parser {
 					{
 					_localctx = new RIDArrayContext(new IdContext(_parentctx, _parentState));
 					pushNewRecursionContext(_localctx, _startState, RULE_id);
-					setState(210);
-					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(211);
-					match(T__0);
-					setState(213);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-					if (_la==INT) {
-						{
-						setState(212);
-						match(INT);
-						}
-					}
-
-					setState(215);
-					match(T__1);
+					setState(233);
+					if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
+					setState(234);
+					match(LBKT);
+					setState(235);
+					expr(0);
+					setState(236);
+					match(RBKT);
 					}
 					} 
 				}
-				setState(220);
+				setState(242);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,16,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,17,_ctx);
 			}
 			}
 		}
@@ -1700,15 +1846,15 @@ public class KtlynsParser extends Parser {
 		int _parentState = getState();
 		Call_argsContext _localctx = new Call_argsContext(_ctx, _parentState);
 		Call_argsContext _prevctx = _localctx;
-		int _startState = 30;
-		enterRecursionRule(_localctx, 30, RULE_call_args, _p);
+		int _startState = 32;
+		enterRecursionRule(_localctx, 32, RULE_call_args, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(223);
+			setState(245);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,17,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,18,_ctx) ) {
 			case 1:
 				{
 				_localctx = new RCallArgsContext(_localctx);
@@ -1722,15 +1868,15 @@ public class KtlynsParser extends Parser {
 				_localctx = new RCallArgsExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(222);
+				setState(244);
 				expr(0);
 				}
 				break;
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(230);
+			setState(252);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,18,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,19,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1739,18 +1885,18 @@ public class KtlynsParser extends Parser {
 					{
 					_localctx = new RCallArgsAddContext(new Call_argsContext(_parentctx, _parentState));
 					pushNewRecursionContext(_localctx, _startState, RULE_call_args);
-					setState(225);
+					setState(247);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(226);
+					setState(248);
 					match(COMMA);
-					setState(227);
+					setState(249);
 					expr(0);
 					}
 					} 
 				}
-				setState(232);
+				setState(254);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,18,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,19,_ctx);
 			}
 			}
 		}
@@ -1807,15 +1953,15 @@ public class KtlynsParser extends Parser {
 		int _parentState = getState();
 		Mth_decl_argContext _localctx = new Mth_decl_argContext(_ctx, _parentState);
 		Mth_decl_argContext _prevctx = _localctx;
-		int _startState = 32;
-		enterRecursionRule(_localctx, 32, RULE_mth_decl_arg, _p);
+		int _startState = 34;
+		enterRecursionRule(_localctx, 34, RULE_mth_decl_arg, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(235);
+			setState(257);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,19,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,20,_ctx) ) {
 			case 1:
 				{
 				_localctx = new RMthDeclArgContext(_localctx);
@@ -1829,15 +1975,15 @@ public class KtlynsParser extends Parser {
 				_localctx = new RMthDeclArgVarContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(234);
+				setState(256);
 				var_decl();
 				}
 				break;
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(242);
+			setState(264);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,20,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,21,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1846,18 +1992,18 @@ public class KtlynsParser extends Parser {
 					{
 					_localctx = new RMthDeclArgAddContext(new Mth_decl_argContext(_parentctx, _parentState));
 					pushNewRecursionContext(_localctx, _startState, RULE_mth_decl_arg);
-					setState(237);
+					setState(259);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(238);
+					setState(260);
 					match(COMMA);
-					setState(239);
+					setState(261);
 					var_decl();
 					}
 					} 
 				}
-				setState(244);
+				setState(266);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,20,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,21,_ctx);
 			}
 			}
 		}
@@ -1874,13 +2020,13 @@ public class KtlynsParser extends Parser {
 
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 10:
+		case 11:
 			return expr_sempred((ExprContext)_localctx, predIndex);
-		case 14:
-			return id_sempred((IdContext)_localctx, predIndex);
 		case 15:
-			return call_args_sempred((Call_argsContext)_localctx, predIndex);
+			return id_sempred((IdContext)_localctx, predIndex);
 		case 16:
+			return call_args_sempred((Call_argsContext)_localctx, predIndex);
+		case 17:
 			return mth_decl_arg_sempred((Mth_decl_argContext)_localctx, predIndex);
 		}
 		return true;
@@ -1917,7 +2063,7 @@ public class KtlynsParser extends Parser {
 	private boolean id_sempred(IdContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 12:
-			return precpred(_ctx, 2);
+			return precpred(_ctx, 3);
 		}
 		return true;
 	}
@@ -1937,89 +2083,98 @@ public class KtlynsParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3)\u00f8\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3*\u010e\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
-		"\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\5\3-\n\3\3\4\6\4\60\n\4\r\4\16\4\61\3"+
-		"\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5@\n\5\3\6\3\6\3\6\3"+
-		"\6\3\6\3\6\5\6H\n\6\3\6\3\6\3\6\5\6M\n\6\5\6O\n\6\3\7\3\7\3\7\3\7\3\7"+
-		"\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7_\n\7\3\b\3\b\3\b\3\b\3\b\3\b"+
-		"\3\b\3\b\5\bi\n\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n"+
-		"\3\n\3\13\3\13\3\13\3\13\3\13\3\13\5\13\177\n\13\3\f\3\f\3\f\3\f\3\f\3"+
-		"\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\5\f\u0094\n\f\5"+
-		"\f\u0096\n\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3"+
-		"\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f"+
-		"\3\f\3\f\3\f\3\f\7\f\u00bc\n\f\f\f\16\f\u00bf\13\f\3\r\3\r\3\r\3\r\3\r"+
-		"\3\r\3\r\5\r\u00c8\n\r\3\16\3\16\3\16\3\16\5\16\u00ce\n\16\3\17\3\17\3"+
-		"\20\3\20\3\20\3\20\3\20\3\20\5\20\u00d8\n\20\3\20\7\20\u00db\n\20\f\20"+
-		"\16\20\u00de\13\20\3\21\3\21\5\21\u00e2\n\21\3\21\3\21\3\21\7\21\u00e7"+
-		"\n\21\f\21\16\21\u00ea\13\21\3\22\3\22\5\22\u00ee\n\22\3\22\3\22\3\22"+
-		"\7\22\u00f3\n\22\f\22\16\22\u00f6\13\22\3\22\2\6\26\36 \"\23\2\4\6\b\n"+
-		"\f\16\20\22\24\26\30\32\34\36 \"\2\2\2\u0112\2$\3\2\2\2\4,\3\2\2\2\6/"+
-		"\3\2\2\2\b?\3\2\2\2\nA\3\2\2\2\f^\3\2\2\2\16h\3\2\2\2\20j\3\2\2\2\22q"+
-		"\3\2\2\2\24~\3\2\2\2\26\u0095\3\2\2\2\30\u00c7\3\2\2\2\32\u00cd\3\2\2"+
-		"\2\34\u00cf\3\2\2\2\36\u00d1\3\2\2\2 \u00e1\3\2\2\2\"\u00ed\3\2\2\2$%"+
-		"\5\6\4\2%\3\3\2\2\2&\'\7\22\2\2\'(\5\6\4\2()\7\23\2\2)-\3\2\2\2*+\7\22"+
-		"\2\2+-\7\23\2\2,&\3\2\2\2,*\3\2\2\2-\5\3\2\2\2.\60\5\b\5\2/.\3\2\2\2\60"+
-		"\61\3\2\2\2\61/\3\2\2\2\61\62\3\2\2\2\62\7\3\2\2\2\63\64\5\26\f\2\64\65"+
-		"\7\26\2\2\65@\3\2\2\2\66\67\5\16\b\2\678\7\26\2\28@\3\2\2\29@\5\n\6\2"+
-		":@\5\f\7\2;@\5\20\t\2<=\5\22\n\2=>\7\26\2\2>@\3\2\2\2?\63\3\2\2\2?\66"+
-		"\3\2\2\2?9\3\2\2\2?:\3\2\2\2?;\3\2\2\2?<\3\2\2\2@\t\3\2\2\2AB\7\30\2\2"+
-		"BC\7\20\2\2CD\5\26\f\2DG\7\21\2\2EH\5\4\3\2FH\5\b\5\2GE\3\2\2\2GF\3\2"+
-		"\2\2HN\3\2\2\2IL\7\31\2\2JM\5\4\3\2KM\5\b\5\2LJ\3\2\2\2LK\3\2\2\2MO\3"+
-		"\2\2\2NI\3\2\2\2NO\3\2\2\2O\13\3\2\2\2PQ\7\32\2\2QR\7\20\2\2RS\5\26\f"+
-		"\2ST\7\21\2\2TU\5\4\3\2U_\3\2\2\2VW\7\32\2\2WX\7\20\2\2XY\5\26\f\2YZ\7"+
-		"\24\2\2Z[\5\26\f\2[\\\7\21\2\2\\]\5\4\3\2]_\3\2\2\2^P\3\2\2\2^V\3\2\2"+
-		"\2_\r\3\2\2\2`a\5\36\20\2ab\5\36\20\2bi\3\2\2\2cd\5\36\20\2de\5\36\20"+
-		"\2ef\7\27\2\2fg\5\26\f\2gi\3\2\2\2h`\3\2\2\2hc\3\2\2\2i\17\3\2\2\2jk\5"+
-		"\24\13\2kl\5\36\20\2lm\7\20\2\2mn\5\"\22\2no\7\21\2\2op\5\4\3\2p\21\3"+
-		"\2\2\2qr\7&\2\2rs\5\24\13\2st\5\36\20\2tu\7\20\2\2uv\5\"\22\2vw\7\21\2"+
-		"\2w\23\3\2\2\2x\177\7%\2\2yz\7%\2\2z{\7#\2\2{|\5\36\20\2|}\7!\2\2}\177"+
-		"\3\2\2\2~x\3\2\2\2~y\3\2\2\2\177\25\3\2\2\2\u0080\u0081\b\f\1\2\u0081"+
-		"\u0096\5\34\17\2\u0082\u0096\5\36\20\2\u0083\u0084\5\36\20\2\u0084\u0085"+
-		"\7\20\2\2\u0085\u0086\5 \21\2\u0086\u0087\7\21\2\2\u0087\u0096\3\2\2\2"+
-		"\u0088\u0089\7\20\2\2\u0089\u008a\5\26\f\2\u008a\u008b\7\21\2\2\u008b"+
-		"\u0096\3\2\2\2\u008c\u0096\5\30\r\2\u008d\u008e\5\36\20\2\u008e\u008f"+
-		"\7\27\2\2\u008f\u0090\5\26\f\4\u0090\u0096\3\2\2\2\u0091\u0093\7\33\2"+
-		"\2\u0092\u0094\5\26\f\2\u0093\u0092\3\2\2\2\u0093\u0094\3\2\2\2\u0094"+
-		"\u0096\3\2\2\2\u0095\u0080\3\2\2\2\u0095\u0082\3\2\2\2\u0095\u0083\3\2"+
-		"\2\2\u0095\u0088\3\2\2\2\u0095\u008c\3\2\2\2\u0095\u008d\3\2\2\2\u0095"+
-		"\u0091\3\2\2\2\u0096\u00bd\3\2\2\2\u0097\u0098\f\20\2\2\u0098\u0099\7"+
-		"\r\2\2\u0099\u00bc\5\26\f\21\u009a\u009b\f\17\2\2\u009b\u009c\7\f\2\2"+
-		"\u009c\u00bc\5\26\f\20\u009d\u009e\f\16\2\2\u009e\u009f\7\n\2\2\u009f"+
-		"\u00bc\5\26\f\17\u00a0\u00a1\f\r\2\2\u00a1\u00a2\7\13\2\2\u00a2\u00bc"+
-		"\5\26\f\16\u00a3\u00a4\f\f\2\2\u00a4\u00a5\7\37\2\2\u00a5\u00bc\5\26\f"+
-		"\r\u00a6\u00a7\f\13\2\2\u00a7\u00a8\7 \2\2\u00a8\u00bc\5\26\f\f\u00a9"+
-		"\u00aa\f\n\2\2\u00aa\u00ab\7!\2\2\u00ab\u00bc\5\26\f\13\u00ac\u00ad\f"+
-		"\t\2\2\u00ad\u00ae\7\"\2\2\u00ae\u00bc\5\26\f\n\u00af\u00b0\f\b\2\2\u00b0"+
-		"\u00b1\7#\2\2\u00b1\u00bc\5\26\f\t\u00b2\u00b3\f\7\2\2\u00b3\u00b4\7$"+
-		"\2\2\u00b4\u00bc\5\26\f\b\u00b5\u00b6\f\6\2\2\u00b6\u00b7\7\34\2\2\u00b7"+
-		"\u00bc\5\26\f\7\u00b8\u00b9\f\5\2\2\u00b9\u00ba\7\35\2\2\u00ba\u00bc\5"+
-		"\26\f\6\u00bb\u0097\3\2\2\2\u00bb\u009a\3\2\2\2\u00bb\u009d\3\2\2\2\u00bb"+
-		"\u00a0\3\2\2\2\u00bb\u00a3\3\2\2\2\u00bb\u00a6\3\2\2\2\u00bb\u00a9\3\2"+
-		"\2\2\u00bb\u00ac\3\2\2\2\u00bb\u00af\3\2\2\2\u00bb\u00b2\3\2\2\2\u00bb"+
-		"\u00b5\3\2\2\2\u00bb\u00b8\3\2\2\2\u00bc\u00bf\3\2\2\2\u00bd\u00bb\3\2"+
-		"\2\2\u00bd\u00be\3\2\2\2\u00be\27\3\2\2\2\u00bf\u00bd\3\2\2\2\u00c0\u00c8"+
-		"\5\32\16\2\u00c1\u00c2\7\13\2\2\u00c2\u00c8\5\32\16\2\u00c3\u00c4\7\36"+
-		"\2\2\u00c4\u00c8\5\32\16\2\u00c5\u00c6\7\16\2\2\u00c6\u00c8\5\36\20\2"+
-		"\u00c7\u00c0\3\2\2\2\u00c7\u00c1\3\2\2\2\u00c7\u00c3\3\2\2\2\u00c7\u00c5"+
-		"\3\2\2\2\u00c8\31\3\2\2\2\u00c9\u00ce\7\7\2\2\u00ca\u00ce\7\6\2\2\u00cb"+
-		"\u00ce\7\b\2\2\u00cc\u00ce\7\t\2\2\u00cd\u00c9\3\2\2\2\u00cd\u00ca\3\2"+
-		"\2\2\u00cd\u00cb\3\2\2\2\u00cd\u00cc\3\2\2\2\u00ce\33\3\2\2\2\u00cf\u00d0"+
-		"\7\17\2\2\u00d0\35\3\2\2\2\u00d1\u00d2\b\20\1\2\u00d2\u00d3\7\'\2\2\u00d3"+
-		"\u00dc\3\2\2\2\u00d4\u00d5\f\4\2\2\u00d5\u00d7\7\3\2\2\u00d6\u00d8\7\7"+
-		"\2\2\u00d7\u00d6\3\2\2\2\u00d7\u00d8\3\2\2\2\u00d8\u00d9\3\2\2\2\u00d9"+
-		"\u00db\7\4\2\2\u00da\u00d4\3\2\2\2\u00db\u00de\3\2\2\2\u00dc\u00da\3\2"+
-		"\2\2\u00dc\u00dd\3\2\2\2\u00dd\37\3\2\2\2\u00de\u00dc\3\2\2\2\u00df\u00e2"+
-		"\b\21\1\2\u00e0\u00e2\5\26\f\2\u00e1\u00df\3\2\2\2\u00e1\u00e0\3\2\2\2"+
-		"\u00e2\u00e8\3\2\2\2\u00e3\u00e4\f\3\2\2\u00e4\u00e5\7\24\2\2\u00e5\u00e7"+
-		"\5\26\f\2\u00e6\u00e3\3\2\2\2\u00e7\u00ea\3\2\2\2\u00e8\u00e6\3\2\2\2"+
-		"\u00e8\u00e9\3\2\2\2\u00e9!\3\2\2\2\u00ea\u00e8\3\2\2\2\u00eb\u00ee\b"+
-		"\22\1\2\u00ec\u00ee\5\16\b\2\u00ed\u00eb\3\2\2\2\u00ed\u00ec\3\2\2\2\u00ee"+
-		"\u00f4\3\2\2\2\u00ef\u00f0\f\3\2\2\u00f0\u00f1\7\24\2\2\u00f1\u00f3\5"+
-		"\16\b\2\u00f2\u00ef\3\2\2\2\u00f3\u00f6\3\2\2\2\u00f4\u00f2\3\2\2\2\u00f4"+
-		"\u00f5\3\2\2\2\u00f5#\3\2\2\2\u00f6\u00f4\3\2\2\2\27,\61?GLN^h~\u0093"+
-		"\u0095\u00bb\u00bd\u00c7\u00cd\u00d7\u00dc\u00e1\u00e8\u00ed\u00f4";
+		"\4\23\t\23\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\5\3/\n\3\3\4\6\4\62\n\4\r\4"+
+		"\16\4\63\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3"+
+		"\5\3\5\5\5G\n\5\3\6\3\6\3\6\3\6\3\6\3\6\5\6O\n\6\3\6\3\6\3\6\5\6T\n\6"+
+		"\5\6V\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7"+
+		"f\n\7\3\b\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\n"+
+		"\3\n\3\n\3\n\3\n\3\n\3\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\f\3\f\3"+
+		"\f\3\f\3\f\3\f\5\f\u008b\n\f\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3"+
+		"\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\5\r\u00a0\n\r\5\r\u00a2\n\r\3\r\3\r"+
+		"\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3"+
+		"\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\7\r"+
+		"\u00c8\n\r\f\r\16\r\u00cb\13\r\3\16\3\16\3\16\3\16\3\16\5\16\u00d2\n\16"+
+		"\3\17\3\17\3\17\3\17\5\17\u00d8\n\17\3\20\3\20\3\21\3\21\3\21\6\21\u00df"+
+		"\n\21\r\21\16\21\u00e0\3\21\3\21\6\21\u00e5\n\21\r\21\16\21\u00e6\3\21"+
+		"\5\21\u00ea\n\21\3\21\3\21\3\21\3\21\3\21\7\21\u00f1\n\21\f\21\16\21\u00f4"+
+		"\13\21\3\22\3\22\5\22\u00f8\n\22\3\22\3\22\3\22\7\22\u00fd\n\22\f\22\16"+
+		"\22\u0100\13\22\3\23\3\23\5\23\u0104\n\23\3\23\3\23\3\23\7\23\u0109\n"+
+		"\23\f\23\16\23\u010c\13\23\3\23\2\6\30 \"$\24\2\4\6\b\n\f\16\20\22\24"+
+		"\26\30\32\34\36 \"$\2\2\2\u012a\2&\3\2\2\2\4.\3\2\2\2\6\61\3\2\2\2\bF"+
+		"\3\2\2\2\nH\3\2\2\2\fe\3\2\2\2\16g\3\2\2\2\20l\3\2\2\2\22v\3\2\2\2\24"+
+		"}\3\2\2\2\26\u008a\3\2\2\2\30\u00a1\3\2\2\2\32\u00d1\3\2\2\2\34\u00d7"+
+		"\3\2\2\2\36\u00d9\3\2\2\2 \u00e9\3\2\2\2\"\u00f7\3\2\2\2$\u0103\3\2\2"+
+		"\2&\'\5\6\4\2\'\3\3\2\2\2()\7\20\2\2)*\5\6\4\2*+\7\21\2\2+/\3\2\2\2,-"+
+		"\7\20\2\2-/\7\21\2\2.(\3\2\2\2.,\3\2\2\2/\5\3\2\2\2\60\62\5\b\5\2\61\60"+
+		"\3\2\2\2\62\63\3\2\2\2\63\61\3\2\2\2\63\64\3\2\2\2\64\7\3\2\2\2\65\66"+
+		"\5\30\r\2\66\67\7\26\2\2\67G\3\2\2\289\5\16\b\29:\7\26\2\2:G\3\2\2\2;"+
+		"<\5\20\t\2<=\7\26\2\2=G\3\2\2\2>G\5\n\6\2?G\5\f\7\2@A\7\34\2\2AG\7\26"+
+		"\2\2BG\5\22\n\2CD\5\24\13\2DE\7\26\2\2EG\3\2\2\2F\65\3\2\2\2F8\3\2\2\2"+
+		"F;\3\2\2\2F>\3\2\2\2F?\3\2\2\2F@\3\2\2\2FB\3\2\2\2FC\3\2\2\2G\t\3\2\2"+
+		"\2HI\7\30\2\2IJ\7\16\2\2JK\5\30\r\2KN\7\17\2\2LO\5\4\3\2MO\5\b\5\2NL\3"+
+		"\2\2\2NM\3\2\2\2OU\3\2\2\2PS\7\31\2\2QT\5\4\3\2RT\5\b\5\2SQ\3\2\2\2SR"+
+		"\3\2\2\2TV\3\2\2\2UP\3\2\2\2UV\3\2\2\2V\13\3\2\2\2WX\7\32\2\2XY\7\16\2"+
+		"\2YZ\5\30\r\2Z[\7\17\2\2[\\\5\4\3\2\\f\3\2\2\2]^\7\32\2\2^_\7\16\2\2_"+
+		"`\5\30\r\2`a\7\24\2\2ab\5\30\r\2bc\7\17\2\2cd\5\4\3\2df\3\2\2\2eW\3\2"+
+		"\2\2e]\3\2\2\2f\r\3\2\2\2gh\5 \21\2hi\5 \21\2ij\7\27\2\2jk\5\30\r\2k\17"+
+		"\3\2\2\2lm\5 \21\2mn\5 \21\2no\7\27\2\2op\7\22\2\2pq\7\5\2\2qr\7\23\2"+
+		"\2rs\7\16\2\2st\5\30\r\2tu\7\17\2\2u\21\3\2\2\2vw\5\26\f\2wx\5 \21\2x"+
+		"y\7\16\2\2yz\5$\23\2z{\7\17\2\2{|\5\4\3\2|\23\3\2\2\2}~\7\'\2\2~\177\5"+
+		"\26\f\2\177\u0080\5 \21\2\u0080\u0081\7\16\2\2\u0081\u0082\5$\23\2\u0082"+
+		"\u0083\7\17\2\2\u0083\25\3\2\2\2\u0084\u008b\7&\2\2\u0085\u0086\7&\2\2"+
+		"\u0086\u0087\7$\2\2\u0087\u0088\5 \21\2\u0088\u0089\7\"\2\2\u0089\u008b"+
+		"\3\2\2\2\u008a\u0084\3\2\2\2\u008a\u0085\3\2\2\2\u008b\27\3\2\2\2\u008c"+
+		"\u008d\b\r\1\2\u008d\u00a2\5\36\20\2\u008e\u00a2\5 \21\2\u008f\u0090\5"+
+		" \21\2\u0090\u0091\7\16\2\2\u0091\u0092\5\"\22\2\u0092\u0093\7\17\2\2"+
+		"\u0093\u00a2\3\2\2\2\u0094\u0095\7\16\2\2\u0095\u0096\5\30\r\2\u0096\u0097"+
+		"\7\17\2\2\u0097\u00a2\3\2\2\2\u0098\u00a2\5\32\16\2\u0099\u009a\5 \21"+
+		"\2\u009a\u009b\7\27\2\2\u009b\u009c\5\30\r\4\u009c\u00a2\3\2\2\2\u009d"+
+		"\u009f\7\33\2\2\u009e\u00a0\5\30\r\2\u009f\u009e\3\2\2\2\u009f\u00a0\3"+
+		"\2\2\2\u00a0\u00a2\3\2\2\2\u00a1\u008c\3\2\2\2\u00a1\u008e\3\2\2\2\u00a1"+
+		"\u008f\3\2\2\2\u00a1\u0094\3\2\2\2\u00a1\u0098\3\2\2\2\u00a1\u0099\3\2"+
+		"\2\2\u00a1\u009d\3\2\2\2\u00a2\u00c9\3\2\2\2\u00a3\u00a4\f\20\2\2\u00a4"+
+		"\u00a5\7\13\2\2\u00a5\u00c8\5\30\r\21\u00a6\u00a7\f\17\2\2\u00a7\u00a8"+
+		"\7\n\2\2\u00a8\u00c8\5\30\r\20\u00a9\u00aa\f\16\2\2\u00aa\u00ab\7\b\2"+
+		"\2\u00ab\u00c8\5\30\r\17\u00ac\u00ad\f\r\2\2\u00ad\u00ae\7\t\2\2\u00ae"+
+		"\u00c8\5\30\r\16\u00af\u00b0\f\f\2\2\u00b0\u00b1\7 \2\2\u00b1\u00c8\5"+
+		"\30\r\r\u00b2\u00b3\f\13\2\2\u00b3\u00b4\7!\2\2\u00b4\u00c8\5\30\r\f\u00b5"+
+		"\u00b6\f\n\2\2\u00b6\u00b7\7\"\2\2\u00b7\u00c8\5\30\r\13\u00b8\u00b9\f"+
+		"\t\2\2\u00b9\u00ba\7#\2\2\u00ba\u00c8\5\30\r\n\u00bb\u00bc\f\b\2\2\u00bc"+
+		"\u00bd\7$\2\2\u00bd\u00c8\5\30\r\t\u00be\u00bf\f\7\2\2\u00bf\u00c0\7%"+
+		"\2\2\u00c0\u00c8\5\30\r\b\u00c1\u00c2\f\6\2\2\u00c2\u00c3\7\35\2\2\u00c3"+
+		"\u00c8\5\30\r\7\u00c4\u00c5\f\5\2\2\u00c5\u00c6\7\36\2\2\u00c6\u00c8\5"+
+		"\30\r\6\u00c7\u00a3\3\2\2\2\u00c7\u00a6\3\2\2\2\u00c7\u00a9\3\2\2\2\u00c7"+
+		"\u00ac\3\2\2\2\u00c7\u00af\3\2\2\2\u00c7\u00b2\3\2\2\2\u00c7\u00b5\3\2"+
+		"\2\2\u00c7\u00b8\3\2\2\2\u00c7\u00bb\3\2\2\2\u00c7\u00be\3\2\2\2\u00c7"+
+		"\u00c1\3\2\2\2\u00c7\u00c4\3\2\2\2\u00c8\u00cb\3\2\2\2\u00c9\u00c7\3\2"+
+		"\2\2\u00c9\u00ca\3\2\2\2\u00ca\31\3\2\2\2\u00cb\u00c9\3\2\2\2\u00cc\u00d2"+
+		"\5\34\17\2\u00cd\u00ce\7\t\2\2\u00ce\u00d2\5\34\17\2\u00cf\u00d0\7\37"+
+		"\2\2\u00d0\u00d2\5\34\17\2\u00d1\u00cc\3\2\2\2\u00d1\u00cd\3\2\2\2\u00d1"+
+		"\u00cf\3\2\2\2\u00d2\33\3\2\2\2\u00d3\u00d8\7\5\2\2\u00d4\u00d8\7\4\2"+
+		"\2\u00d5\u00d8\7\6\2\2\u00d6\u00d8\7\7\2\2\u00d7\u00d3\3\2\2\2\u00d7\u00d4"+
+		"\3\2\2\2\u00d7\u00d5\3\2\2\2\u00d7\u00d6\3\2\2\2\u00d8\35\3\2\2\2\u00d9"+
+		"\u00da\7\r\2\2\u00da\37\3\2\2\2\u00db\u00dc\b\21\1\2\u00dc\u00ea\7(\2"+
+		"\2\u00dd\u00df\7\f\2\2\u00de\u00dd\3\2\2\2\u00df\u00e0\3\2\2\2\u00e0\u00de"+
+		"\3\2\2\2\u00e0\u00e1\3\2\2\2\u00e1\u00e2\3\2\2\2\u00e2\u00ea\5 \21\4\u00e3"+
+		"\u00e5\7\13\2\2\u00e4\u00e3\3\2\2\2\u00e5\u00e6\3\2\2\2\u00e6\u00e4\3"+
+		"\2\2\2\u00e6\u00e7\3\2\2\2\u00e7\u00e8\3\2\2\2\u00e8\u00ea\5 \21\3\u00e9"+
+		"\u00db\3\2\2\2\u00e9\u00de\3\2\2\2\u00e9\u00e4\3\2\2\2\u00ea\u00f2\3\2"+
+		"\2\2\u00eb\u00ec\f\5\2\2\u00ec\u00ed\7\22\2\2\u00ed\u00ee\5\30\r\2\u00ee"+
+		"\u00ef\7\23\2\2\u00ef\u00f1\3\2\2\2\u00f0\u00eb\3\2\2\2\u00f1\u00f4\3"+
+		"\2\2\2\u00f2\u00f0\3\2\2\2\u00f2\u00f3\3\2\2\2\u00f3!\3\2\2\2\u00f4\u00f2"+
+		"\3\2\2\2\u00f5\u00f8\b\22\1\2\u00f6\u00f8\5\30\r\2\u00f7\u00f5\3\2\2\2"+
+		"\u00f7\u00f6\3\2\2\2\u00f8\u00fe\3\2\2\2\u00f9\u00fa\f\3\2\2\u00fa\u00fb"+
+		"\7\24\2\2\u00fb\u00fd\5\30\r\2\u00fc\u00f9\3\2\2\2\u00fd\u0100\3\2\2\2"+
+		"\u00fe\u00fc\3\2\2\2\u00fe\u00ff\3\2\2\2\u00ff#\3\2\2\2\u0100\u00fe\3"+
+		"\2\2\2\u0101\u0104\b\23\1\2\u0102\u0104\5\16\b\2\u0103\u0101\3\2\2\2\u0103"+
+		"\u0102\3\2\2\2\u0104\u010a\3\2\2\2\u0105\u0106\f\3\2\2\u0106\u0107\7\24"+
+		"\2\2\u0107\u0109\5\16\b\2\u0108\u0105\3\2\2\2\u0109\u010c\3\2\2\2\u010a"+
+		"\u0108\3\2\2\2\u010a\u010b\3\2\2\2\u010b%\3\2\2\2\u010c\u010a\3\2\2\2"+
+		"\30.\63FNSUe\u008a\u009f\u00a1\u00c7\u00c9\u00d1\u00d7\u00e0\u00e6\u00e9"+
+		"\u00f2\u00f7\u00fe\u0103\u010a";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

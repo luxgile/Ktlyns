@@ -18,7 +18,7 @@ namespace Kat
             {
                 foreach (var method in context.Methods)
                     method.Value.Define(context);
-                root.CodeGen(context);
+                root.GenLhs(context);
             }
             catch (Exception e) { Console.WriteLine($"Exception while generating IR: {e}"); return -1; }
 

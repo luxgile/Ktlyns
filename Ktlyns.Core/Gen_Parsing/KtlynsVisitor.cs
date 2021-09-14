@@ -76,6 +76,13 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitRStatementVarDecl([NotNull] KtlynsParser.RStatementVarDeclContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>RStatementArrDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRStatementArrDecl([NotNull] KtlynsParser.RStatementArrDeclContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>RStatementIfElse</c>
 	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
 	/// </summary>
@@ -89,6 +96,13 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitRStatementLoop([NotNull] KtlynsParser.RStatementLoopContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>RStatementBreak</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRStatementBreak([NotNull] KtlynsParser.RStatementBreakContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>RStatementMthDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
@@ -125,19 +139,19 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitRLoopTwo([NotNull] KtlynsParser.RLoopTwoContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>RVarDecl</c>
-	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitRVarDecl([NotNull] KtlynsParser.RVarDeclContext context);
-	/// <summary>
 	/// Visit a parse tree produced by the <c>RVarDeclExpr</c>
 	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitRVarDeclExpr([NotNull] KtlynsParser.RVarDeclExprContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>RArrDeclExpr</c>
+	/// labeled alternative in <see cref="KtlynsParser.arr_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRArrDeclExpr([NotNull] KtlynsParser.RArrDeclExprContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="KtlynsParser.mth_decl"/>.
 	/// </summary>
@@ -319,13 +333,6 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitRUnaryNot([NotNull] KtlynsParser.RUnaryNotContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>RUnaryAddress</c>
-	/// labeled alternative in <see cref="KtlynsParser.unary"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitRUnaryAddress([NotNull] KtlynsParser.RUnaryAddressContext context);
-	/// <summary>
 	/// Visit a parse tree produced by the <c>RFactorInt</c>
 	/// labeled alternative in <see cref="KtlynsParser.factor"/>.
 	/// </summary>
@@ -360,6 +367,13 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitString([NotNull] KtlynsParser.StringContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>RIDPointer</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRIDPointer([NotNull] KtlynsParser.RIDPointerContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>RIDArray</c>
 	/// labeled alternative in <see cref="KtlynsParser.id"/>.
 	/// </summary>
@@ -373,6 +387,13 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitRIDSimple([NotNull] KtlynsParser.RIDSimpleContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>RIDAddress</c>
+	/// labeled alternative in <see cref="KtlynsParser.id"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRIDAddress([NotNull] KtlynsParser.RIDAddressContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>RCallArgsAdd</c>
 	/// labeled alternative in <see cref="KtlynsParser.call_args"/>.

@@ -84,6 +84,12 @@ namespace Kat
             context.Stmt = context.var_decl().Stmt;
             return ParsingResult.Success;
         }
+        public override ParsingResult VisitRStatementArrDecl([NotNull] RStatementArrDeclContext context)
+        {
+            Safe(() => VisitChildren(context));
+            context.Stmt = context.arr_decl().Stmt;
+            return ParsingResult.Success;
+        }
         public override ParsingResult VisitRStatementMthDecl([NotNull] RStatementMthDeclContext context)
         {
             Safe(() => VisitChildren(context));
@@ -106,6 +112,11 @@ namespace Kat
         {
             Safe(() => VisitChildren(context));
             context.Stmt = context.loop_decl().Stmt;
+            return ParsingResult.Success;
+        }
+        public override ParsingResult VisitRStatementBreak([NotNull] RStatementBreakContext context)
+        {
+            context.Stmt = new KLoopBreak();
             return ParsingResult.Success;
         }
 
@@ -144,26 +155,29 @@ namespace Kat
         }
 
         //Var Decl
-        public override ParsingResult VisitRVarDecl([NotNull] RVarDeclContext context)
-        {
-            VisitChildren(context);
-            var retType = context.id(0).Id;
-            var identifier = context.id(1).Id;
-            if (state.TryGetId(identifier.Name, out IdData idData))
-                throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
-            state.AddId(identifier.Name, IdType.Field);
-            context.Stmt = new KVarDecl(state.GenContext, identifier) { Ret = context.id(0).Id };
-            return ParsingResult.Success;
-        }
         public override ParsingResult VisitRVarDeclExpr([NotNull] RVarDeclExprContext context)
         {
             Safe(() => VisitChildren(context));
             KId retType = context.id(0).Id;
+            retType.IdType = IdType.Type;
+
             KId identifier = context.id(1).Id;
             if (state.TryGetId(identifier.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
             state.AddId(identifier.Name, IdType.Field);
             context.Stmt = new KVarDecl(state.GenContext, identifier) { Ret = context.id(0).Id, Assignment = context.expr().Expr };
+            return ParsingResult.Success;
+        }
+
+        //Array Decl
+        public override ParsingResult VisitRArrDeclExpr([NotNull] RArrDeclExprContext context)
+        {
+            Safe(() => VisitChildren(context));
+            KId id = context.id(1).Id;
+            if (state.TryGetId(id.Name, out IdData idData))
+                throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
+            state.AddId(id.Name, IdType.Field);
+            context.Stmt = new KVarDecl(state.GenContext, id) { Ret = context.id(0).Id, Assignment = context.expr().Expr, ArrayLengths = new uint[] { uint.Parse(context.INT().GetText()) } };
             return ParsingResult.Success;
         }
 
@@ -214,7 +228,7 @@ namespace Kat
         public override ParsingResult VisitRMthVoid([NotNull] RMthVoidContext context)
         {
             VisitChildren(context);
-            context.Id = new KId("Void", IdType.Method, KIdType.Regular);
+            context.Id = new KId("Void", IdType.Method);
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRMthType([NotNull] RMthTypeContext context)
@@ -246,7 +260,7 @@ namespace Kat
             KId id = context.id().Id;
             if (!state.TryGetId(id.Name, out _))
                 throw ParseErrorLib.IdNotDeclared(id.Name, context.Start.Line, context.Start.Column);
-            context.Expr = new KAssign() { Lhs = id, Rhs = context.expr().Expr, ToPointer = state.GenContext.Fields[id.Name].Ret.Type == KIdType.Pointer };
+            context.Expr = new KAssign() { Lhs = id, Rhs = context.expr().Expr };
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRExprCall([NotNull] RExprCallContext context)
@@ -275,6 +289,10 @@ namespace Kat
             context.Expr = new KRet() { expr = context.expr()?.Expr };
             return ParsingResult.Success;
         }
+        //public override ParsingResult VisitRExprArrAcc([NotNull] RExprArrAccContext context)
+        //{
+
+        //}
         private ParsingResult CreateBinOp(ExprContext ctx, ExprType exprType)
         {
             VisitChildren(ctx);
@@ -313,12 +331,6 @@ namespace Kat
         {
             VisitChildren(context);
             context.Expr = new KUnaryOp() { Op = ExprType.Not, Rhs = context.factor().Expr };
-            return ParsingResult.Success;
-        }
-        public override ParsingResult VisitRUnaryAddress([NotNull] RUnaryAddressContext context)
-        {
-            VisitChildren(context);
-            context.Expr = new KAddress() { Id = context.id().Id };
             return ParsingResult.Success;
         }
 
@@ -365,17 +377,28 @@ namespace Kat
         {
             VisitChildren(context);
             string text = context.ID().ToString();
-            bool isPointer = text[^1] == '*';
-            if (isPointer) text = text[0..^1];
-            if (TypeTable.TryGetType(text, out _)) context.Id = new KId(text, IdType.Type, isPointer ? KIdType.Pointer : KIdType.Regular);
-            else context.Id = new KId(text, IdType.Field, KIdType.Regular);
+
+            if (TypeTable.TryGetType(text, out _)) context.Id = new KId(text, IdType.Type);
+            else context.Id = new KId(text, IdType.Field) { PtrCount = 1 };
+
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRIDArray([NotNull] RIDArrayContext context)
         {
+            Safe(() => VisitChildren(context));
+            context.Id = new KIdAcc(context.id().Id) { Index = context.expr().Expr };
+            return ParsingResult.Success;
+        }
+        public override ParsingResult VisitRIDAddress([NotNull] RIDAddressContext context)
+        {
             VisitChildren(context);
-            string text = context.id().Id.Name;
-            context.Id = new KId(text, IdType.Field, KIdType.Array);
+            context.Id = new KId(context.id().Id) { PtrCount = -context.AMP().Length + 1 };
+            return ParsingResult.Success;
+        }
+        public override ParsingResult VisitRIDPointer([NotNull] RIDPointerContext context)
+        {
+            VisitChildren(context);
+            context.Id = new KId(context.id().Id) { PtrCount = context.STAR().Length + 1 };
             return ParsingResult.Success;
         }
 
