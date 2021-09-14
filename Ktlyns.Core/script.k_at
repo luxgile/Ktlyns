@@ -4,7 +4,7 @@ method<Int> Main()
 {
 	Int a = 3;
 	Int* b = &a;
-	*b = 5;
-	Int c = *b;
-	ret *b;
+	Int** c = &b;
+	**c = 1;
+	ret a;
 }

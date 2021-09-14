@@ -112,8 +112,8 @@ id
 	locals[KId Id]:
 	ID					# RIDSimple
 	| id LBKT expr RBKT	# RIDArray
-	| AMP+ id			# RIDAddress
-	| STAR+ id			# RIDPointer;
+	| (AMP)+ id			# RIDAddress
+	| (STAR)+ id			# RIDPointer;
 
 call_args
 	locals[List<KExpr> Exprs]:
@@ -212,7 +212,7 @@ EXTERNAL:
 	'ext';
 
 ID:
-	[a-zA-Z][a-zA-Z0-9]* '[]'? '*'?;
+	[a-zA-Z][a-zA-Z0-9]* ('[]'|'*')*;
 
 COMMENT:
 	'/*' .*? '*/' -> skip;
