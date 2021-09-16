@@ -14,13 +14,21 @@ namespace Kat
         public int CompileAndRun(KNode root, CodeGenContext context)
         {
             context.InitializeLLVMModules("main_source");
-            try
-            {
+            //try
+            //{
                 foreach (var method in context.Methods)
                     method.Value.Define(context);
+
+                if (IRGenAPI.DebugIR)
+                    IRGenAPI.GenDebugDefines(context);
+
                 root.GenLhs(context);
-            }
-            catch (Exception e) { Console.WriteLine($"Exception while generating IR: {e}"); return -1; }
+            //}
+            //catch (Exception e) 
+            //{ 
+            //    Console.WriteLine($"!!! Exception while generating IR: {e}");
+            //    return -1; 
+            //}
 
             LLVM.LinkInMCJIT();
 
@@ -30,7 +38,7 @@ namespace Kat
             LLVM.InitializeX86AsmParser();
             LLVM.InitializeX86AsmPrinter();
 
-            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
+            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1};
             if (!context.module.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
             {
                 Console.WriteLine($"Error: {error}");
@@ -42,7 +50,7 @@ namespace Kat
                 Console.WriteLine("\n\n> IR CODE:\n----------");
                 context.module.Dump();
             }
-
+            
             LLVMValueRef func = context.module.GetNamedFunction("Main");
             MainDelegate mainFunc = (MainDelegate)Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(func), typeof(MainDelegate));
             int a = -1;

@@ -49,7 +49,7 @@ namespace Kat
 
             LLVMBasicBlockRef afterBlock = context.CurrentFunc.AppendBasicBlock("if_after_block");
 
-            LLVMValueRef branch = context.builder.BuildCondBr(Condition.GenLhs(context), ifBlock, hasElse ? elseBlock : afterBlock);
+            LLVMValueRef branch = context.builder.BuildCondBr(Condition.GenRhs(context), ifBlock, hasElse ? elseBlock : afterBlock);
 
             context.builder.PositionAtEnd(ifBlock);
             IfBlock.GenLhs(context);
@@ -264,14 +264,7 @@ namespace Kat
             if (value.Kind == LLVMValueKind.LLVMArgumentValueKind)
                 return value;
 
-            int currPtrCount = PtrCount - 1;
-            while (currPtrCount != 0)
-            {
-                if (currPtrCount > 0) { value = IRGenAPI.GetValueFromPointer(context, value, Name); currPtrCount--; }
-                else if (currPtrCount < 0) { value = IRGenAPI.CreatePointerFromValue(context, value); currPtrCount++; }
-            }
-
-            return value;
+            return ApplyPtrCount(context, value, PtrCount - 1);
         }
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
@@ -284,7 +277,12 @@ namespace Kat
             if (value.Kind == LLVMValueKind.LLVMArgumentValueKind)
                 return value;
 
-            int currPtrCount = PtrCount;
+            return ApplyPtrCount(context, value, PtrCount);
+        }
+
+        protected LLVMValueRef ApplyPtrCount(CodeGenContext context, LLVMValueRef value, int valuePtr)
+        {
+            int currPtrCount = valuePtr;
             while (currPtrCount != 0)
             {
                 if (currPtrCount > 0) { value = IRGenAPI.GetValueFromPointer(context, value, Name); currPtrCount--; }
@@ -303,15 +301,14 @@ namespace Kat
 
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
-            return CodeGen(context);
+            LLVMValueRef value = GetGEP(context);
+            value = ApplyPtrCount(context, value, PtrCount);
+            return value;
         }
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
-            return CodeGen(context);
-        }
-        private LLVMValueRef CodeGen(CodeGenContext context)
-        {
-            return context.builder.BuildLoad(GetGEP(context));
+            LLVMValueRef value = context.builder.BuildLoad(GetGEP(context));
+            return ApplyPtrCount(context, value, PtrCount);
         }
 
         public LLVMValueRef GetGEP(CodeGenContext context)
@@ -381,29 +378,29 @@ namespace Kat
         public override KPrimitiveType GetReturnType(CodeGenContext context) => Lhs.GetReturnType(context);
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
-            KPrimitiveType retType = GetReturnType(context);
-            if (retType != KPrimitiveType.Int && retType != KPrimitiveType.Dec)
-                throw new IRGenException($"Cannot create a binary operation with type '{retType}'.");
+            LLVMValueRef lhs = Lhs.GenRhs(context);
+            LLVMValueRef rhs = Rhs.GenRhs(context);
+            bool isInt = lhs.TypeOf.IntWidth > 1;
 
             return Op switch
             {
-                ExprType.Add => BuildBinOp(retType == KPrimitiveType.Int ? LLVMOpcode.LLVMAdd : LLVMOpcode.LLVMFAdd),
-                ExprType.Sub => BuildBinOp(retType == KPrimitiveType.Int ? LLVMOpcode.LLVMSub : LLVMOpcode.LLVMFSub),
-                ExprType.Mult => BuildBinOp(retType == KPrimitiveType.Int ? LLVMOpcode.LLVMMul : LLVMOpcode.LLVMFMul),
-                ExprType.Div => BuildBinOp(retType == KPrimitiveType.Int ? LLVMOpcode.LLVMSDiv : LLVMOpcode.LLVMFDiv),
-                ExprType.Eq => retType == KPrimitiveType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntEQ) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOEQ),
-                ExprType.NEq => retType == KPrimitiveType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntNE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealONE),
-                ExprType.Less => retType == KPrimitiveType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntSLT) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOLT),
-                ExprType.ELess => retType == KPrimitiveType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntSLE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOLE),
-                ExprType.Great => retType == KPrimitiveType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGT) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGT),
-                ExprType.EGreat => retType == KPrimitiveType.Int ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGE),
+                ExprType.Add => BuildBinOp(isInt ? LLVMOpcode.LLVMAdd : LLVMOpcode.LLVMFAdd),
+                ExprType.Sub => BuildBinOp(isInt ? LLVMOpcode.LLVMSub : LLVMOpcode.LLVMFSub),
+                ExprType.Mult => BuildBinOp(isInt ? LLVMOpcode.LLVMMul : LLVMOpcode.LLVMFMul),
+                ExprType.Div => BuildBinOp(isInt ? LLVMOpcode.LLVMSDiv : LLVMOpcode.LLVMFDiv),
+                ExprType.Eq => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntEQ) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOEQ),
+                ExprType.NEq => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntNE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealONE),
+                ExprType.Less => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntSLT) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOLT),
+                ExprType.ELess => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntSLE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOLE),
+                ExprType.Great => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGT) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGT),
+                ExprType.EGreat => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGE),
                 ExprType.And => BuildBinOp(LLVMOpcode.LLVMAnd),
                 ExprType.Or => BuildBinOp(LLVMOpcode.LLVMOr),
                 _ => throw new IRGenException("Invalid operator"),
             };
-            LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, Lhs.GenLhs(context), Rhs.GenRhs(context));
-            LLVMValueRef BuildBinICmp(LLVMIntPredicate predicate) => context.builder.BuildICmp(predicate, Lhs.GenLhs(context), Rhs.GenRhs(context));
-            LLVMValueRef BuildBinFCmp(LLVMRealPredicate predicate) => context.builder.BuildFCmp(predicate, Lhs.GenLhs(context), Rhs.GenRhs(context));
+            LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, lhs, rhs);
+            LLVMValueRef BuildBinICmp(LLVMIntPredicate predicate) => context.builder.BuildICmp(predicate, lhs, rhs);
+            LLVMValueRef BuildBinFCmp(LLVMRealPredicate predicate) => context.builder.BuildFCmp(predicate, lhs, rhs);
         }
     }
 

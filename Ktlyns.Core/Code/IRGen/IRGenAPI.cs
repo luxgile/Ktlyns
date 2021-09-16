@@ -4,6 +4,14 @@ namespace Kat
 {
     public static class IRGenAPI
     {
+        public static bool DebugIR { get; set; } = true;
+
+        public static void GenDebugDefines(CodeGenContext context)
+        {
+            LLVMTypeRef func = LLVMTypeRef.CreateFunction(LLVMTypeRef.Void, new LLVMTypeRef[] { });
+            context.module.AddFunction("llvm.dbg.addr", func);
+        }
+
         /// <summary>
         /// Allocates a field of the specified type and returns a pointer of the allocated field.
         /// </summary>
@@ -17,14 +25,15 @@ namespace Kat
             else
             {
                 //This creates an empty pointer of predefined type.
-                return context.builder.BuildAlloca(fieldType, name);
+                LLVMValueRef value = context.builder.BuildAlloca(fieldType, name);
+                return value;
             }
         }
 
         public static LLVMValueRef CreatePointerFromValue(CodeGenContext context, LLVMValueRef value)
         {
-            var pointerType = LLVMTypeRef.CreatePointer(value.TypeOf.ElementType, 0);
-            var pointerValue = context.builder.BuildAlloca(pointerType, "tmp_ptr");
+            LLVMTypeRef pointerType = LLVMTypeRef.CreatePointer(value.TypeOf.ElementType, 0);
+            LLVMValueRef pointerValue = context.builder.BuildAlloca(pointerType, "tmp_ptr");
             context.builder.BuildStore(value, pointerValue);
             return context.builder.BuildLoad(pointerValue);
         }

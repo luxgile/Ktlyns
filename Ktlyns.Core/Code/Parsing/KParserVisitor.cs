@@ -173,6 +173,9 @@ namespace Kat
         public override ParsingResult VisitRArrDeclExpr([NotNull] RArrDeclExprContext context)
         {
             Safe(() => VisitChildren(context));
+            KId retType = context.id(0).Id;
+            retType.IdType = IdType.Type;
+
             KId id = context.id(1).Id;
             if (state.TryGetId(id.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
@@ -386,19 +389,21 @@ namespace Kat
         public override ParsingResult VisitRIDArray([NotNull] RIDArrayContext context)
         {
             Safe(() => VisitChildren(context));
-            context.Id = new KIdAcc(context.id().Id) { Index = context.expr().Expr };
+            context.Id = new KIdAcc(context.id().Id) { Index = context.expr().Expr, PtrCount = 1 };
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRIDAddress([NotNull] RIDAddressContext context)
         {
             VisitChildren(context);
-            context.Id = new KId(context.id().Id) { PtrCount = -context.AMP().Length + 1 };
+            context.Id = context.id().Id;
+            context.Id.PtrCount -= context.AMP().Length;
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRIDPointer([NotNull] RIDPointerContext context)
         {
             VisitChildren(context);
-            context.Id = new KId(context.id().Id) { PtrCount = context.STAR().Length + 1 };
+            context.Id = context.id().Id;
+            context.Id.PtrCount += context.STAR().Length;
             return ParsingResult.Success;
         }
 

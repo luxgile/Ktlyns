@@ -1,10 +1,11 @@
 //ext method Print();
 
+
 method<Int> Main()
 {
-	Int a = 3;
-	Int* b = &a;
-	Int** c = &b;
-	**c = 1;
-	ret a;
+	Int c = 0; 
+	Bool a = false; 
+	if (a) { c = 1; } 
+	else { c = 2; } 
+	ret c;
 }

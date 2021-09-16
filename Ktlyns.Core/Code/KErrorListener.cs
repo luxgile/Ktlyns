@@ -31,8 +31,8 @@ namespace Kat
 
         public override void ReportContextSensitivity(Parser recognizer, DFA dfa, int startIndex, int stopIndex, int prediction, SimulatorState acceptState)
         {
-            HasErrors = true;
-            Console.WriteLine($"Error: Context Sensitivity");
+            HasWarnings = true;
+            Console.WriteLine($"Warning: Context Sensitivity");
         }
 
         public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)

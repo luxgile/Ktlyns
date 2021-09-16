@@ -8,6 +8,7 @@ namespace Kat
 {
     public unsafe class KCompiler
     {
+        public uint Version { get; } = 1;
         public bool DebugCompilation { get; set; } = false;
 
         public KCompiler()
