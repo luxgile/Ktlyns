@@ -16,12 +16,16 @@ namespace Kat
         [DllImport("Katime.dll")]
         public static extern void Print(string s);
 
+        //[DllImport("script.o")]
+        //public static extern int Mainn();
+
         private static unsafe void Main(string[] args)
         {
             string scriptFile = File.ReadAllText(@"D:\Development\K@\Ktlyns\Ktlyns.Core\script.k_at");
             KCompiler compiler = new KCompiler() { DebugCompilation = true };
             int result = compiler.CompileAndRun(scriptFile);
-            Console.WriteLine("Result: " + result);
+            Console.WriteLine("Program result: " + result);
+            //Console.WriteLine("Program result: " + Mainn());
         }
     }
 }

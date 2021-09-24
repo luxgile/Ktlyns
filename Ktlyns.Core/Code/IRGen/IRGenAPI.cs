@@ -4,7 +4,7 @@ namespace Kat
 {
     public static class IRGenAPI
     {
-        public static bool DebugIR { get; set; } = true;
+        public static bool DebugIR { get; set; } = false;
 
         public static void GenDebugDefines(CodeGenContext context)
         {
@@ -40,6 +40,14 @@ namespace Kat
         public static LLVMValueRef GetValueFromPointer(CodeGenContext context, LLVMValueRef pointer, string name)
         {
             return context.builder.BuildLoad(pointer, name + "_value");
+        }
+
+        public static LLVMValueRef StoreValue(CodeGenContext context, LLVMValueRef pointer, LLVMValueRef value)
+        {
+            LLVMTypeRef pointerType = pointer.TypeOf;
+            if (pointerType.Kind != LLVMTypeKind.LLVMPointerTypeKind)
+                throw new IRGenException("Pointer is needed to store a value.");
+            return context.builder.BuildStore(value, pointer);
         }
     }
 }

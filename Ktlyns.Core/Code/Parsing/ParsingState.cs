@@ -94,7 +94,7 @@ namespace Kat
                 if (promises[i].Data.Equals(data))
                 {
                     promises.RemoveAt(i);
-                    return;
+                    i--;
                 }
             }
         }

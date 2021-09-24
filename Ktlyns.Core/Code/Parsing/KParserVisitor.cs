@@ -155,6 +155,19 @@ namespace Kat
         }
 
         //Var Decl
+        public override ParsingResult VisitRVarDecl([NotNull] RVarDeclContext context)
+        {
+            Safe(() => VisitChildren(context));
+            KId retType = context.id(0).Id;
+            retType.IdType = IdType.Type;
+
+            KId identifier = context.id(1).Id;
+            if (state.TryGetId(identifier.Name, out IdData idData))
+                throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
+            state.AddId(identifier.Name, IdType.Field);
+            context.Stmt = new KVarDecl(state.GenContext, identifier) { Ret = context.id(0).Id };
+            return ParsingResult.Success;
+        }
         public override ParsingResult VisitRVarDeclExpr([NotNull] RVarDeclExprContext context)
         {
             Safe(() => VisitChildren(context));

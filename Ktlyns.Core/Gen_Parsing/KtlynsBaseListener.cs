@@ -246,6 +246,20 @@ public partial class KtlynsBaseListener : IKtlynsListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitRLoopTwo([NotNull] KtlynsParser.RLoopTwoContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>RVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterRVarDecl([NotNull] KtlynsParser.RVarDeclContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitRVarDecl([NotNull] KtlynsParser.RVarDeclContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RVarDeclExpr</c>
 	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
 	/// <para>The default implementation does nothing.</para>

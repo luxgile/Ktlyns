@@ -68,5 +68,48 @@ namespace Kat
 
             return a;
         }
+
+        public LLVMModuleRef CompileModule(KNode root, CodeGenContext context)
+        {
+            context.InitializeLLVMModules("main_source");
+            //try
+            //{
+            foreach (var method in context.Methods)
+                method.Value.Define(context);
+
+            if (IRGenAPI.DebugIR)
+                IRGenAPI.GenDebugDefines(context);
+
+            root.GenLhs(context);
+            //}
+            //catch (Exception e) 
+            //{ 
+            //    Console.WriteLine($"!!! Exception while generating IR: {e}");
+            //    return -1; 
+            //}
+
+            LLVM.LinkInMCJIT();
+
+            LLVM.InitializeX86TargetMC();
+            LLVM.InitializeX86Target();
+            LLVM.InitializeX86TargetInfo();
+            LLVM.InitializeX86AsmParser();
+            LLVM.InitializeX86AsmPrinter();
+
+            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
+            if (!context.module.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
+            {
+                Console.WriteLine($"Error: {error}");
+                throw new Exception();
+            }
+
+            if (LogIR)
+            {
+                Console.WriteLine("\n\n> IR CODE:\n----------");
+                context.module.Dump();
+            }
+
+            return context.module;
+        }
     }
 }

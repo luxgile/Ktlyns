@@ -18,7 +18,21 @@ namespace Kat
 
     public abstract class KExpr : KNode
     {
-        public virtual KPrimitiveType GetReturnType(CodeGenContext context) => KPrimitiveType.Void;
+    }
+
+    public class KCustomExpr : KExpr
+    {
+        public Func<LLVMValueRef> LhsGen;
+        public Func<LLVMValueRef> RhsGen;
+
+        public override LLVMValueRef GenLhs(CodeGenContext context)
+        {
+            return LhsGen();
+        }
+        public override LLVMValueRef GenRhs(CodeGenContext context)
+        {
+            return RhsGen();
+        }
     }
 
     public abstract class KStmt : KNode 
@@ -173,7 +187,6 @@ namespace Kat
     public class KDec : KExpr
     {
         public double Value { get; set; }
-        public override KPrimitiveType GetReturnType(CodeGenContext context) => KPrimitiveType.Dec;
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             throw new IRGenException("Decimal numbers cannot be generated as LHS");
@@ -187,7 +200,6 @@ namespace Kat
     public class KInt : KExpr
     {
         public int Value { get; set; }
-        public override KPrimitiveType GetReturnType(CodeGenContext context) => KPrimitiveType.Int;
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             throw new IRGenException("Int numbers cannot be generated as LHS");
@@ -201,7 +213,6 @@ namespace Kat
     public class KBool : KExpr
     {
         public bool Value { get; set; }
-        public override KPrimitiveType GetReturnType(CodeGenContext context) => KPrimitiveType.Bool;
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             throw new IRGenException("Bool cannot be generated as LHS");
@@ -247,23 +258,12 @@ namespace Kat
             IdType = idType;
         }
 
-        public override KPrimitiveType GetReturnType(CodeGenContext context)
-        {
-            if (retTypeCached == null)
-                retTypeCached = context.Fields[Name].Ret;
-            return Enum.Parse<KPrimitiveType>(retTypeCached.Name);
-        }
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             if (!context.HasLocal(Name))
                 throw new IRGenException($"Undeclared variable {Name}.");
 
             LLVMValueRef value = context.GetLocal(Name);
-
-            //Check if it's an argument. If it is then it's the value
-            if (value.Kind == LLVMValueKind.LLVMArgumentValueKind)
-                return value;
-
             return ApplyPtrCount(context, value, PtrCount - 1);
         }
         public override LLVMValueRef GenRhs(CodeGenContext context)
@@ -272,11 +272,6 @@ namespace Kat
                 throw new IRGenException($"Undeclared variable {Name}.");
 
             LLVMValueRef value = context.GetLocal(Name);
-
-            //Check if it's an argument. If it is then it's the value
-            if (value.Kind == LLVMValueKind.LLVMArgumentValueKind)
-                return value;
-
             return ApplyPtrCount(context, value, PtrCount);
         }
 
@@ -323,10 +318,6 @@ namespace Kat
     {
         public KId Id { get; set; }
         public List<KExpr> Args { get; set; }
-        public override KPrimitiveType GetReturnType(CodeGenContext context)
-        {
-            return Enum.Parse<KPrimitiveType>(context.Methods[Id.Name].Ret.Name);
-        }
 
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
@@ -346,7 +337,6 @@ namespace Kat
     {
         public ExprType Op { get; set; }
         public KExpr Rhs { get; set; }
-        public override KPrimitiveType GetReturnType(CodeGenContext context) => Rhs.GetReturnType(context);
 
         private static LLVMValueRef dummyInt0 = LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, 0, false);
         private static LLVMValueRef dummyInt1 = LLVMValueRef.CreateConstInt(LLVMTypeRef.Int1, 1, false);
@@ -354,18 +344,17 @@ namespace Kat
 
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
-            KPrimitiveType retType = GetReturnType(context);
-            if (Op != ExprType.Not && retType != KPrimitiveType.Int && retType != KPrimitiveType.Dec)
-                throw new IRGenException($"Cannot create a unary operation with type '{retType}'.");
+            LLVMValueRef rhs = Rhs.GenRhs(context);
+            bool isInt = rhs.TypeOf.IntWidth > 1;
 
             return Op switch
             {
-                ExprType.Add => BuildBinOp(retType == KPrimitiveType.Int ? LLVMOpcode.LLVMAdd : LLVMOpcode.LLVMFAdd),
-                ExprType.Sub => BuildBinOp(retType == KPrimitiveType.Int ? LLVMOpcode.LLVMSub : LLVMOpcode.LLVMFSub),
+                ExprType.Add => BuildBinOp(isInt ? LLVMOpcode.LLVMAdd : LLVMOpcode.LLVMFAdd),
+                ExprType.Sub => BuildBinOp(isInt ? LLVMOpcode.LLVMSub : LLVMOpcode.LLVMFSub),
                 ExprType.Not => BuildNotOp(),
                 _ => throw new IRGenException("Invalid operator"),
             };
-            LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, retType == KPrimitiveType.Int ? dummyInt0 : dummyDec0, Rhs.GenRhs(context), code.ToString().ToLower());
+            LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, isInt ? dummyInt0 : dummyDec0, Rhs.GenRhs(context), code.ToString().ToLower());
             LLVMValueRef BuildNotOp() => context.builder.BuildBinOp(LLVMOpcode.LLVMSub, dummyInt1, Rhs.GenRhs(context), "not_op");
         }
     }
@@ -375,7 +364,6 @@ namespace Kat
         public ExprType Op { get; set; }
         public KExpr Lhs { get; set; }
         public KExpr Rhs { get; set; }
-        public override KPrimitiveType GetReturnType(CodeGenContext context) => Lhs.GetReturnType(context);
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
             LLVMValueRef lhs = Lhs.GenRhs(context);
@@ -408,10 +396,6 @@ namespace Kat
     {
         public KId Lhs { get; set; }
         public KExpr Rhs { get; set; }
-        public override KPrimitiveType GetReturnType(CodeGenContext context)
-        {
-            return Lhs.GetReturnType(context);
-        }
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
             if (!context.HasLocal(Lhs.Name))
@@ -433,7 +417,7 @@ namespace Kat
             //    //lhs = context.builder.BuildIntToPtr(lhs_Adr, LLVMTypeRef.CreatePointer(TypeTable.GetType(GetReturnType(context)), 0));
             //}
 
-            return context.builder.BuildStore(rhs, lhs);
+            return IRGenAPI.StoreValue(context, lhs, rhs);
         }
     }
 
@@ -474,7 +458,7 @@ namespace Kat
         {
             Id = id;
             //TODO: This should be scoped, otherwise can't use variables with same name in different methods
-            context.Fields.Add(Id.Name, this);
+            //context.Fields.Add(Id.Name, this);
         }
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
@@ -485,7 +469,7 @@ namespace Kat
             context.SetLocal(Id.Name, pointer);
 
             //Assign cannot be null, but with arrays there's no need to assign anything.
-            if (fieldType.ArrayLength == 0)
+            if (fieldType.ArrayLength == 0 && Assignment != null)
             {
                 KAssign assign = new KAssign() { Lhs = Id, Rhs = Assignment };
                 assign.GenRhs(context);
@@ -519,7 +503,7 @@ namespace Kat
             for (int i = 0; i < Args.Count; i++)
             {
                 KVarDecl arg = Args[i];
-                argTypes.Add(TypeTable.GetType(arg.Ret.Name));
+                argTypes.Add(TypeTable.CreateType(arg.Ret, new uint[] { }));
             }
             LLVMTypeRef fType = LLVMTypeRef.CreateFunction(TypeTable.GetType(Ret.Name), argTypes.ToArray());
             func = context.module.AddFunction(Id.Name, fType);
@@ -545,8 +529,13 @@ namespace Kat
             for (int i = 0; i < Args.Count; i++)
             {
                 KVarDecl arg = Args[i];
-                arg.GenLhs(context);
-                context.SetLocal(func.Params[i].Name, func.Params[i]);
+                KVarDecl argCopy = new KVarDecl(context, arg.Id) 
+                { 
+                    Ret = arg.Ret
+                    , ArrayLengths = arg.ArrayLengths
+                    , Assignment = new KCustomExpr() { LhsGen = () => func.Params[i], RhsGen = () => func.Params[i] } 
+                };
+                argCopy.GenLhs(context);
             }
 
             if (Block == null) throw new IRGenException("Error while creating method declaration. Block is null.");

@@ -16,7 +16,7 @@ namespace Kat
             LLVM.LoadLibraryPermanently(new MarshaledString("Katime.dll".AsSpan()).Value);
         }
 
-        public int CompileAndRun(string source)
+        private KtlynsParser CreateParser(string source)
         {
             if (DebugCompilation)
             {
@@ -34,14 +34,19 @@ namespace Kat
             parser.Profile = true;
             parser.AddErrorListener(errorListener);
             parser.Interpreter.PredictionMode = Antlr4.Runtime.Atn.PredictionMode.LL_EXACT_AMBIG_DETECTION;
+            return parser;
+        }
 
+        public int CompileAndRun(string source)
+        {
+            var parser = CreateParser(source);
             IParseTree tree = parser.program();
 
             if (DebugCompilation)
                 PrettyPrint2(tree, parser);
 
-            if (errorListener.HasErrors)
-                return -1;
+            //if (errorListener.HasErrors)
+            //    return -1;
 
             KParserVisitor visitor = new KParserVisitor();
             visitor.Visit(tree);
@@ -55,6 +60,32 @@ namespace Kat
 
             KLLVMGen compiler = new KLLVMGen() { LogIR = DebugCompilation };
             return compiler.CompileAndRun(root, visitor.GetIRGenContext());
+        }
+
+        public int CompileToFile(string source)
+        {
+            var parser = CreateParser(source);
+            IParseTree tree = parser.program();
+
+            if (DebugCompilation)
+                PrettyPrint2(tree, parser);
+
+            //if (errorListener.HasErrors)
+            //    return -1;
+
+            KParserVisitor visitor = new KParserVisitor();
+            visitor.Visit(tree);
+            KNode root = visitor.Root;
+
+            if (visitor.Errors.Count > 0)
+            {
+                for (int i = 0; i < visitor.Errors.Count; i++) Console.WriteLine(visitor.Errors[i]);
+                return -1;
+            }
+
+            KLLVMGen compiler = new KLLVMGen() { LogIR = DebugCompilation };
+            var module = compiler.CompileModule(root, visitor.GetIRGenContext());
+            return module.WriteBitcodeToFile("script.bc");
         }
 
         private static void PrettyPrint2(IParseTree tree, Parser parser)

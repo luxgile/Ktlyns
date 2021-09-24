@@ -211,6 +211,18 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitRLoopTwo([NotNull] KtlynsParser.RLoopTwoContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>RVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRVarDecl([NotNull] KtlynsParser.RVarDeclContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRVarDecl([NotNull] KtlynsParser.RVarDeclContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RVarDeclExpr</c>
 	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
 	/// </summary>

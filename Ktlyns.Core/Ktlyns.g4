@@ -47,7 +47,8 @@ loop_decl
 
 var_decl
 	locals[KStmt Stmt]:
-	id id EQ expr # RVarDeclExpr;
+	id id			# RVarDecl //Even if we cannot have null declarations, this is needed for method args
+	| id id EQ expr	# RVarDeclExpr;
 
 arr_decl
 	locals[KStmt Stmt]:
@@ -113,7 +114,7 @@ id
 	ID					# RIDSimple
 	| id LBKT expr RBKT	# RIDArray
 	| (AMP)+ id			# RIDAddress
-	| (STAR)+ id			# RIDPointer;
+	| (STAR)+ id		# RIDPointer;
 
 call_args
 	locals[List<KExpr> Exprs]:
@@ -212,7 +213,10 @@ EXTERNAL:
 	'ext';
 
 ID:
-	[a-zA-Z][a-zA-Z0-9]* ('[]'|'*')*;
+	[a-zA-Z][a-zA-Z0-9]* (
+		'[]'
+		| '*'
+	)*;
 
 COMMENT:
 	'/*' .*? '*/' -> skip;

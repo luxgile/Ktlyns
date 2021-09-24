@@ -51,7 +51,7 @@ namespace Kat
                     break;
 
                     case KPrimitiveType.Array:
-                    lastTypeCreated = LLVMTypeRef.CreateArray(lastTypeCreated, arrayLengths[arrayLengthsIndex]);
+                    lastTypeCreated = LLVMTypeRef.CreateArray(lastTypeCreated, arrayLengths.Length == 0 ? 1 : arrayLengths[arrayLengthsIndex]);
                     arrayLengthsIndex++;
                     break;
                 }

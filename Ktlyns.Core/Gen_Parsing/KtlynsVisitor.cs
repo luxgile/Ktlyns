@@ -139,6 +139,13 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitRLoopTwo([NotNull] KtlynsParser.RLoopTwoContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>RVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRVarDecl([NotNull] KtlynsParser.RVarDeclContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>RVarDeclExpr</c>
 	/// labeled alternative in <see cref="KtlynsParser.var_decl"/>.
 	/// </summary>

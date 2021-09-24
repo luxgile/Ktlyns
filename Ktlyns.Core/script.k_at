@@ -1,11 +1,9 @@
-//ext method Print();
-
+//ext method PrintMsg(Int[]* msg);
+ext method PrintMark();
 
 method<Int> Main()
 {
-	Int c = 0; 
-	Bool a = false; 
-	if (a) { c = 1; } 
-	else { c = 2; } 
-	ret c;
+    Int a = 3;
+	Int b = 5;
+	ret a + b;
 }
