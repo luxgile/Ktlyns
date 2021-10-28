@@ -2,6 +2,7 @@
 using Antlr4.Runtime.Tree;
 using LLVMSharp.Interop;
 using System;
+using System.Diagnostics;
 using System.Text;
 
 namespace Kat
@@ -84,10 +85,12 @@ namespace Kat
 
             KLLVMGen compiler = new KLLVMGen() { LogIR = DebugCompilation };
             var module = compiler.CompileModule(root, visitor.GetIRGenContext());
-            //module.PrintToFile("script.ll");
             module.WriteBitcodeToFile("script.bc");
-
-            //After printinf the file, use
+            Process.Start("cmd.exe", "/K llc script.bc -filetype=obj -march=x86");
+            Process.Start("cmd.exe", "/K gcc script.obj");
+            Process.Start("cmd.exe", "/K a.exe");
+            //After printing the file, use
+            //module.PrintToFile("script.ll");
             //llc script.bc -filetype=obj -march=x86
             //gcc script.obj
             //./a.out
