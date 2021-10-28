@@ -1,9 +1,10 @@
-//ext method PrintMsg(Int[]* msg);
-ext method PrintMark();
+//ext mth PrintMark() : Void;
+//ext mth PrintChar(Char t) : Void;
+//ext mth PrintString(Char* y) : Void;
 
-method<Int> Main()
-{
-    Int a = 3;
-	Int b = 5;
-	ret a + b;
+mth main() : Int {
+    String s = "Hello World!";
+	Char* c = &s to Char*;
+	Print(c);
+	ret 0;
 }

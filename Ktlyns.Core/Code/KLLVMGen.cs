@@ -16,13 +16,16 @@ namespace Kat
             context.InitializeLLVMModules("main_source");
             //try
             //{
-                foreach (var method in context.Methods)
-                    method.Value.Define(context);
+            foreach (var method in context.Methods)
+                method.Value.Define(context);
 
-                if (IRGenAPI.DebugIR)
-                    IRGenAPI.GenDebugDefines(context);
+            if (IRGenAPI.DebugIR)
+                IRGenAPI.GenDebugDefines(context);
 
-                root.GenLhs(context);
+            IRGenAPI.GenLLVMUtils(context);
+
+            root.IRSetup(context);
+            root.GenLhs(context);
             //}
             //catch (Exception e) 
             //{ 
@@ -38,7 +41,7 @@ namespace Kat
             LLVM.InitializeX86AsmParser();
             LLVM.InitializeX86AsmPrinter();
 
-            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1};
+            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
             if (!context.module.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
             {
                 Console.WriteLine($"Error: {error}");
@@ -50,8 +53,8 @@ namespace Kat
                 Console.WriteLine("\n\n> IR CODE:\n----------");
                 context.module.Dump();
             }
-            
-            LLVMValueRef func = context.module.GetNamedFunction("Main");
+
+            LLVMValueRef func = context.module.GetNamedFunction("main");
             MainDelegate mainFunc = (MainDelegate)Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(func), typeof(MainDelegate));
             int a = -1;
             try
@@ -79,6 +82,8 @@ namespace Kat
 
             if (IRGenAPI.DebugIR)
                 IRGenAPI.GenDebugDefines(context);
+
+            IRGenAPI.GenLLVMUtils(context);
 
             root.GenLhs(context);
             //}

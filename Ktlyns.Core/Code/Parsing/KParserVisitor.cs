@@ -90,6 +90,12 @@ namespace Kat
             context.Stmt = context.arr_decl().Stmt;
             return ParsingResult.Success;
         }
+        public override ParsingResult VisitRStatementMthVarDecl([NotNull] RStatementMthVarDeclContext context)
+        {
+            Safe(() => VisitChildren(context));
+            context.Stmt = context.mth_var_decl().Stmt;
+            return ParsingResult.Success;
+        }
         public override ParsingResult VisitRStatementMthDecl([NotNull] RStatementMthDeclContext context)
         {
             Safe(() => VisitChildren(context));
@@ -158,27 +164,50 @@ namespace Kat
         public override ParsingResult VisitRVarDecl([NotNull] RVarDeclContext context)
         {
             Safe(() => VisitChildren(context));
-            KId retType = context.id(0).Id;
-            retType.IdType = IdType.Type;
-
-            KId identifier = context.id(1).Id;
-            if (state.TryGetId(identifier.Name, out IdData idData))
-                throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
-            state.AddId(identifier.Name, IdType.Field);
-            context.Stmt = new KVarDecl(state.GenContext, identifier) { Ret = context.id(0).Id };
+            CreateVarDecl(context, context.id(0).Id, context.id(1).Id, null);
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRVarDeclExpr([NotNull] RVarDeclExprContext context)
         {
             Safe(() => VisitChildren(context));
-            KId retType = context.id(0).Id;
-            retType.IdType = IdType.Type;
+            CreateVarDecl(context, context.id(0).Id, context.id(1).Id, context.expr().Expr);
+            return ParsingResult.Success;
+        }
+        private void CreateVarDecl(Var_declContext context, KId returnType, KId id, KExpr assignment)
+        {
+            if (state.TryGetId(id.Name, out IdData idData))
+                throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
+            KType type = new KType(TypeTable.CreateTypeFromName(returnType.Name, assignment?.TypeData));
+            state.AddId(id.Name, IdType.Field, type.StoredType);
 
-            KId identifier = context.id(1).Id;
+            context.Stmt = new KVarDecl(state.GenContext, id)
+            {
+                Type = type,
+                Assignment = assignment
+            };
+        }
+
+        //Method Var Decl
+        public override ParsingResult VisitRMthVarDecl([NotNull] RMthVarDeclContext context)
+        {
+            Safe(() => VisitChildren(context));
+            KExpr assignment = context.expr().Expr;
+            IdContext[] ids = context.id();
+            KType retType = new KType(TypeTable.CreateTypeFromName(ids[^2].Id.Name, assignment.TypeData));
+            KId identifier = ids[^1].Id;
+
+            KId[] paramsTypes = ids[0..^2].Select(x => x.Id).ToArray();
+
             if (state.TryGetId(identifier.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
-            state.AddId(identifier.Name, IdType.Field);
-            context.Stmt = new KVarDecl(state.GenContext, identifier) { Ret = context.id(0).Id, Assignment = context.expr().Expr };
+            state.AddId(identifier.Name, IdType.Field, retType.StoredType);
+
+            context.Stmt = new KMthVarDecl(state.GenContext, identifier)
+            {
+                Type = retType,
+                Assignment = assignment,
+                ParamTypes = paramsTypes
+            };
             return ParsingResult.Success;
         }
 
@@ -186,14 +215,16 @@ namespace Kat
         public override ParsingResult VisitRArrDeclExpr([NotNull] RArrDeclExprContext context)
         {
             Safe(() => VisitChildren(context));
-            KId retType = context.id(0).Id;
-            retType.IdType = IdType.Type;
+            KExpr expr = context.expr().Expr;
+            KType retType = new KType(TypeTable.CreateTypeFromName(context.id(0).Id.Name, expr.TypeData));
 
             KId id = context.id(1).Id;
             if (state.TryGetId(id.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
-            state.AddId(id.Name, IdType.Field);
-            context.Stmt = new KVarDecl(state.GenContext, id) { Ret = context.id(0).Id, Assignment = context.expr().Expr, ArrayLengths = new uint[] { uint.Parse(context.INT().GetText()) } };
+            state.AddId(id.Name, IdType.Field, retType.StoredType);
+
+            expr.SetType(expr.TypeData with { Length = uint.Parse(context.INT().GetText()) });
+            context.Stmt = new KVarDecl(state.GenContext, id) { Type = retType, Assignment = context.expr().Expr };
             return ParsingResult.Success;
         }
 
@@ -206,17 +237,20 @@ namespace Kat
 
             state.PopBlock();
 
-            KId type = context.mth().Id;
-            KId id = context.id().Id;
+            IdContext idContext = context.id(1);
+            KTypeData typeData = idContext != null ? TypeTable.CreateTypeFromName(idContext.Id.Name, null) : KTypeData.VoidType;
+            KType type = new KType(typeData);
+
+            KId id = context.id(0).Id;
             List<KVarDecl> args = context.mth_decl_arg().Decls;
             KBlock block = context.block().Block;
 
             if (state.TryGetId(id.Name, out IdData data))
                 throw ParseErrorLib.IdDeclared(data.name, context.Start.Line, context.Start.Column);
 
-            state.AddId(id.Name, IdType.Method);
+            state.AddId(id.Name, IdType.Method, type.StoredType);
 
-            context.Stmt = new KMthdDecl(state.GenContext, id, true) { Ret = type, Args = args, Block = block };
+            context.Stmt = new KMthdDecl(state.GenContext, id, true) { Type = type, Args = args, Block = block };
 
             return ParsingResult.Success;
         }
@@ -226,31 +260,19 @@ namespace Kat
         {
             VisitChildren(context);
 
-            KId type = context.mth().Id;
-            KId id = context.id().Id;
+            IdContext idContext = context.id(1);
+            KTypeData typeData = idContext != null ? TypeTable.CreateTypeFromName(idContext.Id.Name, null) : KTypeData.VoidType;
+            KType type = new KType(typeData);
+            KId id = context.id(0).Id;
             List<KVarDecl> args = context.mth_decl_arg().Decls;
 
             if (state.TryGetId(id.Name, out IdData data))
                 throw ParseErrorLib.IdDeclared(data.name, context.Start.Line, context.Start.Column);
 
-            state.AddId(id.Name, IdType.Method);
+            state.AddId(id.Name, IdType.Method, type.StoredType);
 
-            context.Stmt = new KMthdDecl(state.GenContext, id, false) { Ret = type, Args = args };
+            context.Stmt = new KMthdDecl(state.GenContext, id, false) { Type = type, Args = args };
 
-            return ParsingResult.Success;
-        }
-
-        //Mth
-        public override ParsingResult VisitRMthVoid([NotNull] RMthVoidContext context)
-        {
-            VisitChildren(context);
-            context.Id = new KId("Void", IdType.Method);
-            return ParsingResult.Success;
-        }
-        public override ParsingResult VisitRMthType([NotNull] RMthTypeContext context)
-        {
-            VisitChildren(context);
-            context.Id = context.id().Id;
             return ParsingResult.Success;
         }
 
@@ -258,15 +280,16 @@ namespace Kat
         public override ParsingResult VisitRExprString([NotNull] RExprStringContext context)
         {
             VisitChildren(context);
-            context.Expr = context.@string().Str;
+            context.Expr = context.@string().Expr;
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRExprId([NotNull] RExprIdContext context)
         {
             VisitChildren(context);
             KId id = context.id().Id;
-            if (!state.TryGetId(id.Name, out _))
-                throw ParseErrorLib.IdNotDeclared(id.Name, context.Start.Line, context.Start.Column);
+            if (!state.TryGetId(id.Name, out IdData foundId))
+                state.AddPromise(id.Name, IdType.Method, KTypeData.UndefinedType, ParseErrorLib.IdNotDeclared(id.Name, context.Start.Line, context.Start.Column));
+            id.SetType(foundId.typeData);
             context.Expr = id;
             return ParsingResult.Success;
         }
@@ -276,15 +299,15 @@ namespace Kat
             KId id = context.id().Id;
             if (!state.TryGetId(id.Name, out _))
                 throw ParseErrorLib.IdNotDeclared(id.Name, context.Start.Line, context.Start.Column);
-            context.Expr = new KAssign() { Lhs = id, Rhs = context.expr().Expr };
+            context.Expr = new KAssign(id, context.expr().Expr);
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRExprCall([NotNull] RExprCallContext context)
         {
             VisitChildren(context);
             KId id = context.id().Id;
-            state.AddPromise(id.Name, IdType.Method, ParseErrorLib.IdNotDeclared(id.Name, context.Start.Line, context.Start.Column));
-            context.Expr = new KMethod() { Id = id, Args = context.call_args().Exprs };
+            state.AddPromise(id.Name, IdType.Method, KTypeData.UndefinedType, ParseErrorLib.IdNotDeclared(id.Name, context.Start.Line, context.Start.Column));
+            context.Expr = new KMethod(id, context.call_args().Exprs);
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRExprGroup([NotNull] RExprGroupContext context)
@@ -302,17 +325,21 @@ namespace Kat
         public override ParsingResult VisitRExprReturn([NotNull] RExprReturnContext context)
         {
             VisitChildren(context);
-            context.Expr = new KRet() { expr = context.expr()?.Expr };
+            context.Expr = new KRet(context.expr()?.Expr);
             return ParsingResult.Success;
         }
-        //public override ParsingResult VisitRExprArrAcc([NotNull] RExprArrAccContext context)
-        //{
+        public override ParsingResult VisitRExprCast([NotNull] RExprCastContext context)
+        {
+            VisitChildren(context);
+            KType type = new KType(TypeTable.CreateTypeFromName(context.id().Id.Name, null));
+            context.Expr = new KCast(context.expr().Expr, type);
+            return ParsingResult.Success;
+        }
 
-        //}
         private ParsingResult CreateBinOp(ExprContext ctx, ExprType exprType)
         {
             VisitChildren(ctx);
-            ctx.Expr = new KBinOp() { Lhs = ctx.GetRuleContext<ExprContext>(0).Expr, Rhs = ctx.GetRuleContext<ExprContext>(1).Expr, Op = exprType };
+            ctx.Expr = new KBinOp(exprType, ctx.GetRuleContext<ExprContext>(0).Expr, ctx.GetRuleContext<ExprContext>(1).Expr);
             return ParsingResult.Success;
         }
 
@@ -340,13 +367,13 @@ namespace Kat
         public override ParsingResult VisitRUnaryMinus([NotNull] RUnaryMinusContext context)
         {
             VisitChildren(context);
-            context.Expr = new KUnaryOp() { Op = ExprType.Sub, Rhs = context.factor().Expr };
+            context.Expr = new KUnaryOp(ExprType.Sub, context.factor().Expr);
             return ParsingResult.Success;
         }
         public override ParsingResult VisitRUnaryNot([NotNull] RUnaryNotContext context)
         {
             VisitChildren(context);
-            context.Expr = new KUnaryOp() { Op = ExprType.Not, Rhs = context.factor().Expr };
+            context.Expr = new KUnaryOp(ExprType.Not, context.factor().Expr);
             return ParsingResult.Success;
         }
 
@@ -367,12 +394,17 @@ namespace Kat
         }
 
         //String
-        public override ParsingResult VisitString([NotNull] StringContext context)
+        public override ParsingResult VisitKString([NotNull] KStringContext context)
         {
             VisitChildren(context);
-            context.Str = new KStr() { Value = context.GetText() };
+            string s = context.STR().GetText()[1..^1];
+            if (s.Length == 1)
+                context.Expr = new KChar(s[0]);
+            else
+                context.Expr = new KStr(s);
             return ParsingResult.Success;
         }
+
 
         //Bool literals
         public override ParsingResult VisitRFactorTrue([NotNull] RFactorTrueContext context)
@@ -394,8 +426,8 @@ namespace Kat
             VisitChildren(context);
             string text = context.ID().ToString();
 
-            if (TypeTable.TryGetType(text, out _)) context.Id = new KId(text, IdType.Type);
-            else context.Id = new KId(text, IdType.Field) { PtrCount = 1 };
+            if (TypeTable.TryGetType(text, out _)) context.Id = new KId(text, IdType.Type, KTypeData.MetaType);
+            else context.Id = new KId(text, IdType.Field, KTypeData.UndefinedType) { PtrCount = 1 };
 
             return ParsingResult.Success;
         }

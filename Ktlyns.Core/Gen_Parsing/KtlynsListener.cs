@@ -103,6 +103,18 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitRStatementVarDecl([NotNull] KtlynsParser.RStatementVarDeclContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>RStatementMthVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRStatementMthVarDecl([NotNull] KtlynsParser.RStatementMthVarDeclContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RStatementMthVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRStatementMthVarDecl([NotNull] KtlynsParser.RStatementMthVarDeclContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RStatementArrDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
 	/// </summary>
@@ -235,6 +247,18 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitRVarDeclExpr([NotNull] KtlynsParser.RVarDeclExprContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>RMthVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.mth_var_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRMthVarDecl([NotNull] KtlynsParser.RMthVarDeclContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RMthVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.mth_var_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRMthVarDecl([NotNull] KtlynsParser.RMthVarDeclContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RArrDeclExpr</c>
 	/// labeled alternative in <see cref="KtlynsParser.arr_decl"/>.
 	/// </summary>
@@ -266,30 +290,6 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitEx_mth_decl([NotNull] KtlynsParser.Ex_mth_declContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>RMthVoid</c>
-	/// labeled alternative in <see cref="KtlynsParser.mth"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterRMthVoid([NotNull] KtlynsParser.RMthVoidContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>RMthVoid</c>
-	/// labeled alternative in <see cref="KtlynsParser.mth"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitRMthVoid([NotNull] KtlynsParser.RMthVoidContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>RMthType</c>
-	/// labeled alternative in <see cref="KtlynsParser.mth"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterRMthType([NotNull] KtlynsParser.RMthTypeContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>RMthType</c>
-	/// labeled alternative in <see cref="KtlynsParser.mth"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitRMthType([NotNull] KtlynsParser.RMthTypeContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RExprUnary</c>
 	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
@@ -362,6 +362,18 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitRExprReturn([NotNull] KtlynsParser.RExprReturnContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>RExprCast</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRExprCast([NotNull] KtlynsParser.RExprCastContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>RExprCast</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRExprCast([NotNull] KtlynsParser.RExprCastContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RExprId</c>
 	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
@@ -603,15 +615,17 @@ public interface IKtlynsListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitRFactorFalse([NotNull] KtlynsParser.RFactorFalseContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="KtlynsParser.string"/>.
+	/// Enter a parse tree produced by the <c>KString</c>
+	/// labeled alternative in <see cref="KtlynsParser.string"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterString([NotNull] KtlynsParser.StringContext context);
+	void EnterKString([NotNull] KtlynsParser.KStringContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="KtlynsParser.string"/>.
+	/// Exit a parse tree produced by the <c>KString</c>
+	/// labeled alternative in <see cref="KtlynsParser.string"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitString([NotNull] KtlynsParser.StringContext context);
+	void ExitKString([NotNull] KtlynsParser.KStringContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RIDPointer</c>
 	/// labeled alternative in <see cref="KtlynsParser.id"/>.

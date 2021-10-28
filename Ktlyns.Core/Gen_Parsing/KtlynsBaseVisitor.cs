@@ -103,6 +103,17 @@ public partial class KtlynsBaseVisitor<Result> : AbstractParseTreeVisitor<Result
 	/// <return>The visitor result.</return>
 	public virtual Result VisitRStatementVarDecl([NotNull] KtlynsParser.RStatementVarDeclContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by the <c>RStatementMthVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitRStatementMthVarDecl([NotNull] KtlynsParser.RStatementMthVarDeclContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by the <c>RStatementArrDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
 	/// <para>
@@ -224,6 +235,17 @@ public partial class KtlynsBaseVisitor<Result> : AbstractParseTreeVisitor<Result
 	/// <return>The visitor result.</return>
 	public virtual Result VisitRVarDeclExpr([NotNull] KtlynsParser.RVarDeclExprContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by the <c>RMthVarDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.mth_var_decl"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitRMthVarDecl([NotNull] KtlynsParser.RMthVarDeclContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by the <c>RArrDeclExpr</c>
 	/// labeled alternative in <see cref="KtlynsParser.arr_decl"/>.
 	/// <para>
@@ -254,28 +276,6 @@ public partial class KtlynsBaseVisitor<Result> : AbstractParseTreeVisitor<Result
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitEx_mth_decl([NotNull] KtlynsParser.Ex_mth_declContext context) { return VisitChildren(context); }
-	/// <summary>
-	/// Visit a parse tree produced by the <c>RMthVoid</c>
-	/// labeled alternative in <see cref="KtlynsParser.mth"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitRMthVoid([NotNull] KtlynsParser.RMthVoidContext context) { return VisitChildren(context); }
-	/// <summary>
-	/// Visit a parse tree produced by the <c>RMthType</c>
-	/// labeled alternative in <see cref="KtlynsParser.mth"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitRMthType([NotNull] KtlynsParser.RMthTypeContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>RExprUnary</c>
 	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
@@ -342,6 +342,17 @@ public partial class KtlynsBaseVisitor<Result> : AbstractParseTreeVisitor<Result
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitRExprReturn([NotNull] KtlynsParser.RExprReturnContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>RExprCast</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitRExprCast([NotNull] KtlynsParser.RExprCastContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>RExprId</c>
 	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
@@ -563,7 +574,8 @@ public partial class KtlynsBaseVisitor<Result> : AbstractParseTreeVisitor<Result
 	/// <return>The visitor result.</return>
 	public virtual Result VisitRFactorFalse([NotNull] KtlynsParser.RFactorFalseContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="KtlynsParser.string"/>.
+	/// Visit a parse tree produced by the <c>KString</c>
+	/// labeled alternative in <see cref="KtlynsParser.string"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -571,7 +583,7 @@ public partial class KtlynsBaseVisitor<Result> : AbstractParseTreeVisitor<Result
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitString([NotNull] KtlynsParser.StringContext context) { return VisitChildren(context); }
+	public virtual Result VisitKString([NotNull] KtlynsParser.KStringContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>RIDPointer</c>
 	/// labeled alternative in <see cref="KtlynsParser.id"/>.

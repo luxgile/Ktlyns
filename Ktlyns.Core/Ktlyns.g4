@@ -21,6 +21,7 @@ statement
 	locals[KStmt Stmt]:
 	expr SDOT			# RStatement
 	| var_decl SDOT		# RStatementVarDecl
+	| mth_var_decl SDOT	# RStatementMthVarDecl
 	| arr_decl SDOT		# RStatementArrDecl
 	| if_else_decl		# RStatementIfElse
 	| loop_decl			# RStatementLoop
@@ -50,22 +51,21 @@ var_decl
 	id id			# RVarDecl //Even if we cannot have null declarations, this is needed for method args
 	| id id EQ expr	# RVarDeclExpr;
 
+mth_var_decl
+	locals[KStmt Stmt]:
+	LPRN id* RPRN COLON id id EQ expr # RMthVarDecl;
+
 arr_decl
 	locals[KStmt Stmt]:
 	id id EQ '[' INT ']' LPRN expr RPRN # RArrDeclExpr;
 
 mth_decl
 	locals[KStmt Stmt]:
-	mth id LPRN mth_decl_arg RPRN block;
+	METHOD id LPRN mth_decl_arg RPRN COLON id? block;
 
 ex_mth_decl
 	locals[KStmt Stmt]:
-	EXTERNAL mth id LPRN mth_decl_arg RPRN;
-
-mth
-	locals[KId Id]:
-	METHOD				# RMthVoid
-	| METHOD '<' id '>'	# RMthType;
+	EXTERNAL METHOD id LPRN mth_decl_arg RPRN COLON id;
 
 expr
 	locals[KExpr Expr]:
@@ -74,6 +74,7 @@ expr
 	| id LPRN call_args RPRN	# RExprCall
 	| LPRN expr RPRN			# RExprGroup
 	| unary						# RExprUnary
+	| expr CAST id				# RExprCast
 	//Number operators
 	| expr STAR expr	# RExprBinMult
 	| expr SLASH expr	# RExprBinDiv
@@ -106,8 +107,8 @@ factor
 	| FALSE	# RFactorFalse;
 
 string
-	locals[KStr Str]:
-	STR;
+	locals[KExpr Expr]:
+	STR # KString;
 
 id
 	locals[KId Id]:
@@ -152,7 +153,7 @@ AMP:
 	'&';
 
 STR:
-	'"' [^"]* '"';
+	'"' .*? '"';
 
 LPRN:
 	'(';
@@ -175,6 +176,8 @@ SDOT:
 	';';
 EQ:
 	'=';
+COLON:
+	':';
 
 IF:
 	'if';
@@ -205,9 +208,11 @@ LESS:
 	'<';
 EQLESS:
 	'<=';
+CAST:
+	'to';
 
 METHOD:
-	'method';
+	'mth';
 
 EXTERNAL:
 	'ext';

@@ -13,10 +13,10 @@ namespace Kat
 
         public KCompiler()
         {
-            LLVM.LoadLibraryPermanently(new MarshaledString("Katime.dll".AsSpan()).Value);
+            //int result = LLVM.LoadLibraryPermanently(new MarshaledString("Katime.dll".AsSpan()).Value);
         }
 
-        private KtlynsParser CreateParser(string source)
+        private void CreateParser(string source, out KtlynsParser parser, out KErrorListener errorListener)
         {
             if (DebugCompilation)
             {
@@ -29,34 +29,33 @@ namespace Kat
             KtlynsLexer lexer = new KtlynsLexer(stream);
 
             CommonTokenStream tokens = new CommonTokenStream(lexer);
-            KtlynsParser parser = new KtlynsParser(tokens);
-            KErrorListener errorListener = new KErrorListener();
+            parser = new KtlynsParser(tokens);
+            errorListener = new KErrorListener();
             parser.Profile = true;
             parser.AddErrorListener(errorListener);
             parser.Interpreter.PredictionMode = Antlr4.Runtime.Atn.PredictionMode.LL_EXACT_AMBIG_DETECTION;
-            return parser;
         }
 
         public int CompileAndRun(string source)
         {
-            var parser = CreateParser(source);
+            CreateParser(source, out KtlynsParser parser, out KErrorListener errorListener);
             IParseTree tree = parser.program();
 
             if (DebugCompilation)
                 PrettyPrint2(tree, parser);
 
-            //if (errorListener.HasErrors)
-            //    return -1;
+            if (errorListener.HasErrors)
+                return -1;
 
             KParserVisitor visitor = new KParserVisitor();
             visitor.Visit(tree);
             KNode root = visitor.Root;
 
-            if (visitor.Errors.Count > 0)
-            {
-                for (int i = 0; i < visitor.Errors.Count; i++) Console.WriteLine(visitor.Errors[i]);
-                return -1;
-            }
+            //if (visitor.Errors.Count > 0)
+            //{
+            //    for (int i = 0; i < visitor.Errors.Count; i++) Console.WriteLine(visitor.Errors[i]);
+            //    return -1;
+            //}
 
             KLLVMGen compiler = new KLLVMGen() { LogIR = DebugCompilation };
             return compiler.CompileAndRun(root, visitor.GetIRGenContext());
@@ -64,7 +63,7 @@ namespace Kat
 
         public int CompileToFile(string source)
         {
-            var parser = CreateParser(source);
+            CreateParser(source, out KtlynsParser parser, out KErrorListener errorListener);
             IParseTree tree = parser.program();
 
             if (DebugCompilation)
@@ -77,15 +76,23 @@ namespace Kat
             visitor.Visit(tree);
             KNode root = visitor.Root;
 
-            if (visitor.Errors.Count > 0)
-            {
-                for (int i = 0; i < visitor.Errors.Count; i++) Console.WriteLine(visitor.Errors[i]);
-                return -1;
-            }
+            //if (visitor.Errors.Count > 0)
+            //{
+            //    for (int i = 0; i < visitor.Errors.Count; i++) Console.WriteLine(visitor.Errors[i]);
+            //    return -1;
+            //}
 
             KLLVMGen compiler = new KLLVMGen() { LogIR = DebugCompilation };
             var module = compiler.CompileModule(root, visitor.GetIRGenContext());
-            return module.WriteBitcodeToFile("script.bc");
+            //module.PrintToFile("script.ll");
+            module.WriteBitcodeToFile("script.bc");
+
+            //After printinf the file, use
+            //llc script.bc -filetype=obj -march=x86
+            //gcc script.obj
+            //./a.out
+            //Then an executable should have been created
+            return 0;
         }
 
         private static void PrettyPrint2(IParseTree tree, Parser parser)

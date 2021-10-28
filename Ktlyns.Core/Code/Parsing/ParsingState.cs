@@ -4,12 +4,21 @@ using System.Linq;
 
 namespace Kat
 {
+    /// <summary>
+    /// Type of ID: Field, Method or Type
+    /// </summary>
     public enum IdType { Field, Method, Type }
     public struct IdData : IEquatable<IdData>
     {
         public string name;
         public IdType type;
-        public IdData(string id, IdType type) : this() { name = id; this.type = type; }
+        public KTypeData typeData;
+        public IdData(string id, IdType type, KTypeData typeData) : this()
+        {
+            name = id;
+            this.type = type;
+            this.typeData = typeData;
+        }
 
         public bool Equals(IdData other) => name.Equals(other.name);
         public override bool Equals(object obj) => obj is IdData && Equals((IdData)obj);
@@ -74,17 +83,17 @@ namespace Kat
             return false;
         }
 
-        public void AddId(string id, IdType type)
+        public void AddId(string id, IdType type, KTypeData typeData)
         {
-            IdData data = new IdData() { name = id, type = type };
+            IdData data = new IdData(id, type, typeData);
             RemovePromise(data);
             localStack.Peek().AddId(data);
         }
 
-        public void AddPromise(string id, IdType type, ParserException exception)
+        public void AddPromise(string id, IdType type, KTypeData typeData, ParserException exception)
         {
             if (!TryGetId(id, out _))
-                promises.Add(new IdPromise() { Data = new IdData() { name = id, type = type }, Exception = exception });
+                promises.Add(new IdPromise() { Data = new IdData(id, type, typeData), Exception = exception });
         }
 
         private void RemovePromise(IdData data)
