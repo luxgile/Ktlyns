@@ -20,7 +20,7 @@ Simply share the binaries and executable created from Ktlyns and it should run i
 * [Antlr](https://www.antlr.org/) - Lexer and Parser
 
 ## Authors
-* **Guillermo Abajo** - *Initial work* - [PurpleBooth](https://github.com/luxgile)
+* **Guillermo Abajo** - *Initial work* - [Luxgile](https://github.com/luxgile)
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
