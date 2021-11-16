@@ -65,6 +65,9 @@ jobs:
 
     - name: Install Antlr4
       uses: NiccoMlt/setup-antlr4@v0.0.5
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
