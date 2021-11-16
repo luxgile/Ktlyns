@@ -12,11 +12,6 @@ namespace Kat
         public uint Version { get; } = 1;
         public bool DebugCompilation { get; set; } = false;
 
-        public KCompiler()
-        {
-            //int result = LLVM.LoadLibraryPermanently(new MarshaledString("Katime.dll".AsSpan()).Value);
-        }
-
         private void CreateParser(string source, out KtlynsParser parser, out KErrorListener errorListener)
         {
             if (DebugCompilation)
@@ -33,7 +28,10 @@ namespace Kat
             parser = new KtlynsParser(tokens);
             errorListener = new KErrorListener();
             parser.Profile = true;
-            parser.AddErrorListener(errorListener);
+
+            if (DebugCompilation)
+                parser.AddErrorListener(errorListener);
+
             parser.Interpreter.PredictionMode = Antlr4.Runtime.Atn.PredictionMode.LL_EXACT_AMBIG_DETECTION;
         }
 
@@ -52,11 +50,11 @@ namespace Kat
             visitor.Visit(tree);
             KNode root = visitor.Root;
 
-            //if (visitor.Errors.Count > 0)
-            //{
-            //    for (int i = 0; i < visitor.Errors.Count; i++) Console.WriteLine(visitor.Errors[i]);
-            //    return -1;
-            //}
+            if (visitor.Errors.Count > 0)
+            {
+                for (int i = 0; i < visitor.Errors.Count; i++) Console.WriteLine(visitor.Errors[i]);
+                return -1;
+            }
 
             KLLVMGen compiler = new KLLVMGen() { LogIR = DebugCompilation };
             return compiler.CompileAndRun(root, visitor.GetIRGenContext());
@@ -77,11 +75,11 @@ namespace Kat
             visitor.Visit(tree);
             KNode root = visitor.Root;
 
-            //if (visitor.Errors.Count > 0)
-            //{
-            //    for (int i = 0; i < visitor.Errors.Count; i++) Console.WriteLine(visitor.Errors[i]);
-            //    return -1;
-            //}
+            if (visitor.Errors.Count > 0)
+            {
+                for (int i = 0; i < visitor.Errors.Count; i++) Console.WriteLine(visitor.Errors[i]);
+                return -1;
+            }
 
             KLLVMGen compiler = new KLLVMGen() { LogIR = DebugCompilation };
             var module = compiler.CompileModule(root, visitor.GetIRGenContext());

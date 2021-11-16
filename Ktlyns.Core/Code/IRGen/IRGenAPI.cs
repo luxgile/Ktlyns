@@ -38,7 +38,7 @@ namespace Kat
             printfMth.IRSetup(context);
             printfMth.Define(context);
 
-            KMthdDecl customPrintfMth = new KMthdDecl(context, new KId("Print", IdType.Method, KTypeData.UndefinedType), true)
+            KMthdDecl customPrintfMth = new KMthdDecl(context, new KId("print", IdType.Method, KTypeData.UndefinedType), true)
             {
                 Type = new KType(KTypeData.CreateInt(32)),
                 Args = new() { new KVarDecl(context, new KId("c", IdType.Field, KTypeData.CreatePointer(KTypeData.CharType)) { PtrCount = 1 }) { Type = new KType(KTypeData.CreatePointer(KTypeData.CharType)) } },
@@ -59,9 +59,6 @@ namespace Kat
             customPrintfMth.IRSetup(context);
             customPrintfMth.Define(context);
             customPrintfMth.GenLhs(context);
-
-            //LLVMTypeRef printfFunc = TypeTable.CreateVaradicFunctionType(KTypeData.CreateInt(32), KTypeData.CreatePointer(KTypeData.CreateInt(8)));
-            //context.module.AddFunction("printf", printfFunc);
         }
 
         /// <summary>

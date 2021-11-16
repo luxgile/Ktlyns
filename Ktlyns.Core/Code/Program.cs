@@ -14,7 +14,7 @@ namespace Kat
             if (Debugger.IsAttached)
             {
                 Console.WriteLine("Running from IDE, overriding arguments.");
-                args = new string[] { "run", "../../../script.k_at" };
+                args = new string[] { "run", "../../../script.k_at"};
             }
 
             if (args.Length == 0)
@@ -45,14 +45,14 @@ namespace Kat
                 if (cmd == "build")
                 {
                     string scriptFile = File.ReadAllText(args[0]);
-                    KCompiler compiler = new KCompiler() { DebugCompilation = false };
+                    KCompiler compiler = new KCompiler() { DebugCompilation = true };
                     int result = compiler.CompileToFile(scriptFile);
                     Console.WriteLine("Program result: " + result);
                 }
                 if (cmd == "run")
                 {
                     string scriptFile = File.ReadAllText(args[0]);
-                    KCompiler compiler = new KCompiler() { DebugCompilation = false };
+                    KCompiler compiler = new KCompiler() { DebugCompilation = true };
                     int result = compiler.CompileAndRun(scriptFile);
                     Console.WriteLine("Program result: " + result);
                 }

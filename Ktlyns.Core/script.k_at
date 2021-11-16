@@ -1,10 +1,7 @@
-//ext mth PrintMark() : Void;
-//ext mth PrintChar(Char t) : Void;
-//ext mth PrintString(Char* y) : Void;
-
 mth main() : Int
 {
-    ret fib(9);
+    //print("Hello World");
+    ret 0;
 }
 
 mth fib(Int n) : Int

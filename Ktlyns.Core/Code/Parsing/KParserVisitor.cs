@@ -43,6 +43,11 @@ namespace Kat
         public override ParsingResult VisitProgram([NotNull] ProgramContext context)
         {
             Safe(() => VisitChildren(context));
+
+            //For now the print method is injected into the file.
+            state.AddId("print", IdType.Method, KTypeData.UndefinedType);
+            state.AddId("printf", IdType.Method, KTypeData.UndefinedType);
+
             Root = context.statements().Block;
             var exceptions = state.ReportPromises();
             Errors.AddRange(exceptions);

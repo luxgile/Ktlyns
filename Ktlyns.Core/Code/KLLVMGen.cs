@@ -14,24 +14,24 @@ namespace Kat
         public int CompileAndRun(KNode root, CodeGenContext context)
         {
             context.InitializeLLVMModules("main_source");
-            //try
-            //{
-            foreach (var method in context.Methods)
-                method.Value.Define(context);
+            try
+            {
+                foreach (var method in context.Methods)
+                    method.Value.Define(context);
 
-            if (IRGenAPI.DebugIR)
-                IRGenAPI.GenDebugDefines(context);
+                if (IRGenAPI.DebugIR)
+                    IRGenAPI.GenDebugDefines(context);
 
-            IRGenAPI.GenLLVMUtils(context);
+                IRGenAPI.GenLLVMUtils(context);
 
-            root.IRSetup(context);
-            root.GenLhs(context);
-            //}
-            //catch (Exception e) 
-            //{ 
-            //    Console.WriteLine($"!!! Exception while generating IR: {e}");
-            //    return -1; 
-            //}
+                root.IRSetup(context);
+                root.GenLhs(context);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"!!! Exception while generating IR: {e}");
+                return -1;
+            }
 
             LLVM.LinkInMCJIT();
 
