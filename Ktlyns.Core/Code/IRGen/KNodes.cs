@@ -64,7 +64,7 @@ namespace Kat
 
             Condition.IRSetup(context);
             IfBlock.IRSetup(context);
-            ElseBlock.IRSetup(context);
+            ElseBlock?.IRSetup(context);
         }
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
@@ -354,6 +354,10 @@ namespace Kat
                 throw new IRGenException($"Undeclared variable {Name}.");
 
             LLVMValueRef value = context.GetLocal(Name);
+
+            if (value.Kind == LLVMValueKind.LLVMArgumentValueKind)
+                return value;
+
             return ApplyPtrCount(context, value, PtrCount + ptrDif);
         }
         private LLVMValueRef GetMethod(CodeGenContext context)
@@ -807,16 +811,17 @@ namespace Kat
             context.SetFunc(Func);
             context.builder.PositionAtEnd(block);
 
-            //for (int i = 0; i < Args.Count; i++)
-            //{
-            //    KVarDecl arg = Args[i];
-            //    KVarDecl argCopy = new KVarDecl(context, arg.Id)
-            //    {
-            //        Type = arg.Type,
-            //        Assignment = new KCustomExpr() { LhsGen = () => Func.Params[i], RhsGen = () => Func.Params[i] }
-            //    };
-            //    argCopy.GenLhs(context);
-            //}
+            for (int i = 0; i < Args.Count; i++)
+            {
+                context.AddLocal(Args[i].Id.Name, Func.Params[i]);
+                //KVarDecl arg = Args[i];
+                //KVarDecl argCopy = new KVarDecl(context, arg.Id)
+                //{
+                //    Type = arg.Type,
+                //    Assignment = new KCustomExpr() { LhsGen = () => Func.Params[i], RhsGen = () => Func.Params[i] }
+                //};
+                //argCopy.GenLhs(context);
+            }
 
             if (Block == null) throw new IRGenException("Error while creating method declaration. Block is null.");
             Block.GenLhs(context);

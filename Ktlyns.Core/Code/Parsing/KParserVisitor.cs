@@ -177,6 +177,7 @@ namespace Kat
         {
             if (state.TryGetId(id.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
+
             KType type = new KType(TypeTable.CreateTypeFromName(returnType.Name, assignment?.TypeData));
             state.AddId(id.Name, IdType.Field, type.StoredType);
 

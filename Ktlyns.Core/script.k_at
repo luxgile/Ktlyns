@@ -2,9 +2,14 @@
 //ext mth PrintChar(Char t) : Void;
 //ext mth PrintString(Char* y) : Void;
 
-mth main() : Int {
-    String s = "Hello World!";
-	Char* c = &s to Char*;
-	Print(c);
-	ret 0;
+mth main() : Int
+{
+    ret fib(9);
+}
+
+mth fib(Int n) : Int
+{
+    if (n <= 1)
+        ret n;
+    ret fib(n - 1) + fib(n - 2);
 }

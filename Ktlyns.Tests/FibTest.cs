@@ -11,16 +11,16 @@ namespace Kat.Tests
         {
             int result = compiler.CompileAndRun(
                 @"
-method<Int> Main()
+mth main() : Int
 {
-    ret Fib(9);
+    ret fib(9);
 }
 
-method<Int> Fib(Int n)
+mth fib(Int n) : Int
 {
     if (n <= 1)
         ret n;
-    ret Fib(n - 1) + Fib(n - 2);
+    ret fib(n - 1) + fib(n - 2);
 }
                 ");
             Assert.AreEqual(34, result);
