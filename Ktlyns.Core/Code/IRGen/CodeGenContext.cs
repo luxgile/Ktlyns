@@ -1,5 +1,6 @@
 ﻿using LLVMSharp.Interop;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kat
 {
@@ -14,10 +15,14 @@ namespace Kat
         public LLVMBasicBlockRef CurrentLoopBlock { get; private set; }
         public LLVMBasicBlockRef ExitLoopBlock { get; private set; }
         public bool PathCompleted { get; set; }
+        private List<Dictionary<string, LLVMValueRef>> Locals { get; } = new();
+        private Dictionary<string, LLVMValueRef> CurrentLocals => Locals[^1];
 
-        private Dictionary<string, LLVMValueRef> Locals { get; } = new();
-
-
+        public CodeGenContext()
+        {
+            Locals.Add(new Dictionary<string, LLVMValueRef>());
+        }
+        
         public void InitializeLLVMModules(string moduleName)
         {
             module = LLVMModuleRef.CreateWithName(moduleName);
@@ -42,16 +47,31 @@ namespace Kat
             CurrentLoopBlock = current;
             ExitLoopBlock = next;
         }
+
         public void ClearBlocks()
         {
             CurrentLoopBlock = default;
             ExitLoopBlock = default;
         }
 
-        public bool HasLocal(string name) => Locals.ContainsKey(name);
-        public void AddLocal(string name, LLVMValueRef value) => Locals.Add(name, value);
-        public void SetLocal(string name, LLVMValueRef value) => Locals[name] = value;
-        public void RemoveLocal(string name) => Locals.Remove(name);
-        public LLVMValueRef GetLocal(string name) => Locals[name];
+
+        public void AddLocalBlock() => Locals.Add(new Dictionary<string, LLVMValueRef>());
+        public void RemoveLocalBlock() => Locals.RemoveAt(Locals.Count - 1);
+        public bool HasLocal(string name) => Locals.Any(t=> t.ContainsKey((name)));
+
+        public void AddLocal(string name, LLVMValueRef value) => CurrentLocals.Add(name, value);
+
+        public void SetLocal(string name, LLVMValueRef value) => CurrentLocals[name] = value;
+        public void RemoveLocal(string name) => CurrentLocals.Remove(name);
+        public LLVMValueRef GetLocal(string name)
+        {
+            foreach (var t in Locals)
+            {
+                if (t.TryGetValue(name, out LLVMValueRef value))
+                    return value;
+            }
+
+            throw new IrGenException($"No local was found with name {name}");
+        }
     }
 }

@@ -221,16 +221,24 @@ namespace Kat
         public override ParsingResult VisitRArrDeclExpr([NotNull] RArrDeclExprContext context)
         {
             Safe(() => VisitChildren(context));
-            KExpr expr = context.expr().Expr;
-            KType retType = new KType(TypeTable.CreateTypeFromName(context.id(0).Id.Name, expr.TypeData));
+            KExpr expr = context.expr()?.Expr;
+
+            uint length = uint.Parse(context.INT().GetText());
+
+            if (expr != null)
+                expr.SetType(expr.TypeData with { Length = length });
+            else
+                expr = new KExpr(KTypeData.UndefinedType with { Length = length });
+
+            KType retType = new KType(TypeTable.CreateTypeFromName(context.id(0).Id.Name, expr?.TypeData ?? KTypeData.UndefinedType));
 
             KId id = context.id(1).Id;
             if (state.TryGetId(id.Name, out IdData idData))
                 throw ParseErrorLib.IdDeclared(idData.name, context.Start.Line, context.Start.Column);
             state.AddId(id.Name, IdType.Field, retType.StoredType);
 
-            expr.SetType(expr.TypeData with { Length = uint.Parse(context.INT().GetText()) });
-            context.Stmt = new KVarDecl(state.GenContext, id) { Type = retType, Assignment = context.expr().Expr };
+
+            context.Stmt = new KVarDecl(state.GenContext, id) { Type = retType, Assignment = expr };
             return ParsingResult.Success;
         }
 
@@ -475,6 +483,7 @@ namespace Kat
         {
             VisitChildren(context);
             context.call_args().Exprs.Add(context.expr().Expr);
+            context.Exprs = context.call_args().Exprs;
             return ParsingResult.Success;
         }
 
@@ -495,6 +504,7 @@ namespace Kat
         {
             VisitChildren(context);
             context.mth_decl_arg().Decls.Add((KVarDecl)context.var_decl().Stmt);
+            context.Decls = context.mth_decl_arg().Decls;
             return ParsingResult.Success;
         }
     }

@@ -1,0 +1,3 @@
+mth square(Int y) : Int {
+	ret y * y;
+}

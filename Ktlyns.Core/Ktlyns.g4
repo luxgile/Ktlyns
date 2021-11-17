@@ -57,7 +57,7 @@ mth_var_decl
 
 arr_decl
 	locals[KStmt Stmt]:
-	id id EQ '[' INT ']' LPRN expr RPRN # RArrDeclExpr;
+	id id EQ '[' INT ']' LPRN expr? RPRN # RArrDeclExpr;
 
 mth_decl
 	locals[KStmt Stmt]:
@@ -125,9 +125,9 @@ call_args
 
 mth_decl_arg
 	locals[List<KVarDecl> Decls]:
-									# RMthDeclArg
-	| var_decl						# RMthDeclArgVar
-	| mth_decl_arg COMMA var_decl	# RMthDeclArgAdd;
+											# RMthDeclArg
+	| var_decl								# RMthDeclArgVar
+	| mth_decl_arg COMMA VARADIC? var_decl	# RMthDeclArgAdd;
 
 WS:
 	[ \n\t\r]+ -> skip;
@@ -178,6 +178,8 @@ EQ:
 	'=';
 COLON:
 	':';
+VARADIC:
+	'...';
 
 IF:
 	'if';
@@ -218,7 +220,7 @@ EXTERNAL:
 	'ext';
 
 ID:
-	[a-zA-Z][a-zA-Z0-9]* (
+	[a-zA-Z][a-zA-Z0-9_-]* (
 		'[]'
 		| '*'
 	)*;

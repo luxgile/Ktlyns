@@ -7,9 +7,9 @@ using System.Linq;
 namespace Kat
 {
 
-    public class IRGenException : System.Exception
+    public class IrGenException : System.Exception
     {
-        public IRGenException(string msg) : base(msg) { }
+        public IrGenException(string msg) : base(msg) { }
     }
 
     public abstract class KNode
@@ -19,7 +19,7 @@ namespace Kat
         public virtual LLVMValueRef GenRhs(CodeGenContext context) { throw new NotImplementedException(); }
     }
 
-    public abstract class KExpr : KNode
+    public class KExpr : KNode
     {
         public virtual KTypeData TypeData { get; private set; }
         public KExpr(KTypeData type) { TypeData = type; }
@@ -27,6 +27,8 @@ namespace Kat
         {
             TypeData = type;
         }
+        public override LLVMValueRef GenLhs(CodeGenContext context) { return default; }
+        public override LLVMValueRef GenRhs(CodeGenContext context) { return default; }
     }
 
     public class KCustomExpr : KExpr
@@ -128,7 +130,7 @@ namespace Kat
                     return CodeGenOnlyIteration(context);
             }
 
-            throw new IRGenException("Cannot create a loop without any expressions.");
+            throw new IrGenException("Cannot create a loop without any expressions.");
         }
 
         private LLVMValueRef CodeGenOnlyConditional(CodeGenContext context)
@@ -192,8 +194,7 @@ namespace Kat
         }
     }
 
-    public class KLoopBreak : KStmt
-    {
+    public class KLoopBreak : KStmt {
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             context.PathCompleted = true;
@@ -222,7 +223,7 @@ namespace Kat
         public KDec() : base(KTypeData.DecType) { }
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
-            throw new IRGenException("Decimal numbers cannot be generated as LHS");
+            throw new IrGenException("Decimal numbers cannot be generated as LHS");
         }
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
@@ -236,7 +237,7 @@ namespace Kat
         public KInt() : base(KTypeData.IntType) { }
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
-            throw new IRGenException("Int numbers cannot be generated as LHS");
+            throw new IrGenException("Int numbers cannot be generated as LHS");
         }
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
@@ -250,7 +251,7 @@ namespace Kat
         public KBool() : base(KTypeData.BoolType) { }
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
-            throw new IRGenException("Bool cannot be generated as LHS");
+            throw new IrGenException("Bool cannot be generated as LHS");
         }
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
@@ -264,7 +265,7 @@ namespace Kat
         public KChar(char value) : base(KTypeData.CharType) { Value = value; }
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
-            throw new IRGenException("Char cannot be generated as LHS");
+            throw new IrGenException("Char cannot be generated as LHS");
         }
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
@@ -282,7 +283,7 @@ namespace Kat
 
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
-            throw new IRGenException("String cannot be generated as LHS");
+            throw new IrGenException("String cannot be generated as LHS");
         }
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
@@ -335,7 +336,7 @@ namespace Kat
             {
                 IdType.Field => GetField(context, -1),
                 IdType.Method => GetMethod(context),
-                _ => throw new IRGenException("Not valid type for ID"),
+                _ => throw new IrGenException("Not valid type for ID"),
             };
         }
         public override LLVMValueRef GenRhs(CodeGenContext context)
@@ -344,26 +345,26 @@ namespace Kat
             {
                 IdType.Field => GetField(context, 0),
                 IdType.Method => GetMethod(context),
-                _ => throw new IRGenException("Not valid type for ID"),
+                _ => throw new IrGenException("Not valid type for ID"),
             };
         }
 
         private LLVMValueRef GetField(CodeGenContext context, int ptrDif)
         {
             if (!context.HasLocal(Name))
-                throw new IRGenException($"Undeclared variable {Name}.");
+                throw new IrGenException($"Undeclared variable {Name}.");
 
             LLVMValueRef value = context.GetLocal(Name);
 
             if (value.Kind == LLVMValueKind.LLVMArgumentValueKind)
-                return value;
+                ptrDif -= 1;
 
             return ApplyPtrCount(context, value, PtrCount + ptrDif);
         }
         private LLVMValueRef GetMethod(CodeGenContext context)
         {
             if (!context.Methods.TryGetValue(Name, out KMthdDecl mth))
-                throw new IRGenException($"Undeclared method {Name}.");
+                throw new IrGenException($"Undeclared method {Name}.");
 
             //TODO: Probably here we need to create a new value or type for the function pointer
             return mth.Func;
@@ -442,7 +443,7 @@ namespace Kat
             {
                 function = Id.GenRhs(context);
                 if (function.Handle == IntPtr.Zero)
-                    throw new IRGenException($"No function with name {Id.Name} found.");
+                    throw new IrGenException($"No function with name {Id.Name} found.");
             }
 
             List<LLVMValueRef> argsValues = new List<LLVMValueRef>();
@@ -482,7 +483,7 @@ namespace Kat
                 ExprType.Add => BuildBinOp(isInt ? LLVMOpcode.LLVMAdd : LLVMOpcode.LLVMFAdd),
                 ExprType.Sub => BuildBinOp(isInt ? LLVMOpcode.LLVMSub : LLVMOpcode.LLVMFSub),
                 ExprType.Not => BuildNotOp(),
-                _ => throw new IRGenException("Invalid operator"),
+                _ => throw new IrGenException("Invalid operator"),
             };
             LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, isInt ? dummyInt0 : dummyDec0, Rhs.GenRhs(context), code.ToString().ToLower());
             LLVMValueRef BuildNotOp() => context.builder.BuildBinOp(LLVMOpcode.LLVMSub, dummyInt1, Rhs.GenRhs(context), "not_op");
@@ -529,7 +530,7 @@ namespace Kat
                 ExprType.EGreat => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGE),
                 ExprType.And => BuildBinOp(LLVMOpcode.LLVMAnd),
                 ExprType.Or => BuildBinOp(LLVMOpcode.LLVMOr),
-                _ => throw new IRGenException("Invalid operator"),
+                _ => throw new IrGenException("Invalid operator"),
             };
             LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, lhs, rhs);
             LLVMValueRef BuildBinICmp(LLVMIntPredicate predicate) => context.builder.BuildICmp(predicate, lhs, rhs);
@@ -559,7 +560,7 @@ namespace Kat
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
             if (!context.HasLocal(Lhs.Name))
-                throw new IRGenException($"Undeclared variable {Lhs.Name}.");
+                throw new IrGenException($"Undeclared variable {Lhs.Name}.");
 
             //Lhs always must be a pointer
             LLVMValueRef lhs;
@@ -638,7 +639,7 @@ namespace Kat
             if (from.Kind == LLVMTypeKind.LLVMFloatTypeKind && to.Kind == LLVMTypeKind.LLVMIntegerTypeKind) return LLVMOpcode.LLVMFPToSI;
             if (to.Kind == LLVMTypeKind.LLVMPointerTypeKind) return LLVMOpcode.LLVMBitCast;
 
-            throw new IRGenException($"{Cast} not supported as cast.");
+            throw new IrGenException($"{Cast} not supported as cast.");
         }
     }
 
@@ -674,9 +675,11 @@ namespace Kat
         }
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
+            context.AddLocalBlock();
             LLVMValueRef last = default;
             foreach (var stm in Statements)
                 last = stm.GenLhs(context);
+            context.RemoveLocalBlock();
             return last;
         }
     }
@@ -710,11 +713,10 @@ namespace Kat
             context.SetLocal(Id.Name, pointer);
 
             //Assign cannot be null, but with arrays there's no need to assign anything.
-            if (Assignment != null)
-            {
-                KAssign assign = new KAssign(Id, Assignment);
-                assign.GenRhs(context);
-            }
+            if (Assignment == null || Assignment.TypeData.InternalType == KPrimitiveType.Void) return pointer;
+            
+            KAssign assign = new KAssign(Id, Assignment);
+            assign.GenRhs(context);
 
             return pointer;
         }
@@ -780,13 +782,7 @@ namespace Kat
 
         public void Define(CodeGenContext context)
         {
-            List<KTypeData> argTypes = new();
-            for (int i = 0; i < Args.Count; i++)
-            {
-                KVarDecl arg = Args[i];
-                argTypes.Add(arg.Type.StoredType);
-            }
-            LLVMTypeRef fType = TypeTable.CreateFunctionType(Type.StoredType, IsVaradic, argTypes.ToArray());
+            LLVMTypeRef fType = TypeTable.CreateFunctionType(Type.StoredType, IsVaradic, Args.Select(arg => arg.Type.StoredType).ToArray());
             LLVMValueRef func = context.module.AddFunction(Id.Name, fType);
             //if (!needsBlock)
             //    func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
@@ -800,7 +796,7 @@ namespace Kat
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             if (!isDefined)
-                throw new IRGenException("Method has not been defined before generating block.");
+                throw new IrGenException("Method has not been defined before generating block.");
 
             if (!needsBlock)
                 return default;
@@ -811,20 +807,15 @@ namespace Kat
             context.SetFunc(Func);
             context.builder.PositionAtEnd(block);
 
+            context.AddLocalBlock();
+            
             for (int i = 0; i < Args.Count; i++)
-            {
                 context.AddLocal(Args[i].Id.Name, Func.Params[i]);
-                //KVarDecl arg = Args[i];
-                //KVarDecl argCopy = new KVarDecl(context, arg.Id)
-                //{
-                //    Type = arg.Type,
-                //    Assignment = new KCustomExpr() { LhsGen = () => Func.Params[i], RhsGen = () => Func.Params[i] }
-                //};
-                //argCopy.GenLhs(context);
-            }
 
-            if (Block == null) throw new IRGenException("Error while creating method declaration. Block is null.");
+            if (Block == null) throw new IrGenException("Error while creating method declaration. Block is null.");
             Block.GenLhs(context);
+            
+            context.RemoveLocalBlock();
 
             context.ClearFunc();
             return Func;

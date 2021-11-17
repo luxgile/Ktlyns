@@ -25,4 +25,8 @@
     <PackageReference Include="LLVMSharp" Version="12.0.0-beta1" />
   </ItemGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="antlr4 -o ./Gen_Parsing -visitor -Dlanguage=CSharp Ktlyns.g4" />
+  </Target>
+
 </Project>

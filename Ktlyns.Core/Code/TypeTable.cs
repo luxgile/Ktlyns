@@ -12,6 +12,7 @@ namespace Kat
         public static KTypeData DecType { get; } = new KTypeData("Dec", KPrimitiveType.Dec, 1, null, LLVMTypeRef.Double);
         public static KTypeData IntType { get; } = new KTypeData("Int", KPrimitiveType.Int, 1, null, LLVMTypeRef.Int32);
         public static KTypeData BoolType { get; } = new KTypeData("Bool", KPrimitiveType.Bool, 1, null, LLVMTypeRef.Int1);
+        public static KTypeData ByteType { get; } = new KTypeData("Byte", KPrimitiveType.Byte, 1, null, LLVMTypeRef.Int8);
         public static KTypeData CharType { get; } = new KTypeData("Char", KPrimitiveType.Char, 1, null, LLVMTypeRef.Int16);
         public static KTypeData MetaType { get; } = new KTypeData("Type", KPrimitiveType.Type, 1, null, LLVMTypeRef.Void);
         public static KTypeData UndefinedType { get; } = new KTypeData("Undefined", KPrimitiveType.Void, 0, null, LLVMTypeRef.Void);
@@ -28,7 +29,7 @@ namespace Kat
     /// <summary>
     /// Different types a field can be.
     /// </summary>
-    public enum KPrimitiveType { Void, Int, Dec, Bool, Char, String, Pointer, Compound, Type }
+    public enum KPrimitiveType { Void, Int, Dec, Byte, Bool, Char, String, Pointer, Compound, Type }
     public static class TypeTable
     {
         private static Dictionary<KPrimitiveType, KTypeData> typeTable = new();
@@ -40,6 +41,7 @@ namespace Kat
             typeTable.Add(KPrimitiveType.Dec, KTypeData.DecType);
             typeTable.Add(KPrimitiveType.Char, KTypeData.CharType);
             typeTable.Add(KPrimitiveType.Bool, KTypeData.BoolType);
+            typeTable.Add(KPrimitiveType.Byte, KTypeData.ByteType);
         }
 
         public static KTypeData GetType(KPrimitiveType type) => typeTable[type];
@@ -66,7 +68,7 @@ namespace Kat
             List<KPrimitiveType> typeList = GetTypeList(name);
             //First type should always be the base type.
             if (typeList[0] == KPrimitiveType.String)
-                return KTypeData.CreateString(assignment.Length);
+                return KTypeData.CreateString(assignment?.Length ?? 0);
 
             KTypeData lastTypeCreated = GetType(typeList[0]);
             KTypeData currentAssign = assignment;
@@ -79,8 +81,8 @@ namespace Kat
                         break;
 
                     case KPrimitiveType.Compound:
-                        lastTypeCreated = KTypeData.CreateArray(lastTypeCreated, currentAssign.Length);
-                        currentAssign = currentAssign.SubType;
+                        lastTypeCreated = KTypeData.CreateArray(lastTypeCreated, currentAssign?.Length ?? 0);
+                        //currentAssign = currentAssign.SubType;
                         break;
                 }
             }

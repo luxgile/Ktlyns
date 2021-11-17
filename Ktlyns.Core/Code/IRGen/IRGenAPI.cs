@@ -81,7 +81,7 @@ namespace Kat
 
         public static LLVMValueRef CreatePointerFromValue(CodeGenContext context, LLVMValueRef value)
         {
-            LLVMTypeRef pointerType = LLVMTypeRef.CreatePointer(value.TypeOf.ElementType, 0);
+            LLVMTypeRef pointerType = LLVMTypeRef.CreatePointer(value.TypeOf, 0);
             LLVMValueRef pointerValue = context.builder.BuildAlloca(pointerType, "tmp_ptr");
             context.builder.BuildStore(value, pointerValue);
             return context.builder.BuildLoad(pointerValue);
@@ -95,14 +95,14 @@ namespace Kat
         {
             LLVMTypeRef pointerType = pointer.TypeOf;
             if (pointerType.Kind != LLVMTypeKind.LLVMPointerTypeKind)
-                throw new IRGenException("Pointer is needed to store a value.");
+                throw new IrGenException("Pointer is needed to store a value.");
             return context.builder.BuildStore(value, pointer);
         }
 
         public static void CopyMemory(CodeGenContext context, LLVMValueRef dest, LLVMValueRef source, uint byteLength)
         {
             if (dest.TypeOf.Kind != LLVMTypeKind.LLVMPointerTypeKind || source.TypeOf.Kind != LLVMTypeKind.LLVMPointerTypeKind)
-                throw new IRGenException("A and B need to be pointer types");
+                throw new IrGenException("A and B need to be pointer types");
 
             context.builder.BuildCall(MemCpyFn, new LLVMValueRef[] { dest, source
                 , LLVMValueRef.CreateConstInt(LLVMTypeRef.Int64, byteLength)
