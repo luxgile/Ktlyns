@@ -11,6 +11,7 @@ namespace Kat
 
         public Dictionary<string, KMthdDecl> Methods { get; } = new();
         public Dictionary<string, KVarDecl> Fields { get; } = new();
+        public Dictionary<string, KClassDecl> Classes { get; } = new();
         public LLVMValueRef CurrentFunc { get; private set; }
         public LLVMBasicBlockRef CurrentLoopBlock { get; private set; }
         public LLVMBasicBlockRef ExitLoopBlock { get; private set; }
@@ -21,9 +22,10 @@ namespace Kat
         public CodeGenContext()
         {
             Locals.Add(new Dictionary<string, LLVMValueRef>());
+            InitializeLLVMModules("main_source");
         }
-        
-        public void InitializeLLVMModules(string moduleName)
+
+        private void InitializeLLVMModules(string moduleName)
         {
             module = LLVMModuleRef.CreateWithName(moduleName);
             builder = LLVMBuilderRef.Create(module.Context);
@@ -57,12 +59,13 @@ namespace Kat
 
         public void AddLocalBlock() => Locals.Add(new Dictionary<string, LLVMValueRef>());
         public void RemoveLocalBlock() => Locals.RemoveAt(Locals.Count - 1);
-        public bool HasLocal(string name) => Locals.Any(t=> t.ContainsKey((name)));
+        public bool HasLocal(string name) => Locals.Any(t => t.ContainsKey((name)));
 
         public void AddLocal(string name, LLVMValueRef value) => CurrentLocals.Add(name, value);
 
         public void SetLocal(string name, LLVMValueRef value) => CurrentLocals[name] = value;
         public void RemoveLocal(string name) => CurrentLocals.Remove(name);
+
         public LLVMValueRef GetLocal(string name)
         {
             foreach (var t in Locals)

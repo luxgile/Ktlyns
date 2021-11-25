@@ -7,7 +7,7 @@ namespace Kat
     /// <summary>
     /// Type of ID: Field, Method or Type
     /// </summary>
-    public enum IdType { Field, Method, Type }
+    public enum IdType { Field, Method, Type, Class }
     public struct IdData : IEquatable<IdData>
     {
         public string name;
@@ -37,23 +37,25 @@ namespace Kat
     {
         public class LocalScope
         {
-            private HashSet<IdData> locals = new HashSet<IdData>();
+            public HashSet<IdData> Locals { get; } = new HashSet<IdData>();
 
             public bool TryGetId(string id, out IdData data)
             {
                 IdData tmp = new() { name = id };
-                return locals.TryGetValue(tmp, out data);
+                return Locals.TryGetValue(tmp, out data);
             }
 
             public void AddId(IdData idData)
             {
-                locals.Add(idData);
+                Locals.Add(idData);
             }
         }
 
         private Stack<LocalScope> localStack = new Stack<LocalScope>();
         private List<IdPromise> promises = new List<IdPromise>();
+
         public CodeGenContext GenContext { get; private set; } = new CodeGenContext();
+        public LocalScope CurrentScope => localStack.Peek();
 
         public ParsingState()
         {

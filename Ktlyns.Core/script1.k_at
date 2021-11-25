@@ -1,40 +1,12 @@
+class MyClass {
+    Int a;
+    Int b;
+}
+
 mth main() : Int {
-    String message = "Hello World";
-    Char* c = &message to Char*;
-    print_char(c);
-    ret 0;
-}
-
-mth print_char(Char* chr) : Void {
-    Byte[] bytes = [5]();
-    bytes[0] = 37 to Byte;
-    bytes[1] = 108 to Byte;
-    bytes[2] = 115 to Byte;
-    bytes[3] = 10 to Byte;
-    printf(&bytes[0], chr);
-    ret;
-}
-
-mth add(Int a, Int b) : Int {
-    ret a + b;
-}   
-
-mth add_lots(Int count, ... Int[]* args) : Int {
-    Int result = 0;
-    Int index = 0;
-    @(0, count){
-        result = result + args[index];
-        index = index + 1;
-    }
-    ret result;
-}
-
-mth fib(Int n) : Int {
-    if (n <= 1)
-        ret n;
-    ret fib(n - 1) + fib(n - 2);
-}
-
-mth test(Int n) : Void {
-    ret;
+    MyClass obj = MyClass();
+    obj.a = 3;
+    obj.b = 5;
+    Int c = obj.a + obj.b;
+    ret c;
 }

@@ -118,12 +118,26 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitRStatementMthDecl([NotNull] KtlynsParser.RStatementMthDeclContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>RStatementClassDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRStatementClassDecl([NotNull] KtlynsParser.RStatementClassDeclContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>RStatementExMthDecl</c>
 	/// labeled alternative in <see cref="KtlynsParser.statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitRStatementExMthDecl([NotNull] KtlynsParser.RStatementExMthDeclContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>RClassDecl</c>
+	/// labeled alternative in <see cref="KtlynsParser.class_decl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRClassDecl([NotNull] KtlynsParser.RClassDeclContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>RIfElse</c>
 	/// labeled alternative in <see cref="KtlynsParser.if_else_decl"/>.
@@ -304,6 +318,13 @@ public interface IKtlynsVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitRExprBinGreat([NotNull] KtlynsParser.RExprBinGreatContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>RExprAccess</c>
+	/// labeled alternative in <see cref="KtlynsParser.expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitRExprAccess([NotNull] KtlynsParser.RExprAccessContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>RExprString</c>
 	/// labeled alternative in <see cref="KtlynsParser.expr"/>.

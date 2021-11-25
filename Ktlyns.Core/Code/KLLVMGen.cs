@@ -13,25 +13,16 @@ namespace Kat
 
         public int CompileAndRun(KNode root, CodeGenContext context)
         {
-            context.InitializeLLVMModules("main_source");
-            try
-            {
-                foreach (var method in context.Methods)
-                    method.Value.Define(context);
+            foreach (var method in context.Methods)
+                method.Value.Define(context);
 
-                if (IRGenAPI.DebugIR)
-                    IRGenAPI.GenDebugDefines(context);
+            if (IRGenAPI.DebugIR)
+                IRGenAPI.GenDebugDefines(context);
 
-                IRGenAPI.GenLLVMUtils(context);
+            IRGenAPI.GenLLVMUtils(context);
 
-                root.IRSetup(context);
-                root.GenLhs(context);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"!!! Exception while generating IR: {e}");
-                return -1;
-            }
+            root.IRSetup(context);
+            root.GenLhs(context);
 
             LLVM.LinkInMCJIT();
 
@@ -41,8 +32,9 @@ namespace Kat
             LLVM.InitializeX86AsmParser();
             LLVM.InitializeX86AsmPrinter();
 
-            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
-            if (!context.module.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
+            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions {NoFramePointerElim = 1};
+            if (!context.module.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options,
+                out string error))
             {
                 Console.WriteLine($"Error: {error}");
                 return -1;
@@ -55,7 +47,9 @@ namespace Kat
             }
 
             LLVMValueRef func = context.module.GetNamedFunction("main");
-            MainDelegate mainFunc = (MainDelegate)Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(func), typeof(MainDelegate));
+            MainDelegate mainFunc =
+                (MainDelegate) Marshal.GetDelegateForFunctionPointer(engine.GetPointerToGlobal(func),
+                    typeof(MainDelegate));
             int a = -1;
             try
             {
@@ -74,7 +68,6 @@ namespace Kat
 
         public LLVMModuleRef CompileModule(KNode root, CodeGenContext context)
         {
-            context.InitializeLLVMModules("main_source");
             //try
             //{
             foreach (var method in context.Methods)
@@ -101,8 +94,9 @@ namespace Kat
             LLVM.InitializeX86AsmParser();
             LLVM.InitializeX86AsmPrinter();
 
-            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions { NoFramePointerElim = 1 };
-            if (!context.module.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options, out string error))
+            LLVMMCJITCompilerOptions options = new LLVMMCJITCompilerOptions {NoFramePointerElim = 1};
+            if (!context.module.TryCreateMCJITCompiler(out LLVMExecutionEngineRef engine, ref options,
+                out string error))
             {
                 Console.WriteLine($"Error: {error}");
                 throw new Exception();

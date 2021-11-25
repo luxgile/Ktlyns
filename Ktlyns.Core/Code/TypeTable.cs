@@ -2,34 +2,81 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LLVMSharp;
 
 namespace Kat
 {
-    public record KTypeData(string Name, KPrimitiveType InternalType, uint Length, KTypeData SubType, LLVMTypeRef LLVMType)
+    public record KTypeData(string Name, KPrimitiveType InternalType, uint Length, KTypeData SubType,
+        LLVMTypeRef LLVMType)
     {
         public bool HasSubType => SubType != null;
-        public static KTypeData VoidType { get; } = new KTypeData("Void", KPrimitiveType.Void, 0, null, LLVMTypeRef.Void);
-        public static KTypeData DecType { get; } = new KTypeData("Dec", KPrimitiveType.Dec, 1, null, LLVMTypeRef.Double);
-        public static KTypeData IntType { get; } = new KTypeData("Int", KPrimitiveType.Int, 1, null, LLVMTypeRef.Int32);
-        public static KTypeData BoolType { get; } = new KTypeData("Bool", KPrimitiveType.Bool, 1, null, LLVMTypeRef.Int1);
-        public static KTypeData ByteType { get; } = new KTypeData("Byte", KPrimitiveType.Byte, 1, null, LLVMTypeRef.Int8);
-        public static KTypeData CharType { get; } = new KTypeData("Char", KPrimitiveType.Char, 1, null, LLVMTypeRef.Int16);
-        public static KTypeData MetaType { get; } = new KTypeData("Type", KPrimitiveType.Type, 1, null, LLVMTypeRef.Void);
-        public static KTypeData UndefinedType { get; } = new KTypeData("Undefined", KPrimitiveType.Void, 0, null, LLVMTypeRef.Void);
 
-        public static KTypeData CreateArray(KTypeData type, uint length) => new(type.Name + "[]", KPrimitiveType.Compound, length, type
+        public static KTypeData VoidType { get; } =
+            new KTypeData("Void", KPrimitiveType.Void, 0, null, LLVMTypeRef.Void);
+
+        public static KTypeData DecType { get; } =
+            new KTypeData("Dec", KPrimitiveType.Dec, 1, null, LLVMTypeRef.Double);
+
+        public static KTypeData IntType { get; } = new KTypeData("Int", KPrimitiveType.Int, 1, null, LLVMTypeRef.Int32);
+
+        public static KTypeData BoolType { get; } =
+            new KTypeData("Bool", KPrimitiveType.Bool, 1, null, LLVMTypeRef.Int1);
+
+        public static KTypeData ByteType { get; } =
+            new KTypeData("Byte", KPrimitiveType.Byte, 1, null, LLVMTypeRef.Int8);
+
+        public static KTypeData CharType { get; } =
+            new KTypeData("Char", KPrimitiveType.Char, 1, null, LLVMTypeRef.Int16);
+
+        public static KTypeData MetaType { get; } =
+            new KTypeData("Type", KPrimitiveType.Type, 1, null, LLVMTypeRef.Void);
+
+        public static KTypeData UndefinedType { get; } =
+            new KTypeData("Undefined", KPrimitiveType.Void, 0, null, LLVMTypeRef.Void);
+
+        public static KTypeData CreateArray(KTypeData type, uint length) => new(type.Name + "[]",
+            KPrimitiveType.Compound, length, type
             , LLVMTypeRef.CreateArray(type.LLVMType, length));
+
         public static KTypeData CreatePointer(KTypeData type) => new(type.Name + "*", KPrimitiveType.Pointer, 1, type
             , LLVMTypeRef.CreatePointer(type.LLVMType, 0));
+
         public static KTypeData CreateString(uint length) => new("String", KPrimitiveType.String, length, null
             , LLVMTypeRef.CreateArray(CharType.LLVMType, length));
-        public static KTypeData CreateInt(uint bits) => new("Int" + bits, KPrimitiveType.Int, 1, null, LLVMTypeRef.CreateInt(bits));
+
+        public static KTypeData CreateInt(uint bits) =>
+            new("Int" + bits, KPrimitiveType.Int, 1, null, LLVMTypeRef.CreateInt(bits));
+
+        public static KTypeData CreateStruct(LLVMContextRef context, string name, params KTypeData[] fieldTypes) => new(name,
+            KPrimitiveType.Compound
+            , (uint) fieldTypes.Length, null,
+            CreateStructLLVMType(context, name, fieldTypes));
+
+        private static LLVMTypeRef CreateStructLLVMType(LLVMContextRef context, string name, params KTypeData[] fieldTypes)
+        {
+            LLVMTypeRef type = context.CreateNamedStruct(name); 
+            type.StructSetBody(fieldTypes.Select(x => x.LLVMType).ToArray(), false);
+            return type;
+        }
     }
 
     /// <summary>
     /// Different types a field can be.
     /// </summary>
-    public enum KPrimitiveType { Void, Int, Dec, Byte, Bool, Char, String, Pointer, Compound, Type }
+    public enum KPrimitiveType
+    {
+        Void,
+        Int,
+        Dec,
+        Byte,
+        Bool,
+        Char,
+        String,
+        Pointer,
+        Compound,
+        Type
+    }
+
     public static class TypeTable
     {
         private static Dictionary<KPrimitiveType, KTypeData> typeTable = new();
@@ -45,11 +92,14 @@ namespace Kat
         }
 
         public static KTypeData GetType(KPrimitiveType type) => typeTable[type];
-        public static KTypeData GetType(string type) => typeTable[(KPrimitiveType)Enum.Parse(typeof(KPrimitiveType), type)];
+
+        public static KTypeData GetType(string type) =>
+            typeTable[(KPrimitiveType) Enum.Parse(typeof(KPrimitiveType), type)];
+
         public static bool TryGetType(string type, out KTypeData value)
         {
             if (Enum.TryParse(typeof(KPrimitiveType), type, out object? valType))
-                return typeTable.TryGetValue((KPrimitiveType)valType, out value);
+                return typeTable.TryGetValue((KPrimitiveType) valType, out value);
             value = default;
             return false;
         }
@@ -63,9 +113,12 @@ namespace Kat
             return LLVMTypeRef.CreateFunction(retTypeRef, paramTypeRefs, varadic);
         }
 
-        public static KTypeData CreateTypeFromName(string name, KTypeData assignment)
+        public static KTypeData CreateTypeFromName(CodeGenContext context, string name, KTypeData assignment)
         {
             List<KPrimitiveType> typeList = GetTypeList(name);
+            if (typeList.Count == 0 && context.Classes.TryGetValue(name, out KClassDecl clss))
+                return clss.ClassType;
+                
             //First type should always be the base type.
             if (typeList[0] == KPrimitiveType.String)
                 return KTypeData.CreateString(assignment?.Length ?? 0);
@@ -92,13 +145,17 @@ namespace Kat
 
         private static List<KPrimitiveType> GetTypeList(string typeName)
         {
-            int baseTypeEndIndex = typeName.IndexOfAny(new char[] { '*', '[' });
+            int baseTypeEndIndex = typeName.IndexOfAny(new char[] {'*', '['});
             //Base type, no pointers nor arrays.
             if (baseTypeEndIndex == -1)
-                return new List<KPrimitiveType>() { (KPrimitiveType)Enum.Parse(typeof(KPrimitiveType), typeName) };
+            {
+                if (Enum.TryParse(typeName, false, out KPrimitiveType value))
+                    return new() {value};
+                return new List<KPrimitiveType>();
+            }
 
             List<KPrimitiveType> typeList = new List<KPrimitiveType>();
-            typeList.Add((KPrimitiveType)Enum.Parse(typeof(KPrimitiveType), typeName[0..baseTypeEndIndex]));
+            typeList.Add((KPrimitiveType) Enum.Parse(typeof(KPrimitiveType), typeName[0..baseTypeEndIndex]));
             while (baseTypeEndIndex < typeName.Length)
             {
                 if (typeName[baseTypeEndIndex] == '*')
@@ -112,8 +169,8 @@ namespace Kat
 
                 baseTypeEndIndex++;
             }
+
             return typeList;
         }
-
     }
 }

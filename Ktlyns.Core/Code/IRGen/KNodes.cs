@@ -6,40 +6,69 @@ using System.Linq;
 
 namespace Kat
 {
-
     public class IrGenException : System.Exception
     {
-        public IrGenException(string msg) : base(msg) { }
+        public IrGenException(string msg) : base(msg)
+        {
+        }
     }
 
     public abstract class KNode
     {
-        public virtual void IRSetup(CodeGenContext context) { }
-        public virtual LLVMValueRef GenLhs(CodeGenContext context) { throw new NotImplementedException(); }
-        public virtual LLVMValueRef GenRhs(CodeGenContext context) { throw new NotImplementedException(); }
+        public virtual void IRSetup(CodeGenContext context)
+        {
+        }
+
+        public virtual LLVMValueRef GenLhs(CodeGenContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual LLVMValueRef GenRhs(CodeGenContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class KExpr : KNode
     {
         public virtual KTypeData TypeData { get; private set; }
-        public KExpr(KTypeData type) { TypeData = type; }
+
+        public KExpr(KTypeData type)
+        {
+            TypeData = type;
+        }
+
         public void SetType(KTypeData type)
         {
             TypeData = type;
         }
-        public override LLVMValueRef GenLhs(CodeGenContext context) { return default; }
-        public override LLVMValueRef GenRhs(CodeGenContext context) { return default; }
+
+        public override LLVMValueRef GenLhs(CodeGenContext context)
+        {
+            return default;
+        }
+
+        public override LLVMValueRef GenRhs(CodeGenContext context)
+        {
+            return default;
+        }
     }
 
     public class KCustomExpr : KExpr
     {
         public Func<LLVMValueRef> LhsGen;
         public Func<LLVMValueRef> RhsGen;
-        public KCustomExpr() : base(KTypeData.VoidType) { }
+
+        public KCustomExpr() : base(KTypeData.VoidType)
+        {
+        }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             return LhsGen();
         }
+
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
             return RhsGen();
@@ -60,6 +89,7 @@ namespace Kat
         public KExpr Condition { get; set; }
         public KBlock IfBlock { get; set; }
         public KBlock ElseBlock { get; set; }
+
         public override void IRSetup(CodeGenContext context)
         {
             base.IRSetup(context);
@@ -68,6 +98,7 @@ namespace Kat
             IfBlock.IRSetup(context);
             ElseBlock?.IRSetup(context);
         }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             //Right now all blocks need to return a value, they can't go back to the parent block. So once you are inside an if you can't get out of it without returning and exiting the method.
@@ -82,7 +113,8 @@ namespace Kat
 
             LLVMBasicBlockRef afterBlock = context.CurrentFunc.AppendBasicBlock("if_after_block");
 
-            LLVMValueRef branch = context.builder.BuildCondBr(Condition.GenRhs(context), ifBlock, hasElse ? elseBlock : afterBlock);
+            LLVMValueRef branch =
+                context.builder.BuildCondBr(Condition.GenRhs(context), ifBlock, hasElse ? elseBlock : afterBlock);
 
             context.builder.PositionAtEnd(ifBlock);
             IfBlock.GenLhs(context);
@@ -177,7 +209,8 @@ namespace Kat
             //Conditional block
             context.SetBlocks(loopBlock, afterBlock);
             context.builder.PositionAtEnd(condBlock);
-            LLVMValueRef compare = context.builder.BuildICmp(LLVMIntPredicate.LLVMIntSLT, context.builder.BuildLoad(count), max);
+            LLVMValueRef compare =
+                context.builder.BuildICmp(LLVMIntPredicate.LLVMIntSLT, context.builder.BuildLoad(count), max);
             context.builder.BuildCondBr(compare, loopBlock, afterBlock);
 
             //Loop block
@@ -194,7 +227,8 @@ namespace Kat
         }
     }
 
-    public class KLoopBreak : KStmt {
+    public class KLoopBreak : KStmt
+    {
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             context.PathCompleted = true;
@@ -205,12 +239,14 @@ namespace Kat
     public class KExprStmt : KStmt
     {
         public KExpr Expr { get; set; }
+
         public override void IRSetup(CodeGenContext context)
         {
             base.IRSetup(context);
 
             Expr.IRSetup(context);
         }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             return Expr.GenRhs(context);
@@ -220,11 +256,16 @@ namespace Kat
     public class KDec : KExpr
     {
         public double Value { get; set; }
-        public KDec() : base(KTypeData.DecType) { }
+
+        public KDec() : base(KTypeData.DecType)
+        {
+        }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             throw new IrGenException("Decimal numbers cannot be generated as LHS");
         }
+
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
             return LLVMValueRef.CreateConstReal(LLVMTypeRef.Double, Value);
@@ -234,25 +275,35 @@ namespace Kat
     public class KInt : KExpr
     {
         public int Value { get; set; }
-        public KInt() : base(KTypeData.IntType) { }
+
+        public KInt() : base(KTypeData.IntType)
+        {
+        }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             throw new IrGenException("Int numbers cannot be generated as LHS");
         }
+
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
-            return LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, (ulong)Value, true);
+            return LLVMValueRef.CreateConstInt(LLVMTypeRef.Int32, (ulong) Value, true);
         }
     }
 
     public class KBool : KExpr
     {
         public bool Value { get; set; }
-        public KBool() : base(KTypeData.BoolType) { }
+
+        public KBool() : base(KTypeData.BoolType)
+        {
+        }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             throw new IrGenException("Bool cannot be generated as LHS");
         }
+
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
             return LLVMValueRef.CreateConstInt(LLVMTypeRef.Int1, Value ? 1u : 0u, true);
@@ -262,21 +313,28 @@ namespace Kat
     public class KChar : KExpr
     {
         public char Value { get; init; }
-        public KChar(char value) : base(KTypeData.CharType) { Value = value; }
+
+        public KChar(char value) : base(KTypeData.CharType)
+        {
+            Value = value;
+        }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             throw new IrGenException("Char cannot be generated as LHS");
         }
+
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
             return LLVMValueRef.CreateConstInt(LLVMTypeRef.Int16, Value, true);
         }
     }
+
     public class KStr : KExpr
     {
         public string Value { get; init; }
 
-        public KStr(string value) : base(KTypeData.CreateArray(KTypeData.CharType, (uint)value.Length + 1))
+        public KStr(string value) : base(KTypeData.CreateArray(KTypeData.CharType, (uint) value.Length + 1))
         {
             Value = value + "\0";
         }
@@ -285,6 +343,7 @@ namespace Kat
         {
             throw new IrGenException("String cannot be generated as LHS");
         }
+
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
             //PrintString is only printing the first character.
@@ -311,7 +370,10 @@ namespace Kat
         //Positive number is ammount of *, negative &
         public int PtrCount { get; set; }
 
-        public KId(KId id) : this(id.Name, id.IdType, id.TypeData) { }
+        public KId(KId id) : this(id.Name, id.IdType, id.TypeData)
+        {
+        }
+
         public KId(string name, IdType idType, KTypeData typeData) : base(typeData)
         {
             Name = name;
@@ -339,6 +401,7 @@ namespace Kat
                 _ => throw new IrGenException("Not valid type for ID"),
             };
         }
+
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
             return IdType switch
@@ -361,6 +424,7 @@ namespace Kat
 
             return ApplyPtrCount(context, value, PtrCount + ptrDif);
         }
+
         private LLVMValueRef GetMethod(CodeGenContext context)
         {
             if (!context.Methods.TryGetValue(Name, out KMthdDecl mth))
@@ -375,11 +439,45 @@ namespace Kat
             int currPtrCount = valuePtr;
             while (currPtrCount != 0)
             {
-                if (currPtrCount > 0) { value = IRGenAPI.GetValueFromPointer(context, value, Name); currPtrCount--; }
-                else if (currPtrCount < 0) { value = IRGenAPI.CreatePointerFromValue(context, value); currPtrCount++; }
+                if (currPtrCount > 0)
+                {
+                    value = IRGenAPI.GetValueFromPointer(context, value, Name);
+                    currPtrCount--;
+                }
+                else if (currPtrCount < 0)
+                {
+                    value = IRGenAPI.CreatePointerFromValue(context, value);
+                    currPtrCount++;
+                }
             }
 
             return value;
+        }
+    }
+
+    public class KAccess : KExpr
+    {
+        public KExpr Lhs { get; private set; }
+        public KId Rhs { get; private set; }
+
+        public KAccess(KExpr lhs, KId rhs) : base(lhs.TypeData)
+        {
+            Lhs = lhs;
+            Rhs = rhs;
+        }
+
+        public override LLVMValueRef GenLhs(CodeGenContext context)
+        {
+            var expr = Lhs.GenLhs(context);
+            int index = context.Classes[Lhs.TypeData.Name].GetFieldIndex(Rhs.Name);
+            return context.builder.BuildStructGEP(expr, (uint) index, $"{Lhs.TypeData.Name}.{Rhs.Name}");
+        }
+
+        public override LLVMValueRef GenRhs(CodeGenContext context)
+        {
+            var expr = Lhs.GenLhs(context);
+            int index = context.Classes[Lhs.TypeData.Name].GetFieldIndex(Rhs.Name);
+            return context.builder.BuildLoad(context.builder.BuildStructGEP(expr, (uint) index, $"{Lhs.TypeData.Name}.{Rhs.Name}"));
         }
     }
 
@@ -387,7 +485,9 @@ namespace Kat
     {
         public KExpr Index { get; set; }
 
-        public KIdAcc(KId id) : base(id.Name, id.IdType, id.TypeData) { }
+        public KIdAcc(KId id) : base(id.Name, id.IdType, id.TypeData)
+        {
+        }
 
         public override void IRSetup(CodeGenContext context)
         {
@@ -402,6 +502,7 @@ namespace Kat
             value = ApplyPtrCount(context, value, PtrCount);
             return value;
         }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             LLVMValueRef value = context.builder.BuildLoad(GetGEP(context));
@@ -412,7 +513,7 @@ namespace Kat
         {
             LLVMValueRef array = context.GetLocal(Name);
             LLVMValueRef indexValue = Index.GenRhs(context);
-            return context.builder.BuildInBoundsGEP(array, new LLVMValueRef[] { IRGenAPI.Int32Zero, indexValue });
+            return context.builder.BuildInBoundsGEP(array, new LLVMValueRef[] {IRGenAPI.Int32Zero, indexValue});
         }
     }
 
@@ -420,6 +521,7 @@ namespace Kat
     {
         public KId Id { get; init; }
         public List<KExpr> Args { get; init; }
+
         public KMethod(KId id, List<KExpr> args) : base(id.TypeData)
         {
             Id = id;
@@ -451,7 +553,8 @@ namespace Kat
                 argsValues.Add(arg.GenRhs(context));
 
             context.Methods.TryGetValue(Id.Name, out KMthdDecl mth);
-            return context.builder.BuildCall(function, argsValues.ToArray(), mth.Type.StoredType.InternalType == KPrimitiveType.Void ? null : Id.Name);
+            return context.builder.BuildCall(function, argsValues.ToArray(),
+                mth.Type.StoredType.InternalType == KPrimitiveType.Void ? null : Id.Name);
         }
     }
 
@@ -464,7 +567,11 @@ namespace Kat
         private static LLVMValueRef dummyInt1 = LLVMValueRef.CreateConstInt(LLVMTypeRef.Int1, 1, false);
         private static LLVMValueRef dummyDec0 = LLVMValueRef.CreateConstReal(LLVMTypeRef.Float, 0);
 
-        public KUnaryOp(ExprType op, KExpr rhs) : base(rhs.TypeData) { Op = op; Rhs = rhs; }
+        public KUnaryOp(ExprType op, KExpr rhs) : base(rhs.TypeData)
+        {
+            Op = op;
+            Rhs = rhs;
+        }
 
         public override void IRSetup(CodeGenContext context)
         {
@@ -485,8 +592,12 @@ namespace Kat
                 ExprType.Not => BuildNotOp(),
                 _ => throw new IrGenException("Invalid operator"),
             };
-            LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, isInt ? dummyInt0 : dummyDec0, Rhs.GenRhs(context), code.ToString().ToLower());
-            LLVMValueRef BuildNotOp() => context.builder.BuildBinOp(LLVMOpcode.LLVMSub, dummyInt1, Rhs.GenRhs(context), "not_op");
+
+            LLVMValueRef BuildBinOp(LLVMOpcode code) => context.builder.BuildBinOp(code, isInt ? dummyInt0 : dummyDec0,
+                Rhs.GenRhs(context), code.ToString().ToLower());
+
+            LLVMValueRef BuildNotOp() =>
+                context.builder.BuildBinOp(LLVMOpcode.LLVMSub, dummyInt1, Rhs.GenRhs(context), "not_op");
         }
     }
 
@@ -502,6 +613,7 @@ namespace Kat
             Lhs = lhs;
             Rhs = rhs;
         }
+
         public override void IRSetup(CodeGenContext context)
         {
             base.IRSetup(context);
@@ -522,12 +634,24 @@ namespace Kat
                 ExprType.Sub => BuildBinOp(isInt ? LLVMOpcode.LLVMSub : LLVMOpcode.LLVMFSub),
                 ExprType.Mult => BuildBinOp(isInt ? LLVMOpcode.LLVMMul : LLVMOpcode.LLVMFMul),
                 ExprType.Div => BuildBinOp(isInt ? LLVMOpcode.LLVMSDiv : LLVMOpcode.LLVMFDiv),
-                ExprType.Eq => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntEQ) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOEQ),
-                ExprType.NEq => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntNE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealONE),
-                ExprType.Less => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntSLT) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOLT),
-                ExprType.ELess => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntSLE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOLE),
-                ExprType.Great => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGT) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGT),
-                ExprType.EGreat => isInt ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGE) : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGE),
+                ExprType.Eq => isInt
+                    ? BuildBinICmp(LLVMIntPredicate.LLVMIntEQ)
+                    : BuildBinFCmp(LLVMRealPredicate.LLVMRealOEQ),
+                ExprType.NEq => isInt
+                    ? BuildBinICmp(LLVMIntPredicate.LLVMIntNE)
+                    : BuildBinFCmp(LLVMRealPredicate.LLVMRealONE),
+                ExprType.Less => isInt
+                    ? BuildBinICmp(LLVMIntPredicate.LLVMIntSLT)
+                    : BuildBinFCmp(LLVMRealPredicate.LLVMRealOLT),
+                ExprType.ELess => isInt
+                    ? BuildBinICmp(LLVMIntPredicate.LLVMIntSLE)
+                    : BuildBinFCmp(LLVMRealPredicate.LLVMRealOLE),
+                ExprType.Great => isInt
+                    ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGT)
+                    : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGT),
+                ExprType.EGreat => isInt
+                    ? BuildBinICmp(LLVMIntPredicate.LLVMIntSGE)
+                    : BuildBinFCmp(LLVMRealPredicate.LLVMRealOGE),
                 ExprType.And => BuildBinOp(LLVMOpcode.LLVMAnd),
                 ExprType.Or => BuildBinOp(LLVMOpcode.LLVMOr),
                 _ => throw new IrGenException("Invalid operator"),
@@ -540,10 +664,10 @@ namespace Kat
 
     public class KAssign : KExpr
     {
-        public KId Lhs { get; init; }
+        public KExpr Lhs { get; init; }
         public KExpr Rhs { get; init; }
 
-        public KAssign(KId lhs, KExpr rhs) : base(lhs.TypeData)
+        public KAssign(KExpr lhs, KExpr rhs) : base(lhs.TypeData)
         {
             Lhs = lhs;
             Rhs = rhs;
@@ -559,8 +683,8 @@ namespace Kat
 
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
-            if (!context.HasLocal(Lhs.Name))
-                throw new IrGenException($"Undeclared variable {Lhs.Name}.");
+            //if (!context.HasLocal(Lhs.Name))
+            //   throw new IrGenException($"Undeclared variable {Lhs.Name}.");
 
             //Lhs always must be a pointer
             LLVMValueRef lhs;
@@ -575,18 +699,23 @@ namespace Kat
             //If both are arrays, then copy the memory from one to the other
             if (lhs.TypeOf.ElementType.ArrayLength > 0 && rhs.TypeOf.ElementType.ArrayLength > 0)
             {
-                LLVMValueRef destBitCast = context.builder.BuildBitCast(lhs, KTypeData.CreatePointer(KTypeData.CreateInt(8)).LLVMType);
-                LLVMValueRef sourceBitCast = context.builder.BuildBitCast(rhs, KTypeData.CreatePointer(KTypeData.CreateInt(8)).LLVMType);
-                IRGenAPI.CopyMemory(context, destBitCast, sourceBitCast, rhs.TypeOf.ElementType.ArrayLength * rhs.TypeOf.ElementType.ElementType.IntWidth);
+                LLVMValueRef destBitCast =
+                    context.builder.BuildBitCast(lhs, KTypeData.CreatePointer(KTypeData.CreateInt(8)).LLVMType);
+                LLVMValueRef sourceBitCast =
+                    context.builder.BuildBitCast(rhs, KTypeData.CreatePointer(KTypeData.CreateInt(8)).LLVMType);
+                IRGenAPI.CopyMemory(context, destBitCast, sourceBitCast,
+                    rhs.TypeOf.ElementType.ArrayLength * rhs.TypeOf.ElementType.ElementType.IntWidth);
             }
 
             return IRGenAPI.StoreValue(context, lhs, rhs);
         }
     }
+
     public class KCast : KExpr
     {
         public KExpr Expr { get; init; }
         public KType Cast { get; init; }
+
         public KCast(KExpr expr, KType cast) : base(cast.StoredType)
         {
             Expr = expr;
@@ -611,8 +740,8 @@ namespace Kat
                 return value;
 
             if (Expr.TypeData.InternalType == KPrimitiveType.String &&
-            Cast.StoredType.InternalType == KPrimitiveType.Pointer)
-                return context.builder.BuildInBoundsGEP(value, new[] { IRGenAPI.Int32Zero, IRGenAPI.Int32Zero });
+                Cast.StoredType.InternalType == KPrimitiveType.Pointer)
+                return context.builder.BuildInBoundsGEP(value, new[] {IRGenAPI.Int32Zero, IRGenAPI.Int32Zero});
             return context.builder.BuildCast(GetCode(), value, Cast.StoredType.LLVMType);
         }
 
@@ -635,8 +764,10 @@ namespace Kat
 
             //}
 
-            if (from.Kind == LLVMTypeKind.LLVMIntegerTypeKind && to.Kind == LLVMTypeKind.LLVMFloatTypeKind) return LLVMOpcode.LLVMSIToFP;
-            if (from.Kind == LLVMTypeKind.LLVMFloatTypeKind && to.Kind == LLVMTypeKind.LLVMIntegerTypeKind) return LLVMOpcode.LLVMFPToSI;
+            if (from.Kind == LLVMTypeKind.LLVMIntegerTypeKind && to.Kind == LLVMTypeKind.LLVMFloatTypeKind)
+                return LLVMOpcode.LLVMSIToFP;
+            if (from.Kind == LLVMTypeKind.LLVMFloatTypeKind && to.Kind == LLVMTypeKind.LLVMIntegerTypeKind)
+                return LLVMOpcode.LLVMFPToSI;
             if (to.Kind == LLVMTypeKind.LLVMPointerTypeKind) return LLVMOpcode.LLVMBitCast;
 
             throw new IrGenException($"{Cast} not supported as cast.");
@@ -646,16 +777,19 @@ namespace Kat
     public class KRet : KExpr
     {
         public KExpr Expr { get; init; }
+
         public KRet(KExpr expr) : base(expr == null ? KTypeData.VoidType : expr.TypeData)
         {
             Expr = expr;
         }
+
         public override void IRSetup(CodeGenContext context)
         {
             base.IRSetup(context);
 
             Expr?.IRSetup(context);
         }
+
         public override LLVMValueRef GenRhs(CodeGenContext context)
         {
             if (Expr == null) return context.builder.BuildRetVoid();
@@ -666,19 +800,21 @@ namespace Kat
     public class KBlock : KStmt
     {
         public List<KStmt> Statements { get; set; } = new List<KStmt>();
+
         public override void IRSetup(CodeGenContext context)
         {
             base.IRSetup(context);
 
             foreach (var stmt in Statements)
-                stmt.IRSetup(context);
+                stmt?.IRSetup(context);
         }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             context.AddLocalBlock();
             LLVMValueRef last = default;
             foreach (var stm in Statements)
-                last = stm.GenLhs(context);
+                last = stm?.GenLhs(context) ?? default;
             context.RemoveLocalBlock();
             return last;
         }
@@ -705,6 +841,7 @@ namespace Kat
             //TODO: This should be scoped, otherwise can't use variables with same name in different methods
             //context.Fields.Add(Id.Name, this);
         }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
             LLVMValueRef pointer = IRGenAPI.AllocateField(context, Type.StoredType.LLVMType, Id.Name);
@@ -714,13 +851,14 @@ namespace Kat
 
             //Assign cannot be null, but with arrays there's no need to assign anything.
             if (Assignment == null || Assignment.TypeData.InternalType == KPrimitiveType.Void) return pointer;
-            
+
             KAssign assign = new KAssign(Id, Assignment);
             assign.GenRhs(context);
 
             return pointer;
         }
     }
+
     public class KMthVarDecl : KVarDecl
     {
         public KId[] ParamTypes { get; set; }
@@ -733,9 +871,11 @@ namespace Kat
         public KMthVarDecl(CodeGenContext context, KId id) : base(context, id)
         {
         }
+
         public override LLVMValueRef GenLhs(CodeGenContext context)
         {
-            LLVMTypeRef funcType = TypeTable.CreateFunctionType(Type.TypeData, false, ParamTypes.Select(x => x.TypeData).ToArray());
+            LLVMTypeRef funcType =
+                TypeTable.CreateFunctionType(Type.TypeData, false, ParamTypes.Select(x => x.TypeData).ToArray());
             LLVMTypeRef funcPointerType = LLVMTypeRef.CreatePointer(funcType, 0);
             LLVMValueRef pointer = IRGenAPI.AllocateField(context, funcPointerType, Id.Name);
 
@@ -782,7 +922,8 @@ namespace Kat
 
         public void Define(CodeGenContext context)
         {
-            LLVMTypeRef fType = TypeTable.CreateFunctionType(Type.StoredType, IsVaradic, Args.Select(arg => arg.Type.StoredType).ToArray());
+            LLVMTypeRef fType = TypeTable.CreateFunctionType(Type.StoredType, IsVaradic,
+                Args.Select(arg => arg.Type.StoredType).ToArray());
             LLVMValueRef func = context.module.AddFunction(Id.Name, fType);
             //if (!needsBlock)
             //    func.DLLStorageClass = LLVMDLLStorageClass.LLVMDLLImportStorageClass;
@@ -808,17 +949,58 @@ namespace Kat
             context.builder.PositionAtEnd(block);
 
             context.AddLocalBlock();
-            
+
             for (int i = 0; i < Args.Count; i++)
                 context.AddLocal(Args[i].Id.Name, Func.Params[i]);
 
             if (Block == null) throw new IrGenException("Error while creating method declaration. Block is null.");
             Block.GenLhs(context);
-            
+
             context.RemoveLocalBlock();
 
             context.ClearFunc();
             return Func;
+        }
+    }
+
+    public class KClassDecl : KStmt
+    {
+        public KId Id { get; private set; }
+
+        public KVarDecl[] Fields { get; private set; }
+        public KMthdDecl[] Methods { get; private set; }
+        public KTypeData ClassType { get; private set; }
+
+        public int GetFieldIndex(string fieldName)
+        {
+            for (int i = 0; i < Fields.Length; i++)
+            {
+                if (Fields[i].Id.Name == fieldName)
+                    return i;
+            }
+
+            return -1;
+        }
+
+        public KClassDecl(CodeGenContext context, KId id, KVarDecl[] fields, KMthdDecl[] methods)
+        {
+            Id = id;
+            Fields = fields;
+            Methods = methods;
+            ClassType = KTypeData.CreateStruct(context.module.Context, Id.Name,
+                Fields.Select(x => x.Type.StoredType).ToArray());
+            context.Classes.Add(Id.Name, this);
+        }
+
+        public override LLVMValueRef GenLhs(CodeGenContext context)
+        {
+            foreach (var method in Methods)
+            {
+                method.Id.Name = $"{Id.Name}.{method.Id.Name}";
+                method.GenLhs(context);
+            }
+
+            return default;
         }
     }
 }

@@ -27,7 +27,12 @@ statement
 	| loop_decl			# RStatementLoop
 	| BREAK SDOT		# RStatementBreak
 	| mth_decl			# RStatementMthDecl
+	| class_decl        # RStatementClassDecl
 	| ex_mth_decl SDOT	# RStatementExMthDecl;
+	
+class_decl 
+    locals[KClassDecl Class]: 
+    CLASS id  block  #RClassDecl;
 
 if_else_decl
 	locals[KStmt Stmt]:
@@ -73,6 +78,7 @@ expr
 	| id						# RExprId
 	| id LPRN call_args RPRN	# RExprCall
 	| LPRN expr RPRN			# RExprGroup
+	| expr DOT id               # RExprAccess
 	| unary						# RExprUnary
 	| expr CAST id				# RExprCast
 	//Number operators
@@ -90,7 +96,7 @@ expr
 	| expr AND expr		# RExprBinAnd
 	| expr OR expr		# RExprBinOr
 	//-----------------
-	| id EQ expr	# RExprAssign
+	| expr EQ expr	# RExprAssign
 	| RET expr?		# RExprReturn;
 
 unary
@@ -212,6 +218,8 @@ EQLESS:
 	'<=';
 CAST:
 	'to';
+	
+CLASS: 'class';
 
 METHOD:
 	'mth';
